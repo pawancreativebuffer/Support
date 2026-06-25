@@ -141,8 +141,8 @@ export default function SupportPage() {
         {/* Video Tutorials Section */}
         <div className="w-full max-w-6xl mb-24">
           <div className="flex flex-col items-center mb-10 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 flex items-center justify-center gap-3 text-slate-900">
-              <Video className="text-primary-500 w-8 h-8" />
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 flex items-center justify-center gap-3 text-slate-900">
+              <Video className="text-primary-500 w-13 h-13" />
               How It Works
             </h2>
             <p className="text-slate-600 max-w-2xl">Watch our quick video tutorials to master the platform in minutes. Select a video from the playlist to start learning.</p>
@@ -224,8 +224,8 @@ export default function SupportPage() {
 
         {/* Predefined Questions / FAQ (Now Below Services) */}
         <div className="w-full max-w-6xl mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8 flex items-center justify-center gap-3 text-slate-900">
-            <MessageCircle className="text-primary-500" />
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-8 flex items-center justify-center gap-3 text-slate-900">
+            <MessageCircle className="text-primary-500 w-13 h-13" />
             Frequently Asked Questions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
