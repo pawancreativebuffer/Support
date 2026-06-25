@@ -624,6 +624,7 @@ function InteractivePaymentForm({ title }: { title: string }) {
 }
 
 export default function ArticleDetail({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   // Safe resolution of params for Next.js dynamic routing
   const resolvedParams = params instanceof Promise ? React.use(params) : params;
   const rawSlug = resolvedParams?.slug || 'how-to-setup-your-account';
@@ -1009,22 +1010,33 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
 
                 {/* Feedback bottom block */}
                 <div className="bg-slate-50 border-t border-slate-100 p-8 md:p-10 flex flex-col items-center justify-center text-center">
-                  <h4 className="text-lg font-bold text-slate-900 mb-1">Was this article helpful?</h4>
-                  <p className="text-slate-500 text-sm mb-6">Your feedback helps us improve our support center.</p>
-                  <div className="flex flex-wrap items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 transition-all shadow-sm cursor-pointer"
-                    >
-                      <ThumbsUp className="w-4 h-4" /> Yes, it helped
-                    </button>
-                    <button
-                      type="button"
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all shadow-sm cursor-pointer"
-                    >
-                      <ThumbsDown className="w-4 h-4" /> No, I need help
-                    </button>
-                  </div>
+                  {feedbackSubmitted ? (
+                    <div className="space-y-2 py-4">
+                      <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+                      <h4 className="text-lg font-bold text-green-900">Thank you for your feedback!</h4>
+                      <p className="text-slate-500 text-sm">Your vote helps us improve our support center resources.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <h4 className="text-lg font-bold text-slate-900 mb-1">Was this article helpful?</h4>
+                      <p className="text-slate-500 text-sm mb-6">Your feedback helps us improve our support center.</p>
+                      <div className="flex flex-wrap items-center justify-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setFeedbackSubmitted(true)}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 transition-all shadow-sm cursor-pointer"
+                        >
+                          <ThumbsUp className="w-4 h-4" /> Yes, it helped
+                        </button>
+                        <Link
+                          href={`/contact?category=${activeCategory.slug}&article=${activeArticle.slug}`}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all shadow-sm cursor-pointer"
+                        >
+                          <ThumbsDown className="w-4 h-4" /> No, I need help
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
