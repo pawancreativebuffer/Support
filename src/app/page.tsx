@@ -23,58 +23,71 @@ export default function SupportPage() {
   ];
 
   const services = [
-    { title: "Technical Support", icon: <Settings className="w-6 h-6 text-primary-600" />, description: "Get help with technical issues, bugs, and system errors from our engineering team." },
-    { title: "Account & Billing", icon: <Shield className="w-6 h-6 text-primary-500" />, description: "Manage your subscription, invoices, and payment methods securely." },
-    { title: "Performance Optimization", icon: <Zap className="w-6 h-6 text-primary-400" />, description: "Expert advice on optimizing your application for maximum speed and efficiency." },
-    { title: "API Integrations", icon: <Layers className="w-6 h-6 text-primary-700" />, description: "Connect your app with third-party services smoothly with our dedicated integration support." },
-    { title: "Live Chat Assistance", icon: <MessageCircle className="w-6 h-6 text-primary-500" />, description: "Chat directly with our support team in real-time for quick resolutions." },
-    { title: "Developer Documentation", icon: <BookOpen className="w-6 h-6 text-primary-600" />, description: "Browse our detailed guides, tutorials, and comprehensive API references." },
+    { title: "Technical Support", icon: <Settings className="w-6 h-6 text-white" />, description: "Get elite help with technical issues and system errors. We're here 24/7.", span: "col-span-1 lg:col-span-2", bg: "bg-slate-900 border-slate-800", text: "text-slate-300", titleColor: "text-white", iconBg: "bg-white/10 border-white/20" },
+    { title: "Account & Billing", icon: <Shield className="w-6 h-6 text-primary-600" />, description: "Manage your invoices and payments securely.", span: "col-span-1 lg:col-span-1", bg: "bg-white border-slate-200", text: "text-slate-600", titleColor: "text-slate-900", iconBg: "bg-slate-50 border-slate-100" },
+    { title: "Performance", icon: <Zap className="w-6 h-6 text-primary-700" />, description: "Optimize your app for maximum speed.", span: "col-span-1 lg:col-span-1", bg: "bg-primary-50 border-primary-100", text: "text-primary-700", titleColor: "text-primary-900", iconBg: "bg-white border-primary-200" },
+    { title: "API Integrations", icon: <Layers className="w-6 h-6 text-primary-600" />, description: "Connect with third-party services smoothly.", span: "col-span-1 lg:col-span-2", bg: "bg-white border-slate-200", text: "text-slate-600", titleColor: "text-slate-900", iconBg: "bg-slate-50 border-slate-100" },
+    { title: "Live Chat", icon: <MessageCircle className="w-6 h-6 text-white" />, description: "Chat directly with our team in real-time.", span: "col-span-1 lg:col-span-2", bg: "bg-primary-600 border-primary-500", text: "text-primary-100", titleColor: "text-white", iconBg: "bg-white/20 border-white/30" },
+    { title: "Documentation", icon: <BookOpen className="w-6 h-6 text-primary-600" />, description: "Browse our detailed guides and tutorials.", span: "col-span-1 lg:col-span-1", bg: "bg-white border-slate-200", text: "text-slate-600", titleColor: "text-slate-900", iconBg: "bg-slate-50 border-slate-100" },
   ];
 
   const searchTags = ["API Keys", "Billing", "Reset Password", "Deployment", "Webhooks"];
 
   return (
     <div className="relative w-full overflow-hidden">
-      {/* Banner Section with distinct background */}
-      <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden flex flex-col items-center">
-        {/* Background Decorative Gradients (Light/Pastel) restricted to banner */}
-        <div className="absolute top-[0%] left-[0%] w-[40%] h-[100%] rounded-full bg-primary-100/50 blur-[100px] pointer-events-none" />
-        <div className="absolute top-[0%] right-[0%] w-[30%] h-[100%] rounded-full bg-primary-50/50 blur-[100px] pointer-events-none" />
+      {/* Hero / Banner Section - Redesigned Asymmetric Layout */}
+      <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-32 md:pb-40 overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/60 via-slate-50 to-slate-50 pointer-events-none" />
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center text-center mb-10 space-y-6">
-          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 pb-2">
-            How can we help you?
-          </h1>
-          <p className="text-lg text-slate-600 max-w-[600px] m-auto">
-            Search our knowledge base or browse categories below to find exactly what you need.
-          </p>
-        </div>
-
-        {/* Search Bar & Tags */}
-        <div className="w-full max-w-2xl relative z-10 px-6">
-          <div className="absolute -inset-2 bg-gradient-to-r from-primary-50 via-primary-100 to-primary-200 rounded-3xl blur-lg opacity-70"></div>
-          <div className="relative flex items-center w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 focus-within:ring-2 focus-within:ring-primary-500/50 transition-all">
-            <Search className="w-6 h-6 text-slate-400 ml-6" />
-            <input
-              type="text"
-              placeholder="Search for articles, guides, or keywords..."
-              className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg py-5 px-4 outline-none border-none"
-            />
-            <button className="mr-3 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-md shadow-primary-200 cursor-pointer">
-              Search
-            </button>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left: Text */}
+          <div className="flex flex-col items-start text-left space-y-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 border border-primary-200 text-primary-700 text-sm font-bold shadow-sm shadow-primary-100 cursor-pointer">
+              <Zap className="w-4 h-4 fill-primary-500" /> Fast & Intelligent Support
+            </div>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+              Find answers. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">
+                Fix problems.
+              </span>
+            </h1>
+            <p className="text-base text-slate-600 max-w-lg leading-relaxed">
+              Skip the wait. Search our intelligent knowledge base or browse our interactive guides to resolve issues instantly.
+            </p>
           </div>
 
-          {/* Predefined Tags */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-6 relative z-5">
-            {searchTags.map((tag, i) => (
-              <button
-                key={i}
-                className="px-4 py-1.5 text-sm font-medium bg-white text-slate-600 cursor-pointer rounded-full border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 hover:scale-105 transition-all duration-300"
-              >
-                {tag}
-              </button>
-            ))}
+          {/* Right: Glassmorphism Search Console */}
+          <div className="relative w-full max-w-xl mx-auto lg:ml-auto">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary-400 to-primary-200 rounded-[2.5rem] blur-2xl opacity-30 animate-pulse"></div>
+            <div className="relative bg-white/60 backdrop-blur-2xl border border-white rounded-[2rem] p-6 md:p-8 shadow-2xl shadow-primary-900/10">
+              <div className="flex flex-col gap-6">
+                <div className="relative flex items-center w-full bg-white border-2 border-primary-100 rounded-2xl overflow-hidden shadow-inner focus-within:border-primary-500 transition-colors">
+                  <Search className="w-7 h-7 text-primary-500 ml-6" />
+                  <input
+                    type="text"
+                    placeholder="Ask anything (e.g. API keys)..."
+                    className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg md:text-xl py-6 px-4 outline-none border-none font-medium"
+                  />
+                  <button className="mr-3 px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-transform active:scale-95 shadow-lg shadow-primary-600/30 cursor-pointer">
+                    Search
+                  </button>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Trending searches</p>
+                  <div className="flex flex-wrap gap-2">
+                    {searchTags.map((tag, i) => (
+                      <button
+                        key={i}
+                        className="px-4 py-2 text-sm font-semibold bg-white text-slate-600 cursor-pointer rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 hover:-translate-y-0.5 transition-all duration-300"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -82,27 +95,41 @@ export default function SupportPage() {
       {/* Main Content Area */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-20 flex flex-col items-center">
 
-        {/* Services Section (Now Above FAQs) */}
-        <div className="w-full max-w-6xl mb-24">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8 flex items-center justify-center gap-3 text-slate-900">
-            <Layers className="text-primary-500" />
-            Explore Our Services
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Services Bento Grid */}
+        <div className="w-full max-w-7xl mb-32">
+          <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider mb-3">
+                <Layers className="w-3 h-3 text-primary-500" /> Solutions
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+                Explore specialized teams.
+              </h2>
+            </div>
+            <button className="hidden lg:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 cursor-pointer group px-5 py-2.5 bg-primary-50 rounded-full">
+              View all services <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {services.map((service, i) => (
               <div
                 key={i}
-                className="relative flex flex-col p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50 cursor-pointer"
+                className={`relative flex flex-col p-8 min-h-[280px] rounded-[2rem] border ${service.bg} ${service.span} hover:scale-[1.02] transition-transform duration-300 cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-primary-900/10 group overflow-hidden`}
               >
-                <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-sm">
+                {/* Decorative element for the big dark card */}
+                {i === 0 && <div className="absolute -right-20 -top-20 w-72 h-72 bg-primary-500/20 rounded-full blur-3xl pointer-events-none" />}
+
+                <div className={`flex-shrink-0 w-14 h-14 rounded-2xl border flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 shadow-sm relative z-10 ${service.iconBg}`}>
                   {service.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">{service.title}</h3>
-                <p className="text-slate-600 leading-relaxed text-sm mb-6">
+                <h3 className={`text-2xl font-bold mb-3 relative z-10 ${service.titleColor}`}>{service.title}</h3>
+                <p className={`leading-relaxed text-base relative z-10 ${service.text}`}>
                   {service.description}
                 </p>
-                <div className="mt-auto pt-4 flex justify-end">
-                  <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white transition-all duration-300 shadow-md group-hover:bg-primary-700">
+                <div className="mt-auto pt-4 flex justify-end relative z-10">
+                  <div className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-300 shadow-sm
+                    ${i === 0 || i === 4 ? 'bg-white/10 border-white/20 text-white group-hover:bg-white group-hover:text-primary-900' : 'bg-primary-600 border-primary-600 text-white group-hover:bg-primary-700'}`}>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -120,16 +147,16 @@ export default function SupportPage() {
             </h2>
             <p className="text-slate-600 max-w-2xl">Watch our quick video tutorials to master the platform in minutes. Select a video from the playlist to start learning.</p>
           </div>
-          
+
           <div className="flex flex-col lg:flex-row gap-6 bg-white p-4 md:p-6 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/40">
             {/* Main Video Player (Left) */}
             <div className="w-full lg:w-2/3 flex flex-col gap-4">
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-inner ring-1 ring-slate-200">
-                <iframe 
+                <iframe
                   className="absolute inset-0 w-full h-full"
-                  src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1&mute=0`} 
+                  src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1&mute=0`}
                   title={activeVideo.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
               </div>
@@ -142,26 +169,25 @@ export default function SupportPage() {
             {/* Video Playlist (Right) */}
             <div className="w-full lg:w-1/3 flex flex-col max-h-[500px] overflow-y-auto pr-2 rounded-xl">
               <h4 className="font-semibold text-slate-900 px-2 pb-3 mb-2 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                Playlist 
+                Playlist
                 <span className="text-xs font-bold bg-primary-50 text-primary-700 px-2.5 py-1 rounded-full">
                   {tutorialVideos.length} videos
                 </span>
               </h4>
               <div className="flex flex-col gap-2">
                 {tutorialVideos.map((video) => (
-                  <div 
+                  <div
                     key={video.id}
                     onClick={() => setActiveVideo(video)}
-                    className={`flex gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-300 border-2 ${
-                      activeVideo.id === video.id 
-                      ? 'border-primary-500 bg-primary-50 shadow-sm' 
+                    className={`flex gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-300 border-2 ${activeVideo.id === video.id
+                      ? 'border-primary-500 bg-primary-50 shadow-sm'
                       : 'border-transparent hover:bg-slate-50 hover:border-slate-200'
-                    }`}
+                      }`}
                   >
                     {/* Thumbnail */}
                     <div className="relative w-32 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 group">
-                      <img 
-                        src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`} 
+                      <img
+                        src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
                         alt={video.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
