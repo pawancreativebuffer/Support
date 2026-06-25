@@ -225,7 +225,7 @@ export default function SupportPage() {
         </div>
 
         {/* Predefined Questions / FAQ (Now Below Services) */}
-        <div className="w-full max-w-7xl mb-12">
+        <div className="w-full max-w-7xl">
           <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-8 flex items-center justify-center gap-3 text-slate-900">
             <MessageCircle className="text-primary-500 w-13 h-13" />
             Frequently Asked Questions

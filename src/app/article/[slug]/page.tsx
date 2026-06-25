@@ -680,7 +680,7 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-24">
+    <div className="bg-slate-50/50 pb-12">
       {/* Sub-header Banner */}
       <div className="relative w-full bg-slate-50 border-b border-slate-200 py-8 mb-10 overflow-hidden">
         <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/30 via-slate-50 to-slate-50 pointer-events-none" />
