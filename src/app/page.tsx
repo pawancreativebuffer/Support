@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Search, ChevronRight, ArrowRight, MessageCircle, Settings, Shield, Zap, BookOpen, Layers, PlayCircle, Video } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SupportPage() {
   const tutorialVideos = [
@@ -113,8 +114,9 @@ export default function SupportPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {services.map((service, i) => (
-              <div
+              <Link
                 key={i}
+                href={`/article/${service.title.toLowerCase().replace(/ /g, '-')}`}
                 className={`relative flex flex-col p-8 min-h-[280px] rounded-[2rem] border ${service.bg} ${service.span} hover:scale-[1.02] transition-transform duration-300 cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-primary-900/10 group overflow-hidden`}
               >
                 {/* Decorative element for the big dark card */}
@@ -133,7 +135,7 @@ export default function SupportPage() {
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
