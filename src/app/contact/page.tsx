@@ -325,97 +325,37 @@ function ContactFormContent() {
             {/* LIVE CHAT TAB */}
             {activeTab === 'live-chat' && (
               <div className="space-y-6">
-                {chatStatus === 'idle' ? (
-                  <div className="text-center py-10 space-y-6 max-w-md mx-auto">
-                    <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto text-primary-600">
-                      <MessageCircle className="w-8 h-8" />
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-slate-900 font-sans">Connect with a Live Agent</h3>
-                      <p className="text-sm text-slate-500">
-                        Chat directly with our customer care representatives for immediate issues regarding wallet balances, card security, and payment transactions.
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex items-center justify-center gap-6 text-sm font-semibold">
-                      <span className="flex items-center gap-1.5 text-green-600">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        Agents Online
-                      </span>
-                      <span className="text-slate-300">|</span>
-                      <span className="flex items-center gap-1.5 text-slate-600">
-                        <Clock className="w-4 h-4 text-slate-400" />
-                        Wait: &lt; 2 minutes
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={startChatSimulation}
-                      className="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-sm"
-                    >
-                      Start Live Chat Session
-                    </button>
+                <div className="text-center py-12 space-y-6 max-w-lg mx-auto">
+                  <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto text-primary-600">
+                    <MessageCircle className="w-8 h-8" />
                   </div>
-                ) : (
-                  <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-inner flex flex-col h-[480px] bg-slate-50">
-                    {/* Chat Header */}
-                    <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center font-bold text-sm text-primary-700">
-                          S
-                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white"></span>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-900">Sarah</h4>
-                          <p className="text-[10px] text-slate-400 font-semibold uppercase">Customer Care Agent</p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-200">SECURE LINK</span>
-                    </div>
-
-                    {/* Chat Messages */}
-                    <div className="flex-1 p-4 overflow-y-auto space-y-3 font-sans">
-                      {chatMessages.map((msg, i) => {
-                        if (msg.sender === 'system') {
-                          return (
-                            <div key={i} className="text-center">
-                              <span className="inline-block bg-slate-200/60 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full">{msg.text}</span>
-                            </div>
-                          );
-                        }
-
-                        const isUser = msg.sender === 'user';
-                        return (
-                          <div key={i} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${isUser ? 'bg-primary-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
-                              }`}>
-                              <p className="leading-relaxed">{msg.text}</p>
-                              <span className={`block text-[9px] mt-1 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>{msg.time}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Chat Input Form */}
-                    <form onSubmit={sendChatMessage} className="bg-white border-t border-slate-200 p-3 flex gap-2">
-                      <input
-                        type="text"
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        disabled={chatStatus === 'connecting'}
-                        placeholder={chatStatus === 'connecting' ? 'Connecting with agent...' : 'Type your message...'}
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:border-primary-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-400"
-                      />
-                      <button
-                        type="submit"
-                        disabled={chatStatus === 'connecting' || !chatInput.trim()}
-                        className="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-colors disabled:bg-slate-100 disabled:text-slate-300 cursor-pointer"
-                      >
-                        <Send className="w-4 h-4" />
-                      </button>
-                    </form>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-slate-900 font-sans">Live Chat Console</h3>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                      We have launched our new persistent support chat widget in the bottom-right corner of the screen. You can minimize, maximize, and resize it at any time, and it will remain active as you navigate through our articles and guides.
+                    </p>
                   </div>
-                )}
+                  <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex items-center justify-center gap-6 text-sm font-semibold">
+                    <span className="flex items-center gap-1.5 text-green-600">
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                      Agents Online
+                    </span>
+                    <span className="text-slate-300">|</span>
+                    <span className="flex items-center gap-1.5 text-slate-600">
+                      <Clock className="w-4 h-4 text-slate-400" />
+                      Wait: &lt; 2 minutes
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('open-chat-widget'));
+                    }}
+                    className="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    Open Live Chat Widget
+                  </button>
+                </div>
               </div>
             )}
 

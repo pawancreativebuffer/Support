@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { LayoutDashboard, LogIn, Menu } from "lucide-react";
+import ChatWidget from "../components/ChatWidget";
 
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700', '800'],
@@ -60,6 +61,9 @@ export default function RootLayout({
         <main className="flex-1 flex flex-col">
           {children}
         </main>
+
+        {/* Global Persistent Support Chat */}
+        <ChatWidget />
 
         {/* Footer */}
         <footer className="bg-slate-950 border-t border-slate-900 py-12 mt-auto">
