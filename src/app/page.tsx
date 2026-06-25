@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ChevronRight, MessageCircle, Settings, Shield, Zap, BookOpen, Layers } from 'lucide-react';
+import { Search, ChevronRight, ArrowRight, MessageCircle, Settings, Shield, Zap, BookOpen, Layers } from 'lucide-react';
 
 export default function SupportPage() {
   const faqs = [
@@ -14,11 +14,11 @@ export default function SupportPage() {
 
   const services = [
     { title: "Technical Support", icon: <Settings className="w-6 h-6 text-primary-600" />, description: "Get help with technical issues, bugs, and system errors from our engineering team." },
-    { title: "Account & Billing", icon: <Shield className="w-6 h-6 text-blue-500" />, description: "Manage your subscription, invoices, and payment methods securely." },
-    { title: "Performance Optimization", icon: <Zap className="w-6 h-6 text-sky-500" />, description: "Expert advice on optimizing your application for maximum speed and efficiency." },
-    { title: "API Integrations", icon: <Layers className="w-6 h-6 text-indigo-500" />, description: "Connect your app with third-party services smoothly with our dedicated integration support." },
+    { title: "Account & Billing", icon: <Shield className="w-6 h-6 text-primary-500" />, description: "Manage your subscription, invoices, and payment methods securely." },
+    { title: "Performance Optimization", icon: <Zap className="w-6 h-6 text-primary-400" />, description: "Expert advice on optimizing your application for maximum speed and efficiency." },
+    { title: "API Integrations", icon: <Layers className="w-6 h-6 text-primary-700" />, description: "Connect your app with third-party services smoothly with our dedicated integration support." },
     { title: "Live Chat Assistance", icon: <MessageCircle className="w-6 h-6 text-primary-500" />, description: "Chat directly with our support team in real-time for quick resolutions." },
-    { title: "Developer Documentation", icon: <BookOpen className="w-6 h-6 text-cyan-600" />, description: "Browse our detailed guides, tutorials, and comprehensive API references." },
+    { title: "Developer Documentation", icon: <BookOpen className="w-6 h-6 text-primary-600" />, description: "Browse our detailed guides, tutorials, and comprehensive API references." },
   ];
 
   const searchTags = ["API Keys", "Billing", "Reset Password", "Deployment", "Webhooks"];
@@ -28,8 +28,8 @@ export default function SupportPage() {
       {/* Banner Section with distinct background */}
       <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden flex flex-col items-center">
         {/* Background Decorative Gradients (Light/Pastel) restricted to banner */}
-        <div className="absolute top-[0%] left-[0%] w-[40%] h-[100%] rounded-full bg-blue-100/50 blur-[100px] pointer-events-none" />
-        <div className="absolute top-[0%] right-[0%] w-[30%] h-[100%] rounded-full bg-sky-100/50 blur-[100px] pointer-events-none" />
+        <div className="absolute top-[0%] left-[0%] w-[40%] h-[100%] rounded-full bg-primary-100/50 blur-[100px] pointer-events-none" />
+        <div className="absolute top-[0%] right-[0%] w-[30%] h-[100%] rounded-full bg-primary-50/50 blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center text-center mb-10 space-y-6">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 pb-2">
@@ -42,7 +42,7 @@ export default function SupportPage() {
 
         {/* Search Bar & Tags */}
         <div className="w-full max-w-2xl relative z-10 px-6">
-          <div className="absolute -inset-2 bg-gradient-to-r from-blue-100 via-primary-100 to-sky-100 rounded-3xl blur-lg opacity-70"></div>
+          <div className="absolute -inset-2 bg-gradient-to-r from-primary-50 via-primary-100 to-primary-200 rounded-3xl blur-lg opacity-70"></div>
           <div className="relative flex items-center w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 focus-within:ring-2 focus-within:ring-primary-500/50 transition-all">
             <Search className="w-6 h-6 text-slate-400 ml-6" />
             <input
@@ -82,15 +82,20 @@ export default function SupportPage() {
             {services.map((service, i) => (
               <div
                 key={i}
-                className="relative p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50 cursor-pointer"
+                className="relative flex flex-col p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50 cursor-pointer"
               >
                 <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-sm">
                   {service.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-slate-900 mb-3">{service.title}</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">
+                <p className="text-slate-600 leading-relaxed text-sm mb-6">
                   {service.description}
                 </p>
+                <div className="mt-auto pt-4 flex justify-end">
+                  <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white transition-all duration-300 shadow-md group-hover:bg-primary-700">
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
