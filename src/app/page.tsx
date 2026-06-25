@@ -1,63 +1,65 @@
-import Image from "next/image";
+import React from 'react';
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-indigo-500/30 overflow-hidden relative">
+      {/* Background decorations */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[25%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-600/20 blur-[120px]" />
+        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px]" />
+        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-blue-600/10 blur-[120px]" />
+      </div>
+
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-24 text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 text-sm font-medium text-indigo-300 rounded-full bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md">
+          <span className="flex w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Next.js + Tailwind CSS v4 Boilerplate
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+
+        {/* Hero Title */}
+        <h1 className="max-w-4xl mb-8 text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl">
+          Build <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Beautiful</span> Web Apps Faster.
+        </h1>
+
+        {/* Hero Subtitle */}
+        <p className="max-w-2xl mb-12 text-lg text-slate-400 sm:text-xl">
+          Start your next project with a stunning foundation. Engineered with modern aesthetics, dark mode perfection, and smooth micro-interactions out of the box.
+        </p>
+
+        {/* Call to Actions */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-500 hover:scale-105 hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] active:scale-95"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            Get Started Now
           </a>
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-300 transition-all duration-200 bg-slate-900/50 border border-slate-700/50 rounded-full backdrop-blur-md hover:bg-slate-800 hover:text-white hover:scale-105 active:scale-95"
           >
-            Documentation
+            Read Documentation
           </a>
+        </div>
+
+        {/* Features grid */}
+        <div className="grid grid-cols-1 gap-6 mt-32 sm:grid-cols-3 max-w-5xl w-full">
+          {[
+            { title: "Next.js App Router", desc: "Leverage the latest routing features of React and Next.js." },
+            { title: "Tailwind CSS v4", desc: "Lightning fast styling with the newest utility-first framework." },
+            { title: "Premium Design", desc: "Pre-configured gradients, blur effects, and micro-animations." },
+          ].map((feature, i) => (
+            <div key={i} className="flex flex-col items-start p-6 text-left transition-colors bg-slate-900/50 border border-slate-800/60 rounded-2xl backdrop-blur-sm hover:bg-slate-800/50 hover:border-slate-700/80">
+              <div className="flex items-center justify-center w-10 h-10 mb-4 rounded-lg bg-indigo-500/20 text-indigo-400">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-slate-200">{feature.title}</h3>
+              <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </main>
     </div>
