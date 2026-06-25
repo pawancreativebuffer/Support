@@ -26,19 +26,18 @@ export default function RootLayout({
         <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-2 text-primary-600 font-bold text-xl tracking-tight cursor-pointer">
+            <div className="flex items-center gap-2 text-primary-600 font-bold text-xl tracking-tight cursor-pointer uppercase">
               <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white shadow-sm shadow-primary-200">
                 <LayoutDashboard className="w-5 h-5" />
               </div>
-              Nexus
+              Support
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-              <a href="#" className="hover:text-primary-600 transition-colors">Products</a>
-              <a href="#" className="hover:text-primary-600 transition-colors">Solutions</a>
-              <a href="#" className="hover:text-primary-600 transition-colors">Resources</a>
-              <a href="#" className="text-primary-600 font-semibold">Support</a>
+              <a href="#" className="text-primary-600">Home</a>
+              <a href="#" className="hover:text-primary-600 transition-colors">Services</a>
+              <a href="#" className="hover:text-primary-600 transition-colors">Feedback</a>
             </nav>
 
             {/* Actions */}
@@ -69,7 +68,7 @@ export default function RootLayout({
               <div className="w-6 h-6 rounded-md bg-slate-300 flex items-center justify-center text-white">
                 <LayoutDashboard className="w-3 h-3" />
               </div>
-              © {new Date().getFullYear()} Nexus Inc. All rights reserved.
+              © {new Date().getFullYear()} Support Inc. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm text-slate-500">
               <a href="#" className="hover:text-primary-600 transition-colors">Privacy Policy</a>

@@ -28,14 +28,14 @@ export default function SupportPage() {
       {/* Background Decorative Gradients (Light/Pastel) */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-[100px] pointer-events-none" />
       <div className="absolute top-[10%] right-[-10%] w-[30%] h-[50%] rounded-full bg-sky-100/50 blur-[100px] pointer-events-none" />
-      
+
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 md:py-24 flex flex-col items-center">
         {/* Hero Section */}
-        <div className="text-center w-full max-w-3xl mb-12 space-y-6">
+        <div className="text-center w-full mb-10 space-y-6">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 pb-2">
             How can we help you?
           </h1>
-          <p className="text-lg md:text-xl text-slate-600">
+          <p className="text-md text-slate-600  max-w-[600px] m-auto">
             Search our knowledge base or browse categories below to find exactly what you need.
           </p>
         </div>
@@ -45,22 +45,22 @@ export default function SupportPage() {
           <div className="absolute -inset-2 bg-gradient-to-r from-blue-100 via-primary-100 to-sky-100 rounded-3xl blur-lg opacity-70"></div>
           <div className="relative flex items-center w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 focus-within:ring-2 focus-within:ring-primary-500/50 transition-all">
             <Search className="w-6 h-6 text-slate-400 ml-6" />
-            <input 
-              type="text" 
-              placeholder="Search for articles, guides, or keywords..." 
+            <input
+              type="text"
+              placeholder="Search for articles, guides, or keywords..."
               className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg py-5 px-4 outline-none border-none"
             />
             <button className="mr-3 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-md shadow-primary-200">
               Search
             </button>
           </div>
-          
+
           {/* Predefined Tags */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-6 relative z-5">
             {searchTags.map((tag, i) => (
-              <button 
+              <button
                 key={i}
-                className="px-4 py-1.5 text-sm font-medium bg-white text-black rounded-full border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 hover:scale-105 transition-all duration-300"
+                className="px-4 py-1.5 text-sm font-medium bg-white text-slate-600 cursor-pointer rounded-full border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 hover:scale-105 transition-all duration-300"
               >
                 {tag}
               </button>
@@ -76,8 +76,8 @@ export default function SupportPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className="relative p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50"
               >
                 <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-sm">
@@ -100,8 +100,8 @@ export default function SupportPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {faqs.map((faq, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className="group flex items-center justify-between p-5 rounded-2xl bg-white border border-slate-200 hover:border-primary-300 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-primary-50"
               >
                 <div className="flex flex-col gap-1">
