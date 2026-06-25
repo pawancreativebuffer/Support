@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { LayoutDashboard, LogIn, Menu } from "lucide-react";
 import ChatWidget from "../components/ChatWidget";
+import Link from "next/link";
 
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700', '800'],
@@ -27,18 +28,18 @@ export default function RootLayout({
         <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-2 text-primary-600 font-bold text-xl tracking-tight cursor-pointer uppercase">
+            <Link href="/" className="flex items-center gap-2 text-primary-600 font-bold text-xl tracking-tight cursor-pointer uppercase hover:opacity-90 transition-opacity">
               <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white shadow-sm shadow-primary-200">
                 <LayoutDashboard className="w-5 h-5" />
               </div>
               Support
-            </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-              <a href="#" className="hover:text-primary-600 transition-colors cursor-pointer">Products</a>
-              <a href="#" className="hover:text-primary-600 transition-colors cursor-pointer">Solutions</a>
-              <a href="#" className="hover:text-primary-600 transition-colors cursor-pointer">Resources</a>
+              <Link href="/" className="hover:text-primary-600 transition-colors cursor-pointer">Home</Link>
+              <Link href="/#solutions" className="hover:text-primary-600 transition-colors cursor-pointer">Solutions</Link>
+              <Link href="/article/request-a-payment" className="hover:text-primary-600 transition-colors cursor-pointer">Resources</Link>
             </nav>
 
             {/* Actions */}
@@ -47,9 +48,9 @@ export default function RootLayout({
                 <LogIn className="w-4 h-4" />
                 Sign In
               </button>
-              <button className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-all shadow-sm shadow-primary-200 cursor-pointer">
-                AI Support
-              </button>
+              <Link href="/contact" className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-all shadow-sm shadow-primary-200 cursor-pointer">
+                Contact
+              </Link>
               <button className="md:hidden text-slate-600 hover:text-primary-600 transition-colors px-2 cursor-pointer">
                 <Menu className="w-6 h-6" />
               </button>
