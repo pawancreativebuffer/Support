@@ -25,23 +25,23 @@ export default function SupportPage() {
 
   return (
     <div className="relative w-full overflow-hidden">
-      {/* Background Decorative Gradients (Light/Pastel) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-[100px] pointer-events-none" />
-      <div className="absolute top-[10%] right-[-10%] w-[30%] h-[50%] rounded-full bg-sky-100/50 blur-[100px] pointer-events-none" />
+      {/* Banner Section with distinct background */}
+      <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden flex flex-col items-center">
+        {/* Background Decorative Gradients (Light/Pastel) restricted to banner */}
+        <div className="absolute top-[0%] left-[0%] w-[40%] h-[100%] rounded-full bg-blue-100/50 blur-[100px] pointer-events-none" />
+        <div className="absolute top-[0%] right-[0%] w-[30%] h-[100%] rounded-full bg-sky-100/50 blur-[100px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 md:py-24 flex flex-col items-center">
-        {/* Hero Section */}
-        <div className="text-center w-full mb-10 space-y-6">
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center text-center mb-10 space-y-6">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 pb-2">
             How can we help you?
           </h1>
-          <p className="text-md text-slate-600  max-w-[600px] m-auto">
+          <p className="text-lg text-slate-600 max-w-[600px] m-auto">
             Search our knowledge base or browse categories below to find exactly what you need.
           </p>
         </div>
 
         {/* Search Bar & Tags */}
-        <div className="w-full max-w-2xl mb-24 relative">
+        <div className="w-full max-w-2xl relative z-10 px-6">
           <div className="absolute -inset-2 bg-gradient-to-r from-blue-100 via-primary-100 to-sky-100 rounded-3xl blur-lg opacity-70"></div>
           <div className="relative flex items-center w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 focus-within:ring-2 focus-within:ring-primary-500/50 transition-all">
             <Search className="w-6 h-6 text-slate-400 ml-6" />
@@ -50,7 +50,7 @@ export default function SupportPage() {
               placeholder="Search for articles, guides, or keywords..."
               className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg py-5 px-4 outline-none border-none"
             />
-            <button className="mr-3 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-md shadow-primary-200">
+            <button className="mr-3 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-md shadow-primary-200 cursor-pointer">
               Search
             </button>
           </div>
@@ -67,6 +67,10 @@ export default function SupportPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Main Content Area */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-20 flex flex-col items-center">
 
         {/* Services Section (Now Above FAQs) */}
         <div className="w-full max-w-6xl mb-24">
@@ -78,7 +82,7 @@ export default function SupportPage() {
             {services.map((service, i) => (
               <div
                 key={i}
-                className="relative p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50"
+                className="relative p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50 cursor-pointer"
               >
                 <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-sm">
                   {service.icon}
@@ -93,12 +97,12 @@ export default function SupportPage() {
         </div>
 
         {/* Predefined Questions / FAQ (Now Below Services) */}
-        <div className="w-full max-w-4xl mb-12">
+        <div className="w-full max-w-6xl mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-8 flex items-center justify-center gap-3 text-slate-900">
             <MessageCircle className="text-primary-500" />
             Frequently Asked Questions
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {faqs.map((faq, i) => (
               <div
                 key={i}

@@ -35,21 +35,21 @@ export default function RootLayout({
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-              <a href="#" className="text-primary-600">Home</a>
-              <a href="#" className="hover:text-primary-600 transition-colors">Services</a>
-              <a href="#" className="hover:text-primary-600 transition-colors">Feedback</a>
+              <a href="#" className="hover:text-primary-600 transition-colors cursor-pointer">Products</a>
+              <a href="#" className="hover:text-primary-600 transition-colors cursor-pointer">Solutions</a>
+              <a href="#" className="hover:text-primary-600 transition-colors cursor-pointer">Resources</a>
             </nav>
 
             {/* Actions */}
             <div className="flex items-center gap-4">
-              <button className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">
+              <button className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-primary-600 transition-colors px-3 cursor-pointer">
                 <LogIn className="w-4 h-4" />
                 Sign In
               </button>
-              <button className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2 rounded-full transition-all shadow-sm shadow-primary-200">
+              <button className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-all shadow-sm shadow-primary-200 cursor-pointer">
                 Get Started
               </button>
-              <button className="md:hidden text-slate-600 hover:text-primary-600 transition-colors">
+              <button className="md:hidden text-slate-600 hover:text-primary-600 transition-colors px-2 cursor-pointer">
                 <Menu className="w-6 h-6" />
               </button>
             </div>
@@ -62,18 +62,18 @@ export default function RootLayout({
         </main>
 
         {/* Footer */}
-        <footer className="bg-slate-50 border-t border-slate-200 py-12 mt-auto">
+        <footer className="bg-slate-950 border-t border-slate-900 py-12 mt-auto">
           <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2 text-slate-400 font-medium">
-              <div className="w-6 h-6 rounded-md bg-slate-300 flex items-center justify-center text-white">
+              <div className="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center text-slate-300">
                 <LayoutDashboard className="w-3 h-3" />
               </div>
-              © {new Date().getFullYear()} Support Inc. All rights reserved.
+              © {new Date().getFullYear()} Nexus Inc. All rights reserved.
             </div>
-            <div className="flex gap-6 text-sm text-slate-500">
-              <a href="#" className="hover:text-primary-600 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-primary-600 transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-primary-600 transition-colors">Contact</a>
+            <div className="flex gap-6 text-sm text-slate-400">
+              <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Privacy Policy</a>
+              <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Terms of Service</a>
+              <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Contact</a>
             </div>
           </div>
         </footer>
