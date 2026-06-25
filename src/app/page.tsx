@@ -36,7 +36,7 @@ export default function SupportPage() {
   return (
     <div className="relative w-full overflow-hidden">
       {/* Hero / Banner Section - Redesigned Asymmetric Layout */}
-      <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-32 md:pb-40 overflow-hidden">
+      <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-24 md:pb-24 overflow-hidden">
         {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/60 via-slate-50 to-slate-50 pointer-events-none" />
 
