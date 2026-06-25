@@ -1,67 +1,122 @@
-import React from 'react';
+"use client";
 
-export default function Home() {
+import { Search, ChevronRight, MessageCircle, Settings, Shield, Zap, BookOpen, Layers } from 'lucide-react';
+
+export default function SupportPage() {
+  const faqs = [
+    { question: "How do I reset my password?", category: "Account" },
+    { question: "Where can I find my billing history?", category: "Billing" },
+    { question: "How to integrate the API?", category: "Developers" },
+    { question: "Can I change my subscription plan?", category: "Pricing" },
+    { question: "What happens if I exceed my usage limits?", category: "Usage" },
+    { question: "Is there a status page for services?", category: "System" }
+  ];
+
+  const services = [
+    { title: "Technical Support", icon: <Settings className="w-6 h-6 text-primary-600" />, description: "Get help with technical issues, bugs, and system errors from our engineering team." },
+    { title: "Account & Billing", icon: <Shield className="w-6 h-6 text-blue-500" />, description: "Manage your subscription, invoices, and payment methods securely." },
+    { title: "Performance Optimization", icon: <Zap className="w-6 h-6 text-sky-500" />, description: "Expert advice on optimizing your application for maximum speed and efficiency." },
+    { title: "API Integrations", icon: <Layers className="w-6 h-6 text-indigo-500" />, description: "Connect your app with third-party services smoothly with our dedicated integration support." },
+    { title: "Live Chat Assistance", icon: <MessageCircle className="w-6 h-6 text-primary-500" />, description: "Chat directly with our support team in real-time for quick resolutions." },
+    { title: "Developer Documentation", icon: <BookOpen className="w-6 h-6 text-cyan-600" />, description: "Browse our detailed guides, tutorials, and comprehensive API references." },
+  ];
+
+  const searchTags = ["API Keys", "Billing", "Reset Password", "Deployment", "Webhooks"];
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-indigo-500/30 overflow-hidden relative">
-      {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[25%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-600/20 blur-[120px]" />
-        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-purple-600/20 blur-[120px]" />
-        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-blue-600/10 blur-[120px]" />
-      </div>
-
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-24 text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 text-sm font-medium text-indigo-300 rounded-full bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md">
-          <span className="flex w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-          Next.js + Tailwind CSS v4 Boilerplate
+    <div className="relative w-full overflow-hidden">
+      {/* Background Decorative Gradients (Light/Pastel) */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-100/50 blur-[100px] pointer-events-none" />
+      <div className="absolute top-[10%] right-[-10%] w-[30%] h-[50%] rounded-full bg-sky-100/50 blur-[100px] pointer-events-none" />
+      
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 md:py-24 flex flex-col items-center">
+        {/* Hero Section */}
+        <div className="text-center w-full max-w-3xl mb-12 space-y-6">
+          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 pb-2">
+            How can we help you?
+          </h1>
+          <p className="text-lg md:text-xl text-slate-600">
+            Search our knowledge base or browse categories below to find exactly what you need.
+          </p>
         </div>
 
-        {/* Hero Title */}
-        <h1 className="max-w-4xl mb-8 text-5xl font-extrabold tracking-tight sm:text-7xl lg:text-8xl">
-          Build <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Beautiful</span> Web Apps Faster.
-        </h1>
-
-        {/* Hero Subtitle */}
-        <p className="max-w-2xl mb-12 text-lg text-slate-400 sm:text-xl">
-          Start your next project with a stunning foundation. Engineered with modern aesthetics, dark mode perfection, and smooth micro-interactions out of the box.
-        </p>
-
-        {/* Call to Actions */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <a
-            href="#"
-            className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-500 hover:scale-105 hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] active:scale-95"
-          >
-            Get Started Now
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-300 transition-all duration-200 bg-slate-900/50 border border-slate-700/50 rounded-full backdrop-blur-md hover:bg-slate-800 hover:text-white hover:scale-105 active:scale-95"
-          >
-            Read Documentation
-          </a>
+        {/* Search Bar & Tags */}
+        <div className="w-full max-w-2xl mb-24 relative">
+          <div className="absolute -inset-2 bg-gradient-to-r from-blue-100 via-primary-100 to-sky-100 rounded-3xl blur-lg opacity-70"></div>
+          <div className="relative flex items-center w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl shadow-slate-200/50 focus-within:ring-2 focus-within:ring-primary-500/50 transition-all">
+            <Search className="w-6 h-6 text-slate-400 ml-6" />
+            <input 
+              type="text" 
+              placeholder="Search for articles, guides, or keywords..." 
+              className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg py-5 px-4 outline-none border-none"
+            />
+            <button className="mr-3 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-md shadow-primary-200">
+              Search
+            </button>
+          </div>
+          
+          {/* Predefined Tags */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+            {searchTags.map((tag, i) => (
+              <button 
+                key={i}
+                className="px-4 py-1.5 text-sm font-medium bg-white text-black rounded-full border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 hover:scale-105 transition-all duration-300"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Features grid */}
-        <div className="grid grid-cols-1 gap-6 mt-32 sm:grid-cols-3 max-w-5xl w-full">
-          {[
-            { title: "Next.js App Router", desc: "Leverage the latest routing features of React and Next.js." },
-            { title: "Tailwind CSS v4", desc: "Lightning fast styling with the newest utility-first framework." },
-            { title: "Premium Design", desc: "Pre-configured gradients, blur effects, and micro-animations." },
-          ].map((feature, i) => (
-            <div key={i} className="flex flex-col items-start p-6 text-left transition-colors bg-slate-900/50 border border-slate-800/60 rounded-2xl backdrop-blur-sm hover:bg-slate-800/50 hover:border-slate-700/80">
-              <div className="flex items-center justify-center w-10 h-10 mb-4 rounded-lg bg-indigo-500/20 text-indigo-400">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+        {/* Services Section (Now Above FAQs) */}
+        <div className="w-full max-w-6xl mb-24">
+          <h2 className="text-2xl md:text-3xl font-bold mb-8 flex items-center justify-center gap-3 text-slate-900">
+            <Layers className="text-primary-500" />
+            Explore Our Services
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, i) => (
+              <div 
+                key={i} 
+                className="relative p-6 rounded-3xl bg-white border border-slate-200 hover:border-primary-300 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-100/50"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 shadow-sm">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">{service.title}</h3>
+                <p className="text-slate-600 leading-relaxed text-sm">
+                  {service.description}
+                </p>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-slate-200">{feature.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </main>
+
+        {/* Predefined Questions / FAQ (Now Below Services) */}
+        <div className="w-full max-w-4xl mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold mb-8 flex items-center justify-center gap-3 text-slate-900">
+            <MessageCircle className="text-primary-500" />
+            Frequently Asked Questions
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {faqs.map((faq, i) => (
+              <div 
+                key={i} 
+                className="group flex items-center justify-between p-5 rounded-2xl bg-white border border-slate-200 hover:border-primary-300 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-primary-50"
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold tracking-wider text-primary-600 uppercase">{faq.category}</span>
+                  <h3 className="text-slate-800 font-medium group-hover:text-primary-900 transition-colors">{faq.question}</h3>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors">
+                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-primary-600" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
