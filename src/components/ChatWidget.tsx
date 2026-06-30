@@ -7,7 +7,6 @@ import {
   X, 
   Minus, 
   Send, 
-  CheckCircle, 
   Clock
 } from 'lucide-react';
 
