@@ -55,7 +55,7 @@ export function Header() {
           <Link href="/#solutions" className="hover:text-primary-600 transition-colors cursor-pointer">Solutions</Link>
           <Link href="/article/request-a-payment" className="hover:text-primary-600 transition-colors cursor-pointer">Resources</Link>
           {user && (
-            <Link href="/dashboard" className="text-primary-600 hover:text-primary-700 transition-colors cursor-pointer font-bold">My Dashboard</Link>
+            <Link href={user.role === 'Admin' ? "/admin" : "/dashboard"} className="text-primary-600 hover:text-primary-700 transition-colors cursor-pointer font-bold">My Dashboard</Link>
           )}
         </nav>
 
@@ -63,7 +63,7 @@ export function Header() {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="hidden md:flex items-center gap-4">
-              <Link href="/dashboard" className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-primary-600 transition-colors cursor-pointer">
+              <Link href={user.role === 'Admin' ? "/admin" : "/dashboard"} className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-primary-600 transition-colors cursor-pointer">
                 <div className="w-8 h-8 rounded-full bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center font-bold uppercase">
                   {user.name ? user.name[0] : 'U'}
                 </div>
@@ -123,7 +123,7 @@ export function Header() {
             </Link>
             {user && (
               <Link 
-                href="/dashboard" 
+                href={user.role === 'Admin' ? "/admin" : "/dashboard"}
                 onClick={() => setIsOpen(false)}
                 className="text-primary-600 hover:text-primary-700 py-1.5 transition-colors cursor-pointer font-bold"
               >

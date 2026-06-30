@@ -64,7 +64,6 @@ export default function DashboardPage() {
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
   const [ticketReplyText, setTicketReplyText] = useState('');
-  const [isAdminPreview, setIsAdminPreview] = useState(false);
 
   const loadStoredData = () => {
     try {
@@ -94,6 +93,10 @@ export default function DashboardPage() {
       if (storedUser) {
         try {
           const parsed = JSON.parse(storedUser);
+          if (parsed.role === 'Admin') {
+            window.location.href = '/admin';
+            return;
+          }
           setUser(parsed);
         } catch {
           window.location.href = '/login';
@@ -107,10 +110,6 @@ export default function DashboardPage() {
     setTimeout(() => {
       checkUser();
       loadStoredData();
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('admin') === 'true') {
-        setIsAdminPreview(true);
-      }
     }, 0);
   }, []);
 
@@ -242,11 +241,6 @@ export default function DashboardPage() {
                 <span className="bg-primary-500/20 text-primary-300 border border-primary-500/30 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                   {user.role} Workspace
                 </span>
-                {isAdminPreview && (
-                  <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" /> Admin Redirect Active
-                  </span>
-                )}
               </div>
               <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-none">
                 Welcome back, {user.name}
@@ -266,19 +260,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 space-y-10">
-        {/* Admin Warning Section */}
-        {isAdminPreview && (
-          <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex gap-4 items-start shadow-sm">
-            <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <h4 className="font-bold text-amber-900 text-sm md:text-base">Customer View Dashboard Active (Admin Mode)</h4>
-              <p className="text-xs md:text-sm text-amber-700 leading-relaxed font-medium">
-                You are currently viewing the customer workspace. Under your request, the customer workspace is prioritized first. The admin console for ticket assignment, bulk routing logs, and SLAs will be added in the next phase.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Dashboard KPI cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-6 flex items-center gap-4">

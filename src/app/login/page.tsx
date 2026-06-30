@@ -152,7 +152,7 @@ export default function LoginPage() {
         if (role === 'customer') {
           window.location.href = '/dashboard';
         } else {
-          window.location.href = '/dashboard?admin=true';
+          window.location.href = '/admin';
         }
       } catch {
         setError('Storage security policy blocked session initiation.');
