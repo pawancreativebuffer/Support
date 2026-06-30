@@ -476,13 +476,13 @@ export const ContactVoiceTab: React.FC = () => {
 
   return (
     <div className="py-2 space-y-8 animate-fade-in">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
 
         {/* Left Visual Voice Assistant Panel */}
-        <div className="lg:col-span-6 relative">
+        <div className="lg:col-span-6 relative flex flex-col">
           <div className="absolute -inset-1.5 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-3xl blur opacity-25"></div>
 
-          <div className="relative bg-slate-950 border border-slate-900 rounded-3xl p-8 shadow-2xl flex flex-col items-center justify-center overflow-hidden min-h-[380px]">
+          <div className="relative bg-slate-950 border border-slate-900 rounded-3xl p-8 shadow-2xl flex flex-col items-center justify-center overflow-hidden flex-1 h-[460px] w-full">
             {/* Grid overlay */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:16px_28px] pointer-events-none"></div>
 
@@ -545,17 +545,17 @@ export const ContactVoiceTab: React.FC = () => {
 
               {/* Text Fallback Form */}
               {showTextInput ? (
-                <form onSubmit={handleTextSubmit} className="w-full max-w-[280px] mt-2 flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl p-1.5 z-10">
+                <form onSubmit={handleTextSubmit} className="w-full max-w-[340px] mt-3 flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 z-10 shadow-lg">
                   <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Type your question..."
-                    className="flex-1 bg-transparent border-0 text-white text-xs px-2 focus:outline-none focus:ring-0"
+                    placeholder="Type your question here..."
+                    className="flex-1 bg-transparent border-0 text-white text-sm px-3 focus:outline-none focus:ring-0"
                   />
                   <button
                     type="submit"
-                    className="bg-primary-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-primary-700 font-bold transition-all cursor-pointer"
+                    className="bg-primary-600 text-white text-sm px-5 py-2.5 rounded-xl hover:bg-primary-700 font-bold transition-all cursor-pointer active:scale-95 shadow-md"
                   >
                     Send
                   </button>
@@ -581,7 +581,7 @@ export const ContactVoiceTab: React.FC = () => {
         </div>
 
         {/* Right Voice Log Console */}
-        <div className="lg:col-span-6 flex flex-col h-[380px] bg-white border border-slate-200 rounded-3xl shadow-md overflow-hidden">
+        <div className="lg:col-span-6 flex flex-col h-[460px] bg-white border border-slate-200 rounded-3xl shadow-md overflow-hidden">
           {/* Header */}
           <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
