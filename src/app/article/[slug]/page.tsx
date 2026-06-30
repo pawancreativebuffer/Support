@@ -70,21 +70,21 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-sm md:text-base text-slate-500 font-medium mb-3">
-            <Link href="/" className="hover:text-primary-600 transition-colors">
+          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs md:text-sm text-slate-500 font-medium mb-3">
+            <Link href="/" className="hover:text-primary-600 transition-colors whitespace-nowrap">
               Support Home
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
             <Link
               href={`/article/${activeCategory.slug}`}
-              className={`${!activeArticle ? 'text-slate-900 font-semibold' : 'hover:text-primary-600 transition-colors'}`}
+              className={`whitespace-nowrap ${!activeArticle ? 'text-slate-900 font-semibold' : 'hover:text-primary-600 transition-colors'}`}
             >
               {activeCategory.title}
             </Link>
             {activeArticle && (
               <>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                <span className="text-slate-900 font-semibold truncate max-w-[250px]">{activeArticle.title}</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                <span className="text-slate-900 font-semibold truncate max-w-[140px] sm:max-w-[250px]">{activeArticle.title}</span>
               </>
             )}
           </nav>

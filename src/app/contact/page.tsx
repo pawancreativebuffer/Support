@@ -30,12 +30,12 @@ function ContactFormContent() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-sm text-slate-500 font-medium mb-3">
-            <Link href="/" className="hover:text-primary-600 transition-colors">
+          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs md:text-sm text-slate-500 font-medium mb-3">
+            <Link href="/" className="hover:text-primary-600 transition-colors whitespace-nowrap">
               Support Center
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-950 font-semibold">Contact Us</span>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+            <span className="text-slate-950 font-semibold whitespace-nowrap">Contact Us</span>
           </nav>
 
           {/* Banner Title */}
