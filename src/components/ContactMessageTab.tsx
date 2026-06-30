@@ -29,7 +29,33 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
 
     setFormStatus('loading');
     setTimeout(() => {
-      setTicketNumber(Math.floor(Math.random() * 900000) + 100000);
+      const generatedNum = Math.floor(Math.random() * 900000) + 100000;
+      const newTicket = {
+        id: `NX-${generatedNum}`,
+        firstName,
+        lastName,
+        email,
+        category: topic || 'General Inquiry',
+        description: comment,
+        status: 'Open',
+        type: 'Form',
+        createdAt: new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      try {
+        const existing = localStorage.getItem('nexus_tickets');
+        const tickets = existing ? JSON.parse(existing) : [];
+        tickets.unshift(newTicket);
+        localStorage.setItem('nexus_tickets', JSON.stringify(tickets));
+      } catch (err) {
+        console.error('Failed to save ticket', err);
+      }
+
+      setTicketNumber(generatedNum);
       setFormStatus('success');
     }, 1500);
   };

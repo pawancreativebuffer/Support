@@ -10,6 +10,14 @@ import {
   Clock
 } from 'lucide-react';
 
+interface SavedChat {
+  id: string;
+  title: string;
+  status: 'Active' | 'Connecting' | 'Closed';
+  updatedAt: string;
+  messages: { sender: 'user' | 'agent' | 'system'; text: string; time: string }[];
+}
+
 export default function ChatWidget() {
   // Visibility States:
   // 'hidden': completely hidden, nothing in the bottom-right.
@@ -50,6 +58,36 @@ export default function ChatWidget() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
+
+  // Sync active chat logs with localStorage
+  useEffect(() => {
+    if (chatStatus !== 'idle') {
+      try {
+        const existing = localStorage.getItem('nexus_chats');
+        const chats: SavedChat[] = existing ? JSON.parse(existing) : [];
+        const chatIndex = chats.findIndex((c) => c.id === 'CH-882910');
+        const activeChat: SavedChat = {
+          id: "CH-882910",
+          title: "Sarah (Live Support Chat)",
+          status: chatStatus === 'active' ? 'Active' : 'Connecting',
+          messages: chatMessages,
+          updatedAt: new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        if (chatIndex >= 0) {
+          chats[chatIndex] = activeChat;
+        } else {
+          chats.unshift(activeChat);
+        }
+        localStorage.setItem('nexus_chats', JSON.stringify(chats));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, [chatMessages, chatStatus]);
 
   // Listen for global triggers to open the chat window (e.g. from Contact Us page)
   useEffect(() => {
@@ -260,6 +298,17 @@ export default function ChatWidget() {
                   <button
                     type="button"
                     onClick={() => {
+                      try {
+                        const existing = localStorage.getItem('nexus_chats');
+                        const chats: SavedChat[] = existing ? JSON.parse(existing) : [];
+                        const chatIndex = chats.findIndex((c) => c.id === 'CH-882910');
+                        if (chatIndex >= 0) {
+                          chats[chatIndex].status = 'Closed';
+                          localStorage.setItem('nexus_chats', JSON.stringify(chats));
+                        }
+                      } catch (err) {
+                        console.error(err);
+                      }
                       setShowCloseConfirm(false);
                       setVisibility('hidden');
                       setChatStatus('idle');
