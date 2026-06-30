@@ -2,20 +2,21 @@
 
 import * as React from 'react';
 import { useState, Suspense } from 'react';
-import { ChevronRight, MessageCircle, Mail, PhoneCall } from 'lucide-react';
+import { ChevronRight, MessageCircle, Mail, PhoneCall, Mic } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { TOPICS } from '../../data/topics';
 import { ContactChatTab } from '../../components/ContactChatTab';
 import { ContactMessageTab } from '../../components/ContactMessageTab';
 import { ContactCallTab } from '../../components/ContactCallTab';
+import { ContactVoiceTab } from '../../components/ContactVoiceTab';
 
 function ContactFormContent() {
   const searchParams = useSearchParams();
   const catParam = searchParams.get('category') || '';
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<'live-chat' | 'send-message' | 'call-us'>('live-chat');
+  const [activeTab, setActiveTab] = useState<'live-chat' | 'send-message' | 'call-us' | 'voice-assistant'>('live-chat');
 
   // Compute directly from searchParams during render
   const matched = catParam ? TOPICS.find(t => t.slug === catParam) : null;
@@ -55,11 +56,10 @@ function ContactFormContent() {
             <button
               type="button"
               onClick={() => setActiveTab('live-chat')}
-              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${
-                activeTab === 'live-chat'
-                  ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
-                  : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${activeTab === 'live-chat'
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
+                }`}
             >
               <MessageCircle className="w-4.5 h-4.5" />
               Live Chat
@@ -68,11 +68,10 @@ function ContactFormContent() {
             <button
               type="button"
               onClick={() => setActiveTab('send-message')}
-              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${
-                activeTab === 'send-message'
-                  ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
-                  : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${activeTab === 'send-message'
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
+                }`}
             >
               <Mail className="w-4.5 h-4.5" />
               Send Message
@@ -81,14 +80,25 @@ function ContactFormContent() {
             <button
               type="button"
               onClick={() => setActiveTab('call-us')}
-              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${
-                activeTab === 'call-us'
-                  ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
-                  : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${activeTab === 'call-us'
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
+                }`}
             >
               <PhoneCall className="w-4.5 h-4.5" />
               Call Us
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('voice-assistant')}
+              className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl text-sm font-bold tracking-wider uppercase transition-all cursor-pointer ${activeTab === 'voice-assistant'
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100/80'
+                }`}
+            >
+              <Mic className="w-4.5 h-4.5" />
+              Voice Assistant
             </button>
           </div>
 
@@ -98,6 +108,7 @@ function ContactFormContent() {
               <ContactMessageTab topics={TOPICS} initialTopic={initialTopic} />
             )}
             {activeTab === 'call-us' && <ContactCallTab />}
+            {activeTab === 'voice-assistant' && <ContactVoiceTab />}
           </div>
         </div>
       </div>
