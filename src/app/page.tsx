@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from 'react';
-import { Search, ChevronRight, ArrowRight, MessageCircle, Settings, Shield, Zap, BookOpen, Layers, PlayCircle, Video } from 'lucide-react';
+import {
+  Search, ArrowRight, MessageCircle, Settings, Shield,
+  Zap, BookOpen, Layers, PlayCircle, Video, ChevronDown,
+  HelpCircle, ThumbsUp, ThumbsDown, Sparkles
+} from 'lucide-react';
 import Link from 'next/link';
 
 export default function SupportPage() {
@@ -13,15 +17,275 @@ export default function SupportPage() {
   ];
 
   const [activeVideo, setActiveVideo] = useState(tutorialVideos[0]);
+  const [heroSearch, setHeroSearch] = useState('');
+  const [faqCategory, setFaqCategory] = useState('Account');
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
+  const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
   const faqs = [
-    { question: "How do I reset my password?", category: "Account" },
-    { question: "Where can I find my billing history?", category: "Billing" },
-    { question: "How to integrate the API?", category: "Developers" },
-    { question: "Can I change my subscription plan?", category: "Pricing" },
-    { question: "What happens if I exceed my usage limits?", category: "Usage" },
-    { question: "Is there a status page for services?", category: "System" }
+    {
+      question: "How do I reset my password?",
+      answer: "To reset your password, click on your profile avatar in the top-right corner, navigate to Settings, and select the Security tab. Click 'Change Password', enter your current password, and choose a new secure password. If you are locked out, click the 'Forgot Password' link on the login page, enter your registered email address, and we will send you a secure link to reset it.",
+      category: "Account",
+      helpfulCount: 142
+    },
+    {
+      question: "How do I enable Multi-Factor Authentication (MFA)?",
+      answer: "We highly recommend securing your account with MFA. To enable it, go to Settings > Security and click 'Configure MFA'. You can use any authenticator app (like Google Authenticator, Authy, or Microsoft Authenticator) to scan the QR code and enter the 6-digit confirmation code.",
+      category: "Account",
+      helpfulCount: 89
+    },
+    {
+      question: "Can I invite team members to my account?",
+      answer: "Yes, organization admins can invite team members. Go to Settings > Team and click 'Invite Member'. Enter their email address and select a role (Admin, Developer, or Billing). They will receive an email invitation to create their account and join your workspace.",
+      category: "Account",
+      helpfulCount: 120
+    },
+    {
+      question: "How do I update my profile details and email address?",
+      answer: "To update your profile details, navigate to Settings > Profile. Here, you can change your first name, last name, and display name. If you need to change your registered email address, click 'Change Email', enter your new email, and confirm your password. We will send verification links to both your old and new email addresses to secure the change.",
+      category: "Account",
+      helpfulCount: 54
+    },
+    {
+      question: "Can I delete or temporarily disable my account?",
+      answer: "Yes. You can deactivate your account temporarily under Settings > Security. If you wish to permanently delete your account and all associated data, scroll to the Danger Zone at the bottom of the Account Settings page and click 'Delete Account'. Please note this action is irreversible and deletes all configurations and logs.",
+      category: "Account",
+      helpfulCount: 38
+    },
+    {
+      question: "How do I download my personal data audit logs?",
+      answer: "To comply with GDPR and CCPA, you can request a complete archive of your personal data. Go to Settings > Privacy & Data and click 'Request Data Export'. A download link containing your profile, audit logs, and account history in JSON format will be sent to your registered email address within 24 hours.",
+      category: "Account",
+      helpfulCount: 42
+    },
+    {
+      question: "Where can I find my billing history?",
+      answer: "You can view and download all past invoices and billing statements by navigating to Billing & Subscription from your account menu. There, you can filter invoices by date, see pending charges, update payment methods, and download full PDF receipts. For custom tax invoicing details, contact our finance team.",
+      category: "Billing",
+      helpfulCount: 98
+    },
+    {
+      question: "What payment methods do you accept?",
+      answer: "We accept all major credit cards including Visa, Mastercard, American Express, and Discover. For Enterprise plans, we also support bank wire transfers, ACH payments, and purchase orders. You can update your payment method at any time in Settings > Billing.",
+      category: "Billing",
+      helpfulCount: 75
+    },
+    {
+      question: "How do I update my tax ID or invoice information?",
+      answer: "To add your VAT, GST, or local business tax ID to your invoices, go to Settings > Billing and edit your billing details. The updated tax ID will be displayed on all future invoices automatically. If you need it applied to a past invoice, please contact support.",
+      category: "Billing",
+      helpfulCount: 56
+    },
+    {
+      question: "Can I set up multiple backup payment methods?",
+      answer: "Yes, you can configure multiple credit cards or bank accounts. Go to Settings > Billing and click 'Add Payment Method'. Once added, you can designate one as 'Primary' and others as 'Backup'. If a payment attempt fails on your primary card, our system will automatically try the backup methods to prevent service disruption.",
+      category: "Billing",
+      helpfulCount: 31
+    },
+    {
+      question: "How do I receive monthly invoices via email automatically?",
+      answer: "To receive billing invoices directly in your inbox, navigate to Settings > Billing and locate the Billing Contacts section. You can add up to five email addresses that will automatically receive PDF copies of all invoices and receipts as soon as they are generated.",
+      category: "Billing",
+      helpfulCount: 48
+    },
+    {
+      question: "What is your refund policy for unused credits?",
+      answer: "We offer a 30-day money-back guarantee for all plan subscriptions. If you are unsatisfied with our service, you can request a refund within 30 days of your initial purchase. Unused API and usage credits are non-refundable but remain valid on your account for up to 12 months.",
+      category: "Billing",
+      helpfulCount: 22
+    },
+    {
+      question: "How to integrate the API?",
+      answer: "API integration can be completed in a few quick steps:\n\n1. Go to Developer Settings and generate an API key.\n2. Set the Authorization header as Bearer YOUR_API_KEY.\n3. Send requests to our base URL https://api.nexus.com/v1.\n\nCheck out the simple JS Fetch code example below to start querying our endpoints. See our full API reference for complete SDK packages.",
+      category: "Developers",
+      helpfulCount: 215,
+      isCode: true
+    },
+    {
+      question: "What is the rate limit for API requests?",
+      answer: "Standard API keys are limited to 60 requests per minute. Pro plans support up to 600 requests per minute, and Enterprise accounts can be configured for custom limits. If you exceed the rate limit, the API will return a 429 Too Many Requests status code with a Retry-After header.",
+      category: "Developers",
+      helpfulCount: 134
+    },
+    {
+      question: "Where can I find the API Webhook logs?",
+      answer: "Webhook delivery history and payloads can be monitored in the Webhooks tab under Developer Settings. You can view the status of each sent webhook (success or retry), check response latency, and trigger manual redeliveries of failed events.",
+      category: "Developers",
+      helpfulCount: 92
+    },
+    {
+      question: "How do I rotate my API keys safely without downtime?",
+      answer: "To rotate your API keys safely, go to Developer Settings > API Keys. Click 'Generate New Key' to create a secondary active key. Deploy this new key to your production environment. Once you verify that traffic is successfully routing through the new key, return to the dashboard and safely delete the old key.",
+      category: "Developers",
+      helpfulCount: 84
+    },
+    {
+      question: "Do you offer SDKs for specific programming languages?",
+      answer: "Yes, we maintain official SDK libraries for Node.js, Python, Go, and Ruby. You can find installation instructions, code repositories, and quickstart guides in our Developer Center. We also provide a community-supported PHP SDK.",
+      category: "Developers",
+      helpfulCount: 77
+    },
+    {
+      question: "How can I verify the signature of webhooks?",
+      answer: "Every webhook sent by our system contains a 'X-Nexus-Signature' header. You can verify this signature using your webhook signing secret (found in Developer Settings > Webhooks). Compute the HMAC hex digest of the request payload using SHA-256 and confirm that it matches the signature header.",
+      category: "Developers",
+      helpfulCount: 65
+    },
+    {
+      question: "Can I change my subscription plan?",
+      answer: "Yes, you can upgrade, downgrade, or switch billing cycles (monthly/yearly) at any time. Go to Settings > Billing and click 'Change Plan'. Plan upgrades take effect immediately with prorated charges applied. Downgrades or cancellations remain active on your current tier until the end of your billing cycle.",
+      category: "Pricing",
+      helpfulCount: 64
+    },
+    {
+      question: "Do you offer a free trial?",
+      answer: "Yes! New accounts receive a 14-day free trial of our Pro plan with no credit card required. During the trial, you have access to all Pro features and $10 in API credits to test our services. After the trial, you can choose to subscribe or downgrade to our free tier.",
+      category: "Pricing",
+      helpfulCount: 110
+    },
+    {
+      question: "Are there custom enterprise plans available?",
+      answer: "Absolutely. We offer customized enterprise plans for high-volume users, custom compliance requirements (HIPAA, SOC2), dedicated support options, and custom SLAs. Please contact our sales team to discuss your needs.",
+      category: "Pricing",
+      helpfulCount: 45
+    },
+    {
+      question: "Is there a discount for annual billing subscriptions?",
+      answer: "Yes! If you select our Annual billing option, you receive a 20% discount compared to monthly billing. This discount is applied automatically during checkout. You can switch from monthly to annual billing at any time through the Billing Settings page.",
+      category: "Pricing",
+      helpfulCount: 58
+    },
+    {
+      question: "Do you offer discounts for non-profits or educational institutions?",
+      answer: "Yes, we support non-profit organizations, students, and educational institutions by offering a 50% discount on all Pro plans. Please contact our support team with proof of your organization status or student enrollment to apply.",
+      category: "Pricing",
+      helpfulCount: 39
+    },
+    {
+      question: "What happens if I cancel my subscription mid-cycle?",
+      answer: "If you cancel your subscription, your account will remain on the paid plan with all features active until the end of the current billing cycle. At the end of the cycle, your plan will automatically downgrade to the Free tier, and no further charges will be made.",
+      category: "Pricing",
+      helpfulCount: 47
+    },
+    {
+      question: "What happens if I exceed my usage limits?",
+      answer: "We send automated email warnings when your usage reaches 80% and 100% of your plan limits. If you exceed 100%, we apply soft limits initially. To avoid service interruptions or automatic overages, you can enable auto-scaling on your account settings, which will automatically scale your plan up as needed.",
+      category: "Usage",
+      helpfulCount: 83
+    },
+    {
+      question: "How can I monitor my real-time usage?",
+      answer: "You can track your API calls and data usage in real-time on the Usage Dashboard. The dashboard features daily and monthly consumption charts, breakdowns by API key, and detailed metrics for each endpoint.",
+      category: "Usage",
+      helpfulCount: 71
+    },
+    {
+      question: "Can I set billing alerts for my usage?",
+      answer: "Yes, you can set custom email alerts for usage spending thresholds under Settings > Billing > Alerts. You can configure multiple threshold alerts to stay informed of your usage trends.",
+      category: "Usage",
+      helpfulCount: 52
+    },
+    {
+      question: "How is API usage calculated for nested queries?",
+      answer: "API usage is calculated based on the total number of resolved nodes in a query. Simple REST requests count as 1 request, while nested or batch queries count based on the number of records retrieved. You can see a breakdown of usage weights in the API docs.",
+      category: "Usage",
+      helpfulCount: 29
+    },
+    {
+      question: "What are soft limits versus hard limits on usage?",
+      answer: "A soft limit triggers email notifications to inform you that your usage is high, but does not block requests. A hard limit is the absolute ceiling where requests will start failing with a 429 error. You can adjust these limits in Settings > Usage to prevent unexpected costs.",
+      category: "Usage",
+      helpfulCount: 41
+    },
+    {
+      question: "How often is usage dashboard data updated?",
+      answer: "Usage dashboards are updated in near real-time, typically within 60 seconds of request execution. Some aggregated metrics, like monthly trends and geo-routing statistics, are compiled hourly.",
+      category: "Usage",
+      helpfulCount: 33
+    },
+    {
+      question: "Is there a status page for services?",
+      answer: "Yes! We maintain 99.99% uptime and post live status reports of all system operations, API latency, and database health at status.nexus.com. You can also sign up for email or SMS notifications regarding scheduled maintenance.",
+      category: "System",
+      helpfulCount: 112
+    },
+    {
+      question: "Where are your servers located?",
+      answer: "Our cloud infrastructure is hosted across secure AWS and Azure data centers in North America, Europe, and Asia-Pacific. By default, requests are routed to the nearest regional endpoint to minimize latency and ensure compliance with local data residency laws.",
+      category: "System",
+      helpfulCount: 95
+    },
+    {
+      question: "How do you handle security updates and patches?",
+      answer: "We deploy security updates and OS patches automatically without downtime. Critical vulnerability checks are run daily, and maintenance windows are scheduled during low-traffic periods. System status updates are published on our status page.",
+      category: "System",
+      helpfulCount: 68
+    },
+    {
+      question: "What is your Service Level Agreement (SLA) percentage?",
+      answer: "We guarantee a 99.99% monthly uptime SLA for all paid and enterprise tier accounts. In the unlikely event that uptime falls below this threshold, you are eligible to receive service credits. Detailed SLA terms and claim procedures are available in our Terms of Service.",
+      category: "System",
+      helpfulCount: 49
+    },
+    {
+      question: "Are your services compliant with SOC2 and HIPAA?",
+      answer: "Yes, our platform is SOC2 Type II certified and compliant with HIPAA regulations. We undergo annual third-party audits to verify our security practices. Enterprise customers can sign a Business Associate Agreement (BAA) with us.",
+      category: "System",
+      helpfulCount: 76
+    },
+    {
+      question: "How do I report a security vulnerability or bug?",
+      answer: "We take security very seriously. If you discover a vulnerability, please do not disclose it publicly. Report it directly to our security team via security@nexus.com. We operate a bug bounty program and reward verified findings in accordance with our disclosure guidelines.",
+      category: "System",
+      helpfulCount: 55
+    }
   ];
+
+  const categories = ['Account', 'Billing', 'Developers', 'Pricing', 'Usage', 'System'];
+
+  const getFaqCount = (cat: string) => {
+    return faqs.filter(f => f.category === cat).length;
+  };
+
+  const filteredFaqs = faqs.filter(faq => {
+    return faq.category === faqCategory;
+  });
+
+  const handleTagClick = (tag: string) => {
+    if (tag === 'API Keys' || tag === 'Webhooks') {
+      setFaqCategory('Developers');
+    } else if (tag === 'Billing') {
+      setFaqCategory('Billing');
+    } else if (tag === 'Reset Password') {
+      setFaqCategory('Account');
+    } else if (tag === 'Deployment') {
+      setFaqCategory('System');
+    }
+    setTimeout(() => {
+      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleHeroSearch = () => {
+    const query = heroSearch.toLowerCase();
+    if (query.includes('api') || query.includes('key') || query.includes('webhook') || query.includes('developer') || query.includes('integrate')) {
+      setFaqCategory('Developers');
+    } else if (query.includes('bill') || query.includes('invoice') || query.includes('pay') || query.includes('tax')) {
+      setFaqCategory('Billing');
+    } else if (query.includes('pass') || query.includes('user') || query.includes('team') || query.includes('invite') || query.includes('mfa')) {
+      setFaqCategory('Account');
+    } else if (query.includes('plan') || query.includes('sub') || query.includes('trial') || query.includes('free') || query.includes('enterprise')) {
+      setFaqCategory('Pricing');
+    } else if (query.includes('limit') || query.includes('usage') || query.includes('alert')) {
+      setFaqCategory('Usage');
+    } else if (query.includes('status') || query.includes('server') || query.includes('patch') || query.includes('security')) {
+      setFaqCategory('System');
+    }
+    setTimeout(() => {
+      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   const services = [
     { title: "Technical Support", icon: <Settings className="w-6 h-6 text-white" />, description: "Get elite help with technical issues and system errors. We're here 24/7.", span: "col-span-1 lg:col-span-2", bg: "bg-slate-900 border-slate-800", text: "text-slate-300", titleColor: "text-white", iconBg: "bg-white/10 border-white/20" },
@@ -68,9 +332,19 @@ export default function SupportPage() {
                   <input
                     type="text"
                     placeholder="Ask anything (e.g. API keys)..."
+                    value={heroSearch}
+                    onChange={(e) => setHeroSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleHeroSearch();
+                      }
+                    }}
                     className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg md:text-xl py-6 px-4 outline-none border-none font-medium"
                   />
-                  <button className="mr-3 px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-transform active:scale-95 shadow-lg shadow-primary-600/30 cursor-pointer">
+                  <button
+                    onClick={handleHeroSearch}
+                    className="mr-3 px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-transform active:scale-95 shadow-lg shadow-primary-600/30 cursor-pointer"
+                  >
                     Search
                   </button>
                 </div>
@@ -80,6 +354,7 @@ export default function SupportPage() {
                     {searchTags.map((tag, i) => (
                       <button
                         key={i}
+                        onClick={() => handleTagClick(tag)}
                         className="px-4 py-2 text-sm font-semibold bg-white text-slate-600 cursor-pointer rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 hover:-translate-y-0.5 transition-all duration-300"
                       >
                         {tag}
@@ -225,26 +500,145 @@ export default function SupportPage() {
         </div>
 
         {/* Predefined Questions / FAQ (Now Below Services) */}
-        <div className="w-full max-w-7xl">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-8 flex items-center justify-center gap-3 text-slate-900">
-            <MessageCircle className="text-primary-500 w-13 h-13" />
-            Frequently Asked Questions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {faqs.map((faq, i) => (
-              <div
-                key={i}
-                className="group flex items-center justify-between p-5 rounded-2xl bg-white border border-slate-200 hover:border-primary-300 cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-primary-50"
-              >
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold tracking-wider text-primary-600 uppercase">{faq.category}</span>
-                  <h3 className="text-slate-800 font-medium group-hover:text-primary-900 transition-colors">{faq.question}</h3>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary-100 group-hover:text-primary-600 transition-colors">
-                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-primary-600" />
+        <div id="faq-section" className="w-full max-w-7xl scroll-mt-24">
+          <div className="flex flex-col items-center mb-10 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider mb-3">
+              <HelpCircle className="w-3 h-3 text-primary-500" /> FAQ Desk
+            </div>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 flex items-center justify-center gap-3 text-slate-900">
+              <MessageCircle className="text-primary-500 w-12 h-12" />
+              Frequently Asked Questions
+            </h2>
+            <p className="text-slate-600 max-w-2xl text-base">
+              Find answers to commonly asked questions about account settings, billing, API usage, limits, and service status.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12 w-full">
+            {/* Left Panel: Category List */}
+            <div className="lg:col-span-1">
+              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 sticky top-28">
+                <h3 className="text-lg font-bold text-slate-900">Categories</h3>
+                <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
+                  {categories.map((cat) => {
+                    const isActive = faqCategory === cat;
+                    const count = getFaqCount(cat);
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setFaqCategory(cat);
+                          setOpenFaq(null); // Close active FAQ when changing categories
+                        }}
+                        className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold whitespace-nowrap cursor-pointer transition-all duration-200 ${isActive
+                          ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                          }`}
+                      >
+                        <span>{cat}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200/60 text-slate-500'
+                          }`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Right Panel: Accordions */}
+            <div className="lg:col-span-2 space-y-4">
+              {filteredFaqs.map((faq, i) => {
+                const isOpen = openFaq === faq.question;
+                const feedback = helpfulFeedback[faq.question];
+                return (
+                  <div
+                    key={i}
+                    className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
+                      ? 'border-primary-400 shadow-md shadow-primary-500/5'
+                      : 'border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md'
+                      }`}
+                  >
+                    {/* Question Header Button */}
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : faq.question)}
+                      className="w-full flex items-center justify-between p-6 cursor-pointer text-left focus:outline-none"
+                    >
+                      <div className="flex items-center gap-3 pr-4">
+                        <h3 className={`text-base md:text-lg font-bold transition-colors ${isOpen ? 'text-primary-700' : 'text-slate-800'
+                          }`}>
+                          {faq.question}
+                        </h3>
+                      </div>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${isOpen ? 'bg-primary-100 text-primary-600' : 'bg-slate-50 text-slate-400'
+                        }`}>
+                        <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                      </div>
+                    </button>
+
+                    {/* Answer Content - Smooth Transition Accordion */}
+                    <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}>
+                      <div className="overflow-hidden">
+                        <div className="p-6 pt-0 border-t border-slate-50 space-y-4">
+                          {/* The Answer text */}
+                          <div className="text-slate-600 text-sm md:text-base leading-relaxed whitespace-pre-line">
+                            {faq.answer}
+                          </div>
+
+                          {/* Developer Mock Code Block */}
+                          {faq.isCode && (
+                            <pre className="bg-slate-900 rounded-xl p-4 overflow-x-auto border border-slate-800 shadow-inner font-mono text-xs text-slate-300 whitespace-pre">
+                              {`fetch('https://api.nexus.com/v1/user', {
+  headers: {
+    'Authorization': 'Bearer <YOUR_API_KEY>'
+  }
+})
+.then(res => res.json())
+.then(data => console.log(data));`}
+                            </pre>
+                          )}
+
+                          {/* Feedback row */}
+                          <div className="flex items-center justify-between pt-4 border-t border-slate-100/80 text-xs text-slate-500">
+                            <span className="flex items-center gap-1">
+                              <Sparkles className="w-3.5 h-3.5 text-primary-500" />
+                              {faq.helpfulCount + (feedback === 'up' ? 1 : 0)} people found this helpful
+                            </span>
+                            <div className="flex items-center gap-3">
+                              {feedback ? (
+                                <span className="text-primary-600 font-semibold animate-fade-in">Thanks for your feedback!</span>
+                              ) : (
+                                <>
+                                  <span>Was this helpful?</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      onClick={() => setHelpfulFeedback(prev => ({ ...prev, [faq.question]: 'up' }))}
+                                      className="p-1.5 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-600 transition-colors cursor-pointer"
+                                      title="Helpful"
+                                    >
+                                      <ThumbsUp className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => setHelpfulFeedback(prev => ({ ...prev, [faq.question]: 'down' }))}
+                                      className="p-1.5 rounded-lg border border-slate-200 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
+                                      title="Not helpful"
+                                    >
+                                      <ThumbsDown className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

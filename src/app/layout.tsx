@@ -73,7 +73,7 @@ export default function RootLayout({
               <div className="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center text-slate-300">
                 <LayoutDashboard className="w-3 h-3" />
               </div>
-              © {new Date().getFullYear()} Nexus Inc. All rights reserved.
+              © {new Date().getFullYear()} Ticket-it. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm text-slate-400">
               <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Privacy Policy</a>
