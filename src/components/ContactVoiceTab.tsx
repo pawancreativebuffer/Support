@@ -60,23 +60,23 @@ function getCurrentTime(): string {
 function getVoiceResponse(query: string): string {
   const text = query.toLowerCase();
 
-  if (text.includes('payment') || text.includes('receive') || text.includes('invoice')) {
-    return "To receive payments, navigate to the 'Receive' tab and select 'Request a Payment'. You can enter client details and invoice amounts. Standard bank credit card fees are 2.9%, and ACH bank transfers are capped at $10.";
+  if (text.includes('ticket') || text.includes('submit') || text.includes('create')) {
+    return "To submit a support ticket, navigate to the 'Send Message' tab or click 'Contact' in the header. You can fill in the subject, select a category, and specify your issue. Our standard response time is under 24 hours.";
   }
-  if (text.includes('withdraw') || text.includes('bank') || text.includes('transfer')) {
-    return "You can withdraw funds directly to a linked bank account. Standard withdrawals to US ACH, UK FPS, and EU SEPA networks are processed in 1 to 2 business days with up to 1.5% exchange rate spread.";
+  if (text.includes('sla') || text.includes('priority') || text.includes('response')) {
+    return "Ticket-it SLA response times vary by plan tier. Basic is 24 hours, Pro is 8 hours, and Enterprise accounts get urgent ticket routing with a 1-hour target response time and a 4-hour resolution SLA.";
   }
-  if (text.includes('card') || text.includes('order')) {
-    return "You can request a physical or virtual debit card from your dashboard. A minimum balance of $30 is required. Delivery of physical cards takes 10 to 15 business days.";
+  if (text.includes('widget') || text.includes('embed') || text.includes('chat bubble')) {
+    return "You can embed the Ticket-it chat widget on your site. Go to Developer Settings > Widget, copy the script tag, and paste it before your website's body closing tag. Ensure your domain is whitelisted.";
   }
   if (text.includes('api') || text.includes('integration') || text.includes('developer')) {
-    return "We offer robust integration APIs. Go to the Developer settings tab in your profile, configure your environment variables, and review the nested JSON schemes. Remember to isolate sandbox and production keys.";
+    return "Ticket-it offers REST APIs for tickets, webhooks, and widget control. Go to Developer settings to generate an API key and secure your calls using the Authorization Bearer header.";
   }
   if (text.includes('hours') || text.includes('contact') || text.includes('support') || text.includes('phone')) {
-    return "Customer support hotlines are available 24/7 for the US and Canada. You can contact us via phone, live chat, or message tickets. Premium plan accounts have access to telephone priority bypass PINs.";
+    return "Our help desk hotlines are available 24/7. You can contact us via phone, live chat, or message tickets. Enterprise plan accounts have access to telephone priority bypass PINs.";
   }
   if (text.includes('hello') || text.includes('hi') || text.includes('hey')) {
-    return "Hello! How can I assist you with your support inquiry today? You can ask me about card activations, payment fees, or bank transfers.";
+    return "Hello! How can I assist you with your Ticket-it support inquiry today? You can ask me about submitting tickets, embedding the chat widget, or SLA response times.";
   }
 
   return "I heard you, but that topic is outside my direct knowledge base. You can write a detailed message in the 'Send Message' tab or dial one of our global hotlines in the 'Call Us' tab for immediate assistance.";
@@ -107,7 +107,7 @@ export const ContactVoiceTab: React.FC = () => {
         {
           id: 'welcome',
           sender: 'assistant',
-          text: "Hello! I am your Nexus Voice Assistant. Click the microphone button and ask me about receiving payments, card orders, system requirements, or withdrawal status.",
+          text: "Hello! I am your Ticket-it Voice Assistant. Click the microphone button and ask me about submitting tickets, widget embedding, developer APIs, or SLA targets.",
           timestamp: getCurrentTime()
         }
       ]);
@@ -622,7 +622,7 @@ export const ContactVoiceTab: React.FC = () => {
           {/* Guidelines Footer */}
           <div className="bg-slate-50 border-t border-slate-100 p-3.5 flex items-start gap-2 text-xs text-slate-500">
             <HelpCircle className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
-            <p><strong>Suggested Voice Prompts:</strong> &quot;How do I receive payments?&quot; • &quot;Order a card&quot; • &quot;Support phone hours&quot; • &quot;API details&quot;</p>
+            <p><strong>Suggested Voice Prompts:</strong> &quot;How do I submit a ticket?&quot; • &quot;Embed chat widget&quot; • &quot;SLA response times&quot; • &quot;API details&quot;</p>
           </div>
 
         </div>

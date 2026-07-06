@@ -47,45 +47,45 @@ export default function LoginPage() {
         // Seed some demo tickets and chats if they don't exist
         const demoTickets = [
           {
-            id: "NX-104928",
+            id: "TK-104928",
             firstName: "Jane",
             lastName: "Doe",
             email: "customer@example.com",
-            category: "Debit Card Activation",
-            description: "I received my physical debit card but when I click activation it gives an API timeout error code 500.",
+            category: "Live Chat & Widgets",
+            description: "I embedded the Ticket-it chat widget script but it's throwing a CORS policy error on our checkout domain. Please whitelist domain.com.",
             status: "Open",
             createdAt: "Jun 29, 2026 04:10 PM",
             type: "Form"
           },
           {
-            id: "NX-291823",
+            id: "TK-291823",
             firstName: "Jane",
             lastName: "Doe",
             email: "customer@example.com",
-            category: "Receive Payments",
-            description: "My payout is delayed. It was supposed to settle yesterday morning. Can you please check the transfer reference?",
+            category: "Ticketing & Help Desk",
+            description: "Our SLA targets for High priority tickets are not escalating correctly. Agents are not receiving Slack notifications.",
             status: "In Progress",
             createdAt: "Jun 28, 2026 09:12 AM",
             type: "Form"
           },
           {
-            id: "NX-991822",
+            id: "TK-991822",
             firstName: "Jane",
             lastName: "Doe",
             email: "customer@example.com",
             category: "Voice Assistant",
-            description: "Voice command inquiry: 'Show status of my visa checkout activation'. Speech recognition input logs verified.",
+            description: "Voice command inquiry: 'Show ticket response SLA targets'. Speech recognition input logs verified.",
             status: "Resolved",
             createdAt: "Jun 27, 2026 11:30 AM",
             type: "Voice"
           },
           {
-            id: "NX-882710",
+            id: "TK-882710",
             firstName: "Jane",
             lastName: "Doe",
             email: "customer@example.com",
-            category: "Live Support Chat",
-            description: "Chat inquiry regarding credit limit increase. Logged session details sync complete.",
+            category: "API & Developer Tools",
+            description: "API integration inquiry regarding webhook signature validation. Logged session details sync complete.",
             status: "Resolved",
             createdAt: "Jun 24, 2026 03:45 PM",
             type: "Live Chat"
@@ -95,20 +95,20 @@ export default function LoginPage() {
         const demoVoiceLogs = [
           {
             id: "VO-918231",
-            title: "Card Activation Query",
+            title: "Widget Configuration Query",
             status: "Completed",
             createdAt: "Jun 29, 2026 10:14 AM",
             duration: "0:05",
-            transcript: "please check if my debit card is activated",
+            transcript: "please help me setup the live chat widget on my website",
             confidence: "98%"
           },
           {
             id: "VO-382910",
-            title: "Microphone Settings Test",
+            title: "SLA Response Times Query",
             status: "Completed",
             createdAt: "Jun 28, 2026 02:22 PM",
             duration: "0:08",
-            transcript: "testing voice assistant speech recognition error logs",
+            transcript: "what are the ticket priority response times",
             confidence: "94%"
           }
         ];

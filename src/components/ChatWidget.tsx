@@ -393,7 +393,7 @@ export default function ChatWidget() {
                 <div>
                   <h5 className="font-bold text-slate-900 text-sm">Live Support Chat</h5>
                   <p className="text-xs text-slate-500 mt-1">
-                    Connect with an expert representative immediately to solve payment issues.
+                    Connect with an expert representative immediately to resolve Ticket-it issues.
                   </p>
                 </div>
                 <div className="bg-white border border-slate-200/60 rounded-xl p-3 flex justify-between gap-6 text-[10px] font-semibold text-slate-600">

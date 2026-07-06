@@ -60,295 +60,215 @@ export interface Category {
 
 export const CATEGORIES: Category[] = [
   {
-    id: "receive-payments",
-    title: "Receive Payments",
-    slug: "receive-payments",
+    id: "ticketing-helpdesk",
+    title: "Ticketing & Help Desk",
+    slug: "ticketing-helpdesk",
     articles: [
       {
-        slug: "request-a-payment",
-        title: "Request a Payment",
-        description: "Send a payment request to your global clients and track when they pay you.",
-        prerequisites: "Make sure you have completed your profile setup and verified your identity.",
+        slug: "request-a-payment", // Keeping slug to maintain resource page link in header / article/request-a-payment
+        title: "Creating and Managing Tickets",
+        description: "Learn how to submit, view, and track support tickets via email, the web portal, or the embedded support widget.",
+        prerequisites: "Verify your email address to log in and access your tickets dashboard.",
         steps: [
-          "Log in to your Support Dashboard and navigate to 'Receive' > 'Request a Payment'.",
-          "Enter your client's email, name, and payment amount.",
-          "Add payment terms, attach supporting documents (like invoices), and click 'Send'."
+          "Go to the Ticket-it Home page and click 'Contact' or 'Sign In'.",
+          "Fill in the ticket creation form with your subject, category, and issue description.",
+          "Click 'Submit Ticket'. You will receive an automated email response with your ticket reference number."
         ],
         screenshot: "/payment-setup-mockup.png",
-        screenshotCaption: "Figure 1: Payment Request submission form.",
+        screenshotCaption: "Figure 1: Ticket creation submission form.",
         explanationPoints: [
-          { title: "Payment Links Life Span", detail: "Payment links expire after 30 days of generation for compliance reasons." },
-          { title: "Supported Cards", detail: "Accepts Visa, Mastercard, American Express, and direct SEPA/ACH debit." },
-          { title: "Automatic Reminders", detail: "The platform sends automated reminders to your clients 3 days before the invoice is due." }
+          { title: "Ticket Lifespan", detail: "Resolved tickets are automatically closed after 3 days if no response is received." },
+          { title: "Allowed File Attachments", detail: "You can attach logs, screenshots, and PDFs up to 10MB in size per ticket." },
+          { title: "SLA Targets", detail: "Response times depend on your plan: Basic (24h), Pro (8h), and Enterprise (1h/Urgent)." }
         ],
         sample: {
           type: "table",
-          title: "Payment Processing Fees",
+          title: "Ticket Priority SLA Matrix",
           data: {
-            headers: ["Payment Method", "Processing Time", "Fee"],
+            headers: ["Priority Tier", "Target Response Time", "Resolution SLA"],
             rows: [
-              ["Credit Card (Visa/MC)", "Instant", "2.9% + $0.30"],
-              ["American Express", "Instant", "3.5% + $0.30"],
-              ["ACH Bank Debit (US)", "3-5 Business Days", "1.0% (Cap $10)"],
-              ["SEPA Bank Debit (EU)", "2-3 Business Days", "1.0% (Cap €10)"]
+              ["Urgent (Enterprise only)", "Within 1 Hour", "Under 4 Hours"],
+              ["High Priority", "Within 4 Hours", "Under 12 Hours"],
+              ["Medium Priority", "Within 8 Hours", "Under 24 Hours"],
+              ["Low / Inquiry", "Within 24 Hours", "Under 48 Hours"]
             ]
           }
         }
       },
       {
-        slug: "receiving-accounts",
-        title: "Global Receiving Accounts",
-        description: "Get local bank details in multiple currencies to receive local bank transfers.",
-        prerequisites: "Receiving accounts are available for EUR, USD, GBP, JSD, and AUD.",
+        slug: "understanding-ticket-statuses",
+        title: "Understanding Ticket Statuses",
+        description: "Understand the lifecycle of a ticket, from creation to final resolution.",
+        prerequisites: "Access is available to both ticket submitters and assigned support agents.",
         steps: [
-          "Select 'Receiving Accounts' from the sidebar.",
-          "Choose the currency account you wish to view details for.",
-          "Provide these local account numbers to your buyers to receive funds easily."
+          "New tickets are placed in the 'Open' state waiting for agent pickup.",
+          "Once an agent starts working, status changes to 'In Progress'.",
+          "If we need your input, status changes to 'Pending Customer'. Click reply to resume activity."
         ],
         screenshot: "/dashboard-mockup.png",
-        screenshotCaption: "Figure 2: Viewing global bank accounts in the console.",
+        screenshotCaption: "Figure 2: Tracking active ticket statuses in the console.",
         explanationPoints: [
-          { title: "Zero Transfer Fees", detail: "Receiving payments via local bank transfer is 100% free of charge." },
-          { title: "Direct Deposit Function", detail: "Functions like a normal domestic checking account for direct wire setups." },
-          { title: "Local Clearing Networks", detail: "Settled natively via Fedwire/ACH (US), Faster Payments (UK), and SEPA (EU)." }
-        ],
-        sample: {
-          type: "receiving-account",
-          title: "US Receiving Account Details (ACH)",
-          data: {
-            bankName: "First Century Bank N.A.",
-            routingNumber: "021000021",
-            accountNumber: "987654321012",
-            accountType: "Checking",
-            beneficiary: "Payoneer Client Services"
-          }
-        }
+          { title: "Open Status", detail: "Tickets newly submitted and waiting in queue for dispatcher routing." },
+          { title: "Pending Customer", detail: "Clock pauses on internal SLAs while awaiting user replies." },
+          { title: "Resolved vs Closed", detail: "Resolved tickets can be reopened by replying, closed tickets cannot." }
+        ]
       },
       {
-        slug: "marketplace-payments",
-        title: "Payments from Marketplaces",
-        description: "Link your account to global freelancing and e-commerce marketplaces.",
-        prerequisites: "You must check if the partner marketplace supports direct Payoneer integration.",
+        slug: "customizing-ticket-forms",
+        title: "Customizing Ticket Forms",
+        description: "Admins can configure custom fields like dropdowns, checkboxes, and text inputs to gather context before routing.",
+        prerequisites: "You must have Admin access rights to change forms.",
         steps: [
-          "Log in to your marketplace seller dashboard.",
-          "Navigate to payment settings and select Payoneer as the payout method.",
-          "Enter your account details and authorize the sync."
+          "Navigate to Admin Dashboard > Settings > Ticket Forms.",
+          "Drag and drop custom field types into the ticket editor layout.",
+          "Set validation rules and map fields to routing categories, then click Save."
         ]
       }
     ]
   },
   {
-    id: "send-payments",
-    title: "Send Payments / Withdraw to Bank",
-    slug: "send-payments-withdraw-to-bank",
+    id: "live-chat-widgets",
+    title: "Live Chat & Widgets",
+    slug: "live-chat-widgets",
     alternativeSlugs: ["account-&-billing"],
     articles: [
       {
-        slug: "send-payments",
-        title: "Send Payments",
-        description: "Pay a payment request from or initiate a payment to a Payoneer account holder. Whether you'd like to pay as an individual or on behalf of a company, learn how to pay vendors and manage your payments.",
-        prerequisites: "Ensure you have sufficient balance in your wallet or a linked bank card.",
+        slug: "embedding-chat-widget",
+        title: "Embedding Chat Widget",
+        description: "Add the Ticket-it live chat widget to your website or single-page app to assist visitors in real-time.",
+        prerequisites: "Generate your unique widget snippet from the Ticket-it developer panel.",
         steps: [
-          "Go to 'Pay' > 'Send a Payment' in your main navigation panel.",
-          "Enter the email of the recipient or select from your saved list.",
-          "Input the amount, choose the funding source, and authorize the transaction using 2FA."
+          "Go to Developer Settings > Widget and copy the HTML snippet.",
+          "Paste the script tag directly before the closing </body> tag of your website template.",
+          "Refresh your website; the Ticket-it chat bubble will appear in the bottom-right corner."
         ],
         screenshot: "/payment-setup-mockup.png",
-        screenshotCaption: "Figure 3: Initiating a payment to external vendors.",
+        screenshotCaption: "Figure 3: Interactive chat widget placement configurations.",
         explanationPoints: [
-          { title: "Double-Verify Emails", detail: "Verify the exact email address to avoid routing funds to the wrong wallet." },
-          { title: "Single-Limit Thresholds", detail: "Standard limits allow sending up to $10,000 per transaction." },
-          { title: "2-Factor Security", detail: "All outgoing transactions require active SMS or App-based 2FA validation." }
+          { title: "CORS Constraints", detail: "Make sure to whitelist your website domain in the Ticket-it panel before testing." },
+          { title: "Custom Branding", detail: "Pro plans allow customizing colors, agent avatars, and welcome triggers." },
+          { title: "Mobile Responsiveness", detail: "Widget dynamically scales for optimal presentation on iOS and Android devices." }
         ],
         sample: {
           type: "form",
-          title: "Live Interactive Payment Simulator",
+          title: "Live Interactive Widget Simulator",
           data: null
         }
       },
       {
-        slug: "withdrawals-bank-accounts",
-        title: "Withdrawals/Bank Accounts",
-        description: "You can withdraw funds from your Payoneer account directly to your bank account. Learn how to add a bank account, make a withdrawal and more.",
-        prerequisites: "Your bank account must be verified before making a withdrawal.",
+        slug: "converting-chats-to-tickets",
+        title: "Converting Chats to Tickets",
+        description: "If a chat session requires offline follow-up, agents can easily transform the conversation into a standard support ticket.",
+        prerequisites: "Required by active agents responding to live chats.",
         steps: [
-          "Navigate to 'Withdraw' > 'To Bank Account'.",
-          "Select the balance you wish to withdraw from and choose the verified bank account.",
-          "Enter the amount to withdraw, review the conversion rate, and submit the request."
+          "Inside the Agent Chat panel, click the 'Convert to Ticket' button in the toolbar.",
+          "Confirm customer details and assign the ticket to the appropriate department.",
+          "The chat history is attached as the starting log, and a notification is emailed to the client."
         ],
         screenshot: "/dashboard-mockup.png",
-        screenshotCaption: "Figure 4: Balance withdrawal interface with live exchange rates.",
+        screenshotCaption: "Figure 4: Chat session management panel with 'Convert' action.",
         explanationPoints: [
-          { title: "Exchange Rate Spreads", detail: "Conversions use competitive mid-market rates with transparent, low spreads." },
-          { title: "Cut-off Times", detail: "Withdrawals requested before 5 PM EST are processed next business day." },
-          { title: "Security Hold Policy", detail: "First-time withdrawals to newly linked bank accounts may take up to 48 hours for compliance checks." }
+          { title: "Transcript Attachment", detail: "Conversations are saved and appended as markdown text inside the ticket notes." },
+          { title: "Automatic Follow-up", detail: "Emails are dispatched immediately containing ticket credentials." },
+          { title: "Agent Assignments", detail: "Tickets default to the agent handling the live chat unless reassigned manually." }
         ],
         sample: {
           type: "table",
-          title: "Withdrawal Timelines & Rates",
+          title: "Chat Resolution Guidelines",
           data: {
-            headers: ["Region", "Method", "Processing Speed", "Fee Spread"],
+            headers: ["Chat Condition", "Recommended Action", "Target Hand-off Time"],
             rows: [
-              ["United States", "ACH Direct Credit", "1-2 Business Days", "Up to 1.5%"],
-              ["United Kingdom", "FPS Network", "1-2 Hours", "Up to 1.5%"],
-              ["Eurozone countries", "SEPA Settlement", "1 Business Day", "Up to 1.5%"],
-              ["Rest of the World", "Swift Wire Transfer", "3-5 Business Days", "Flat $15.00 fee"]
+              ["Simple Q&A", "Resolve on call", "Under 5 Minutes"],
+              ["Vulnerability Report", "Convert to Urgent Ticket", "Instant Transition"],
+              ["Billing Discrepancy", "Convert & Route to Finance", "Under 2 Minutes"],
+              ["Feature Request", "Log to Product Backlog", "Under 3 Minutes"]
             ]
           }
         }
       },
       {
-        slug: "pay-to-recipient-payoneer",
-        title: "Pay to a recipient's Payoneer",
-        description: "Instantly transfer funds to another Payoneer user free of charge.",
-        prerequisites: "The recipient must have an active Payoneer account.",
+        slug: "chat-triggers-and-routing",
+        title: "Chat Triggers & Routing",
+        description: "Initiate proactive chats with customers based on browsing actions or duration.",
+        prerequisites: "Requires widget script v2.4+ deployed on site.",
         steps: [
-          "Select the 'Pay' option from the main dashboard header.",
-          "Select 'To Recipient's Payoneer Account'.",
-          "Enter recipient details, select currency, and hit submit."
-        ]
-      },
-      {
-        slug: "pay-to-recipient-bank-account",
-        title: "Pay to a recipient's bank account",
-        description: "Send bank wire transfers directly to your suppliers, contractors, and partners.",
-        prerequisites: "You need the recipient's full banking info, including IBAN/SWIFT code.",
-        steps: [
-          "Go to 'Pay' > 'To Supplier Bank Account'.",
-          "Select or add the bank details of your recipient.",
-          "Review the transfer fee and confirm the transaction."
+          "Select 'Live Chat' from the sidebar settings.",
+          "Choose triggers and configure rules (e.g., user spends 30s on Pricing).",
+          "Set up automatic messages and route to appropriate agents."
         ]
       }
     ]
   },
   {
-    id: "my-payoneer-account",
-    title: "My Payoneer Account",
-    slug: "my-payoneer-account",
+    id: "agent-team-routing",
+    title: "Agent & Team Routing",
+    slug: "agent-team-routing",
     articles: [
       {
-        slug: "account-verification",
-        title: "Account Verification",
-        description: "Submit documents to verify your identity and unlock full transaction limits.",
-        prerequisites: "Have a government-issued photo ID ready.",
+        slug: "roles-and-permissions",
+        title: "Roles and Permissions",
+        description: "Manage your help desk team size and restrict access to tickets by configuring user roles.",
+        prerequisites: "You must have Owner permissions to invite new Admins.",
         steps: [
-          "Go to Settings > Verification Center.",
-          "Upload clear photos of your passport, driver's license, or national ID.",
-          "Wait 2-3 business days for the compliance team to review."
+          "Go to Admin Dashboard > Settings > Team & Agents.",
+          "Click 'Invite Agent' and specify their email address.",
+          "Choose a role: Owner, Admin, Manager, Agent, or Light Agent."
         ]
       },
       {
-        slug: "change-password-security",
-        title: "Change Password & Security",
-        description: "Update your password, enable two-factor authentication, and manage security questions.",
-        prerequisites: "You must have access to your registered mobile number for SMS codes.",
+        slug: "automatic-ticket-routing",
+        title: "Automatic Ticket Routing",
+        description: "Build rules to automatically assign incoming tickets to specific agent groups or departments.",
+        prerequisites: "Configure target agent groups before assigning routing rules.",
         steps: [
-          "Navigate to Security Settings.",
-          "Click 'Change Password' or 'Enable 2FA'.",
-          "Follow the prompts to verify your identity."
+          "Navigate to Settings > Routing Rules and click 'Add Rule'.",
+          "Define condition parameters (e.g., if Ticket Category equals 'Billing').",
+          "Set the action to assign the ticket to the 'Billing & Finance Group'."
         ]
       },
       {
-        slug: "update-profile-details",
-        title: "Update Profile Details",
-        description: "Change your registered email, home address, or phone number in your profile settings.",
-        prerequisites: "Ensure you have supporting documents if changing your legal address.",
+        slug: "creating-canned-responses",
+        title: "Creating Canned Responses",
+        description: "Set up macros/canned responses for frequent agent answers to streamline support workflow.",
+        prerequisites: "Agents can create personal shortcuts; managers can create global team shortcuts.",
         steps: [
-          "Open your Profile Settings page.",
-          "Update the outdated fields with correct information.",
-          "Upload utility bills or bank statements to confirm the new details."
+          "Open your Profile Settings page or Admin settings.",
+          "Select Canned Responses and click 'New Template'.",
+          "Input the trigger key (e.g., '/greet') and write the template text."
         ]
       }
     ]
   },
   {
-    id: "my-payoneer-card",
-    title: "My Payoneer Card",
-    slug: "my-payoneer-card",
+    id: "api-integrations",
+    title: "API & Developer Tools",
+    slug: "api-integrations",
     articles: [
       {
-        slug: "order-a-card",
-        title: "Order a Card",
-        description: "Request a physical or virtual debit card to spend your funds worldwide.",
-        prerequisites: "A minimum account balance of $30 (or equivalent) is required to order.",
+        slug: "authenticating-api-requests",
+        title: "Authenticating API Requests",
+        description: "Securely authenticate your API requests to the Ticket-it platform using Bearer tokens.",
+        prerequisites: "Generate API credentials from the developer settings tab before making requests.",
         steps: [
-          "Go to the Cards tab in the navigation menu.",
-          "Select physical or virtual, and verify your shipping address.",
-          "Submit the request; physical cards arrive in 10-15 business days."
-        ]
-      },
-      {
-        slug: "card-activation-pin",
-        title: "Card Activation & PIN",
-        description: "Activate your card online and set your secure 4-digit ATM PIN.",
-        prerequisites: "You must have received the physical card in the mail before activation.",
-        steps: [
-          "Log in to the portal and go to your Cards list.",
-          "Select 'Activate' and enter the 16-digit card number.",
-          "Set a secure 4-digit PIN for ATM and retail usage."
-        ]
-      }
-    ]
-  },
-  {
-    id: "refer-a-friend-mobile-app-and-more",
-    title: "Refer a Friend, Mobile App and More",
-    slug: "refer-a-friend-mobile-app-and-more",
-    articles: [
-      {
-        slug: "referral-program-rules",
-        title: "Referral Program Rules",
-        description: "Earn rewards by inviting other business owners to sign up and transact.",
-        prerequisites: "Referrals must sign up using your unique link.",
-        steps: [
-          "Navigate to the Refer a Friend page.",
-          "Copy your unique referral link.",
-          "Share the link with colleagues. When they receive $1,000, both of you earn $25."
-        ]
-      },
-      {
-        slug: "using-the-mobile-app",
-        title: "Using the Mobile App",
-        description: "Manage your payments, check balances, and receive push notifications on the go.",
-        prerequisites: "Compatible with iOS 14+ and Android 8.0+.",
-        steps: [
-          "Download the app from the Apple App Store or Google Play Store.",
-          "Log in using your existing credentials.",
-          "Set up biometrics (Face ID/Touch ID) for secure quick login."
-        ]
-      }
-    ]
-  },
-  {
-    id: "technical-support",
-    title: "Technical Support",
-    slug: "technical-support",
-    articles: [
-      {
-        slug: "how-to-setup-your-account",
-        title: "How to setup your account",
-        description: "Learn how to configure your system, manage dashboard access, and start using our central hub.",
-        prerequisites: "Before you begin, make sure you have active admin access to your workspace. If you do not see the settings tab, contact your organization owner.",
-        steps: [
-          "Navigate to the dashboard and log in to your account.",
-          "Locate the navigation sidebar on the left side of your screen. This is your central hub for all configurations.",
-          "Apply the configuration. Copy the environment variables configuration snippet below and paste it into your environment variables file (.env)."
+          "Retrieve your API key from the dashboard developer console.",
+          "Attach the API key as an Authorization header (Authorization: Bearer YOUR_API_KEY) to every outgoing request.",
+          "Ensure keys are never committed to version control systems or exposed in client-side code."
         ],
-        codeBlock: `# Environment Variables Configuration\nNEXUS_API_KEY="sk_live_123456789"\nNEXUS_PROJECT_ID="proj_abc987"\nENABLE_DEBUG_MODE=true`,
+        codeBlock: `# API Authentication Header\ncurl -X GET https://api.ticket-it.com/v1/tickets \\\n  -H "Authorization: Bearer tkt_sk_123456789" \\\n  -H "Content-Type: application/json"`,
         screenshot: "/dashboard-mockup.png",
-        screenshotCaption: "Figure 5: Environment variable management console.",
+        screenshotCaption: "Figure 5: API credentials management console.",
         explanationPoints: [
           { title: "Security Best Practices", detail: "Never push API keys directly to git repos. Always load them as runtime variables." },
           { title: "Environment Isolation", detail: "Use Sandbox credentials for local testing, and rotate live production keys frequently." }
         ],
         sample: {
           type: "json",
-          title: "Mock System Registration Payload",
+          title: "Get Ticket API Response",
           data: {
-            status: "active",
-            projectId: "proj_abc987",
+            status: "success",
+            projectId: "tkt_proj_abc987",
             environment: "production",
-            allowedDomains: ["*.nexus-platform.com", "localhost:3000"],
+            allowedDomains: ["*.ticket-it.com", "localhost:3000"],
             limits: {
               dailyRequests: 100000,
               rateLimitPerMinute: 600
@@ -361,156 +281,108 @@ export const CATEGORIES: Category[] = [
         ]
       },
       {
-        slug: "troubleshooting-connection-issues",
-        title: "Troubleshooting connection issues",
-        description: "Resolve latency, network timeouts, and firewall rules preventing communication with our servers.",
-        prerequisites: "Ensure you have command-line access to run network diagnostics (like ping or traceroute).",
+        slug: "webhook-event-subscriptions",
+        title: "Webhook Event Subscriptions",
+        description: "Subscribe to real-time events to sync ticket state changes with external CRMs or messaging apps.",
+        prerequisites: "Ensure you have command-line access or a backend endpoint to test callbacks.",
         steps: [
-          "Verify your local internet connection and router settings.",
-          "Run a traceroute to our API server at api.nexus-platform.com to identify network hops causing latency.",
-          "Check your firewall or proxy server settings to ensure ports 80, 443, and 8080 are open for outbound traffic."
+          "Navigate to Developer Settings > Webhooks.",
+          "Click 'Create Webhook Endpoint' and enter your listener URL.",
+          "Select the events to subscribe to, such as ticket.created or ticket.updated, and click Save."
         ],
         troubleshooting: [
-          { error: "DNS Resolution Failed", solution: "Flush your local DNS cache and configure fallback servers like 8.8.8.8." },
-          { error: "SSL Certificate Error", solution: "Update your operating system's root certificates to ensure secure HTTPS handshakes." }
+          { error: "Webhook Handshake Failed", solution: "Verify that your server returns a 200 OK response within 3 seconds of receiving the handshake ping." },
+          { error: "SSL Certificate Error", solution: "Verify that your callback URL uses a valid SSL certificate signed by a recognized root authority." }
         ]
       },
       {
-        slug: "system-status-and-downtime",
-        title: "System status and downtime",
-        description: "Check service health, scheduled maintenance updates, and operational status metrics.",
+        slug: "widget-javascript-api",
+        title: "Widget JavaScript API",
+        description: "Control the live chat widget programmatically from your site's frontend scripts.",
+        prerequisites: "Load the Ticket-it loader script before running custom API calls.",
+        steps: [
+          "Call TicketIt('show') or TicketIt('hide') to trigger visibility.",
+          "Pass user identities using TicketIt('identify', { email: 'user@example.com' }) to log them in automatically.",
+          "Listen to frontend events using TicketIt('on', 'chat:started', callback)."
+        ]
+      }
+    ]
+  },
+  {
+    id: "status-performance",
+    title: "System Status & Uptime",
+    slug: "status-performance",
+    articles: [
+      {
+        slug: "system-health-monitoring",
+        title: "System Health & Uptime Monitoring",
+        description: "Check current operational status of the Ticket-it API, mail delivery gateway, and chat servers.",
         prerequisites: "Subscribe to status alerts via email or SMS to stay informed on system uptime.",
         steps: [
-          "Visit the status portal at status.nexus-platform.com.",
+          "Visit the status portal at status.ticket-it.com.",
           "Review the historical uptime charts for each primary service area (API, Web Dashboard, and database clusters).",
           "Check the maintenance calendar for upcoming scheduled database upgrades and feature deployments."
         ]
-      }
-    ]
-  },
-  {
-    id: "performance",
-    title: "Performance",
-    slug: "performance",
-    articles: [
-      {
-        slug: "optimizing-page-load-speed",
-        title: "Optimizing page load speed",
-        description: "Maximize site speed by utilizing lazy loading, optimized imagery, and critical CSS rendering path.",
-        prerequisites: "Familiarize yourself with Google Lighthouse or Web Vitals metrics.",
-        steps: [
-          "Audit your site using Lighthouse to locate major rendering bottlenecks.",
-          "Implement lazy loading for images and non-critical components below the fold.",
-          "Enable Gzip/Brotli compression and use modern image formats like WebP or AVIF."
-        ]
       },
       {
-        slug: "caching-strategies-for-databases",
-        title: "Caching strategies for databases",
-        description: "Improve database query speed using Redis, key-value stores, and query result caching configurations.",
-        prerequisites: "You need a running Redis or Memcached instance connected to your database.",
+        slug: "troubleshooting-connection-issues",
+        title: "Troubleshooting Connection Issues",
+        description: "Diagnose network drops, firewall rules, or DNS resolution issues preventing connections to Ticket-it.",
+        prerequisites: "Ensure you have CLI access to run diagnostics (ping, traceroute).",
         steps: [
-          "Identify slow, frequently executed SQL queries using database query logs.",
-          "Write cache middleware to check if the query result exists in Redis before querying the main database.",
-          "Implement cache invalidation policies (TTL or manual purges) to prevent stale data."
+          "Verify your local internet connection and router settings.",
+          "Run a traceroute to our API server at api.ticket-it.com to identify network hops causing latency.",
+          "Check your firewall or proxy server settings to ensure ports 80, 443, and 8080 are open for outbound traffic."
         ]
       }
     ]
   },
   {
-    id: "api-integrations",
-    title: "API Integrations",
-    slug: "api-integrations",
+    id: "security-compliance",
+    title: "Security & Compliance",
+    slug: "security-compliance",
     articles: [
       {
-        slug: "api-rate-limits-and-quotas",
-        title: "API rate limits and quotas",
-        description: "Avoid getting blocked by tracking your API requests per minute, burst tokens, and limit upgrades.",
-        prerequisites: "All endpoints implement standard rate limits based on your API key's subscription tier.",
+        slug: "configuring-sso-saml",
+        title: "Configuring SSO & SAML Authentication",
+        description: "Integrate Ticket-it with identity providers like Okta, Microsoft Azure AD, or OneLogin for unified user authentication.",
+        prerequisites: "You must have Owner permissions in Ticket-it to configure Single Sign-On (SSO).",
         steps: [
-          "Inspect HTTP headers returned by the API (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset).",
-          "Implement exponential backoff and retry logic in your API client when receiving HTTP 429 Too Many Requests.",
-          "Distribute bulk operations over time to avoid spikes in API request volume."
-        ]
+          "Navigate to Admin Dashboard > Settings > Security > SSO Settings.",
+          "Select your Identity Provider (IdP) and copy the Ticket-it Assertion Consumer Service (ACS) URL.",
+          "In your IdP admin panel, create a new SAML integration, enter the ACS URL, and download the Metadata XML.",
+          "Upload the IdP Metadata XML file to Ticket-it, toggle 'Enable SAML SSO', and click Save."
+        ],
+        screenshot: "/dashboard-mockup.png",
+        screenshotCaption: "Figure 6: SSO and SAML identity provider configuration portal.",
+        explanationPoints: [
+          { title: "Just-In-Time Provisioning", detail: "When enabled, new users logging in via SSO automatically have agent profiles created." },
+          { title: "SAML Metadata auto-sync", detail: "Ticket-it fetches updated IdP certificates automatically every 7 days." }
+        ],
+        sample: {
+          type: "json",
+          title: "SAML User Profile Mapping JSON Schema",
+          data: {
+            status: "active",
+            projectId: "tkt_proj_sso",
+            environment: "production",
+            allowedDomains: ["saml.ticket-it.com"],
+            limits: {
+              dailyRequests: 5000,
+              rateLimitPerMinute: 100
+            }
+          }
+        }
       },
       {
-        slug: "authenticating-api-requests",
-        title: "Authenticating API requests",
-        description: "Use OAuth 2.0, Bearer tokens, or secret keys to secure your API calls to our platforms.",
-        prerequisites: "Generate API credentials from the developer settings tab before making requests.",
+        slug: "data-privacy-gdpr-compliance",
+        title: "Data Privacy & GDPR Compliance",
+        description: "Learn how Ticket-it handles customer data encryption, data residency, and GDPR automated right-to-be-forgotten requests.",
+        prerequisites: "General compliance policies apply to all active workspaces.",
         steps: [
-          "Retrieve your API key from the dashboard developer console.",
-          "Attach the API key as an Authorization header (Authorization: Bearer YOUR_API_KEY) to every outgoing request.",
-          "Ensure keys are never committed to version control systems or exposed in client-side code."
-        ]
-      },
-      {
-        slug: "migrating-from-v1-to-v2-api",
-        title: "Migrating from v1 to v2 API",
-        description: "Step-by-step migration guide to transition your codebase to our newer, faster v2 endpoints.",
-        prerequisites: "Support for v1 API will end on December 31, 2026. Upgrading early is highly recommended.",
-        steps: [
-          "Review the v1 vs v2 breaking changes log in our developer portal.",
-          "Update all endpoint base URLs from /v1/ to /v2/ in your client configuration.",
-          "Modify request payloads to match the new nested JSON schema format required by v2 endpoints."
-        ]
-      }
-    ]
-  },
-  {
-    id: "live-chat",
-    title: "Live Chat",
-    slug: "live-chat",
-    articles: [
-      {
-        slug: "how-to-start-a-live-chat-session",
-        title: "How to start a live chat session",
-        description: "Get real-time answers by connecting to one of our expert support agents via live chat widget.",
-        prerequisites: "Log in to your account to link your chat session with your customer profile for faster resolution.",
-        steps: [
-          "Click the blue chat bubble in the bottom right corner of any page.",
-          "Select a help category and type a short summary of your issue.",
-          "Wait 1-2 minutes to be automatically connected with the next available support representative."
-        ]
-      },
-      {
-        slug: "chat-support-hours-and-availability",
-        title: "Chat support hours and availability",
-        description: "View working hours, active time zones, and average response times for chat queues.",
-        prerequisites: "Live chat is available for Professional and Enterprise plan subscribers.",
-        steps: [
-          "Check standard support hours: Monday through Friday, 8:00 AM to 8:00 PM EST.",
-          "For out-of-hours inquiries, submit an email ticket which will be prioritized at the start of the next business day.",
-          "View current queue wait times displayed at the top of the chat widget interface."
-        ]
-      }
-    ]
-  },
-  {
-    id: "documentation",
-    title: "Documentation",
-    slug: "documentation",
-    articles: [
-      {
-        slug: "getting-started-guide",
-        title: "Getting started guide",
-        description: "Read through our quickstart tutorial to configure your workspace and deploy your first app.",
-        prerequisites: "Basic familiarity with node package managers and terminal commands is assumed.",
-        steps: [
-          "Install the client library using npm install @nexus/platform.",
-          "Initialize the SDK with your API key inside your app's entry file.",
-          "Test the connection by making a simple ping call and verify the success response."
-        ]
-      },
-      {
-        slug: "developer-api-reference",
-        title: "Developer API reference",
-        description: "Explore full endpoints, schemas, parameters, and request-response payloads.",
-        prerequisites: "Read the authentication guide to acquire keys before calling reference endpoints.",
-        steps: [
-          "Visit reference.nexus-platform.com or view local Swagger documentation.",
-          "Browse endpoints grouped by resource (e.g. Users, Teams, Transactions, Logs).",
-          "Use the interactive console to run test queries and view response structures live."
+          "To trigger a customer right-to-be-forgotten request, go to Settings > Privacy & Compliance.",
+          "Enter the user's email address and select 'Permanently Delete User Data'.",
+          "The system will scrub all chat transcripts, support tickets, and contact records associated with that email within 48 hours."
         ]
       }
     ]
@@ -519,26 +391,18 @@ export const CATEGORIES: Category[] = [
 
 export const getCategoryIcon = (catId: string) => {
   switch (catId) {
-    case 'receive-payments':
+    case 'ticketing-helpdesk':
       return <BookOpen className="w-4 h-4" />;
-    case 'send-payments':
-      return <Layers className="w-4 h-4" />;
-    case 'my-payoneer-account':
-      return <Shield className="w-4 h-4" />;
-    case 'my-payoneer-card':
-      return <Zap className="w-4 h-4" />;
-    case 'refer-a-friend-mobile-app-and-more':
+    case 'live-chat-widgets':
       return <MessageCircle className="w-4 h-4" />;
-    case 'technical-support':
+    case 'agent-team-routing':
       return <Settings className="w-4 h-4" />;
-    case 'performance':
-      return <Zap className="w-4 h-4" />;
     case 'api-integrations':
       return <Layers className="w-4 h-4" />;
-    case 'live-chat':
-      return <MessageCircle className="w-4 h-4" />;
-    case 'documentation':
-      return <BookOpen className="w-4 h-4" />;
+    case 'status-performance':
+      return <Zap className="w-4 h-4" />;
+    case 'security-compliance':
+      return <Shield className="w-4 h-4" />;
     default:
       return <BookOpen className="w-4 h-4" />;
   }

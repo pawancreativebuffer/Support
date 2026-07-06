@@ -11,7 +11,7 @@ interface TutorialVideo {
 
 export const VideoSection: React.FC = () => {
   const tutorialVideos: TutorialVideo[] = [
-    { id: 'M7lc1UVf-VE', title: "Getting Started with Nexus Platform", duration: "4:20", desc: "Learn the basics of setting up your Nexus account and navigating the dashboard." },
+    { id: 'M7lc1UVf-VE', title: "Getting Started with Ticket-it Platform", duration: "4:20", desc: "Learn the basics of setting up your Ticket-it account and navigating the support dashboard." },
     { id: 'tgbNymZ7vqY', title: "API Integration Masterclass", duration: "12:15", desc: "A deep dive into connecting our endpoints with your existing architecture." },
     { id: 'JGwWNGJdvx8', title: "Advanced Billing Setup", duration: "6:10", desc: "How to manage invoices, configure usage alerts, and add payment methods." },
     { id: 'dQw4w9WgXcQ', title: "Team Roles & Permissions", duration: "3:45", desc: "Set up role-based access control for your organization members securely." },

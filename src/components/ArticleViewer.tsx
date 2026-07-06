@@ -118,7 +118,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                 <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                <div className="text-xs text-slate-400 font-mono ml-2 truncate">https://console.nexus-platform.com/portal</div>
+                <div className="text-xs text-slate-400 font-mono ml-2 truncate">https://console.ticket-it.com/portal</div>
               </div>
               <div className="relative w-full h-[350px]">
                 <Image
@@ -199,7 +199,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
                     <div>
                       <h4 className="font-bold text-slate-900 text-sm">{activeArticle.sample.title}</h4>
-                      <p className="text-xs text-slate-400">Beneficiary: Payoneer Client Account</p>
+                      <p className="text-xs text-slate-400">Beneficiary: Ticket-it Client Account</p>
                     </div>
                     <span className="text-xs font-bold bg-primary-100 text-primary-700 px-2.5 py-1 rounded-full">USD</span>
                   </div>

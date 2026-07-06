@@ -13,8 +13,8 @@ export default function SupportPage() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
-  const categories = ['Account', 'Billing', 'Developers', 'Pricing', 'Usage', 'System'];
-  const searchTags = ["API Keys", "Billing", "Reset Password", "Deployment", "Webhooks"];
+  const categories = ['Account', 'Billing', 'Developers', 'Pricing', 'Usage', 'System', 'Security'];
+  const searchTags = ["API Keys", "Billing", "Reset Password", "SSO & SAML", "Webhooks"];
 
   const handleTagClick = (tag: string) => {
     if (tag === 'API Keys' || tag === 'Webhooks') {
@@ -23,8 +23,8 @@ export default function SupportPage() {
       setFaqCategory('Billing');
     } else if (tag === 'Reset Password') {
       setFaqCategory('Account');
-    } else if (tag === 'Deployment') {
-      setFaqCategory('System');
+    } else if (tag === 'SSO & SAML') {
+      setFaqCategory('Security');
     }
     setTimeout(() => {
       document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -37,13 +37,15 @@ export default function SupportPage() {
       setFaqCategory('Developers');
     } else if (query.includes('bill') || query.includes('invoice') || query.includes('pay') || query.includes('tax')) {
       setFaqCategory('Billing');
+    } else if (query.includes('sso') || query.includes('saml') || query.includes('gdpr') || query.includes('hipaa') || query.includes('soc2') || query.includes('compliance') || query.includes('security')) {
+      setFaqCategory('Security');
     } else if (query.includes('pass') || query.includes('user') || query.includes('team') || query.includes('invite') || query.includes('mfa')) {
       setFaqCategory('Account');
     } else if (query.includes('plan') || query.includes('sub') || query.includes('trial') || query.includes('free') || query.includes('enterprise')) {
       setFaqCategory('Pricing');
     } else if (query.includes('limit') || query.includes('usage') || query.includes('alert')) {
       setFaqCategory('Usage');
-    } else if (query.includes('status') || query.includes('server') || query.includes('patch') || query.includes('security')) {
+    } else if (query.includes('status') || query.includes('server') || query.includes('patch')) {
       setFaqCategory('System');
     }
     setTimeout(() => {

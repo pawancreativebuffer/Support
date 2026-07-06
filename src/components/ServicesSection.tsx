@@ -1,15 +1,75 @@
 import React from 'react';
-import { Settings, Shield, Zap, Layers, MessageCircle, BookOpen, ArrowRight } from 'lucide-react';
+import { Ticket, MessageCircle, Users, Code, Activity, BookOpen, ArrowRight, Layers, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export const ServicesSection: React.FC = () => {
   const services = [
-    { title: "Technical Support", icon: <Settings className="w-6 h-6 text-white" />, description: "Get elite help with technical issues and system errors. We're here 24/7.", span: "col-span-1 lg:col-span-2", bg: "bg-slate-900 border-slate-800", text: "text-slate-300", titleColor: "text-white", iconBg: "bg-white/10 border-white/20" },
-    { title: "Account & Billing", icon: <Shield className="w-6 h-6 text-primary-600" />, description: "Manage your invoices and payments securely.", span: "col-span-1 lg:col-span-1", bg: "bg-white border-slate-200", text: "text-slate-600", titleColor: "text-slate-900", iconBg: "bg-slate-50 border-slate-100" },
-    { title: "Performance", icon: <Zap className="w-6 h-6 text-primary-700" />, description: "Optimize your app for maximum speed.", span: "col-span-1 lg:col-span-1", bg: "bg-primary-50 border-primary-100", text: "text-primary-700", titleColor: "text-primary-900", iconBg: "bg-white border-primary-200" },
-    { title: "API Integrations", icon: <Layers className="w-6 h-6 text-primary-600" />, description: "Connect with third-party services smoothly.", span: "col-span-1 lg:col-span-2", bg: "bg-white border-slate-200", text: "text-slate-600", titleColor: "text-slate-900", iconBg: "bg-slate-50 border-slate-100" },
-    { title: "Live Chat", icon: <MessageCircle className="w-6 h-6 text-white" />, description: "Chat directly with our team in real-time.", span: "col-span-1 lg:col-span-2", bg: "bg-primary-600 border-primary-500", text: "text-primary-100", titleColor: "text-white", iconBg: "bg-white/20 border-white/30" },
-    { title: "Documentation", icon: <BookOpen className="w-6 h-6 text-primary-600" />, description: "Browse our detailed guides and tutorials.", span: "col-span-1 lg:col-span-1", bg: "bg-white border-slate-200", text: "text-slate-600", titleColor: "text-slate-900", iconBg: "bg-slate-50 border-slate-100" },
+    { 
+      title: "Ticketing & Help Desk", 
+      slug: "ticketing-helpdesk", 
+      icon: <Ticket className="w-6 h-6 text-white" />, 
+      description: "Manage, prioritize, and track customer support queries from creation to final resolution.", 
+      span: "col-span-1 lg:col-span-2", 
+      bg: "bg-slate-900 border-slate-800", 
+      text: "text-slate-300", 
+      titleColor: "text-white", 
+      iconBg: "bg-white/10 border-white/20" 
+    },
+    { 
+      title: "Live Chat & Widgets", 
+      slug: "live-chat-widgets", 
+      icon: <MessageCircle className="w-6 h-6 text-primary-600" />, 
+      description: "Embed responsive chat widgets and convert visitor chats directly to tickets in real-time.", 
+      span: "col-span-1 lg:col-span-1", 
+      bg: "bg-white border-slate-200", 
+      text: "text-slate-600", 
+      titleColor: "text-slate-900", 
+      iconBg: "bg-slate-50 border-slate-100" 
+    },
+    { 
+      title: "Agent & Team Routing", 
+      slug: "agent-team-routing", 
+      icon: <Users className="w-6 h-6 text-primary-700" />, 
+      description: "Configure role access permissions, group departments, and establish round-robin routing rules.", 
+      span: "col-span-1 lg:col-span-1", 
+      bg: "bg-primary-50 border-primary-100", 
+      text: "text-primary-700", 
+      titleColor: "text-primary-900", 
+      iconBg: "bg-white border-primary-200" 
+    },
+    { 
+      title: "API & Developer Tools", 
+      slug: "api-integrations", 
+      icon: <Code className="w-6 h-6 text-primary-600" />, 
+      description: "Integrate custom workflows using webhooks, REST API keys, and rate-limited developer channels.", 
+      span: "col-span-1 lg:col-span-2", 
+      bg: "bg-white border-slate-200", 
+      text: "text-slate-600", 
+      titleColor: "text-slate-900", 
+      iconBg: "bg-slate-50 border-slate-100" 
+    },
+    { 
+      title: "System Status & Uptime", 
+      slug: "status-performance", 
+      icon: <Activity className="w-6 h-6 text-white" />, 
+      description: "Monitor service operational status and track response times against service level agreements.", 
+      span: "col-span-1 lg:col-span-2", 
+      bg: "bg-primary-600 border-primary-500", 
+      text: "text-primary-100", 
+      titleColor: "text-white", 
+      iconBg: "bg-white/20 border-white/30" 
+    },
+    { 
+      title: "Security & Compliance", 
+      slug: "security-compliance", 
+      icon: <Shield className="w-6 h-6 text-primary-600" />, 
+      description: "Configure single sign-on, manage data retention policies, and verify HIPAA/SOC2 compliance configurations.", 
+      span: "col-span-1 lg:col-span-1", 
+      bg: "bg-white border-slate-200", 
+      text: "text-slate-600", 
+      titleColor: "text-slate-900", 
+      iconBg: "bg-slate-50 border-slate-100" 
+    },
   ];
 
   return (
@@ -23,16 +83,19 @@ export const ServicesSection: React.FC = () => {
             Explore specialized teams.
           </h2>
         </div>
-        <button className="hidden lg:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 cursor-pointer group px-5 py-2.5 bg-primary-50 rounded-full">
+        <Link 
+          href="/article/ticketing-helpdesk" 
+          className="hidden lg:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 cursor-pointer group px-5 py-2.5 bg-primary-50 rounded-full"
+        >
           View all services <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {services.map((service, i) => (
           <Link
             key={i}
-            href={`/article/${service.title.toLowerCase().replace(/ /g, '-')}`}
+            href={`/article/${service.slug}`}
             className={`relative flex flex-col p-8 min-h-[280px] rounded-[2rem] border ${service.bg} ${service.span} hover:scale-[1.02] transition-transform duration-300 cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-primary-900/10 group overflow-hidden`}
           >
             {/* Decorative element for the big dark card */}

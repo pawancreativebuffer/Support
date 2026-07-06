@@ -30,7 +30,7 @@ export const ContactChatTab: React.FC = () => {
                 [18:42:16] handshake verified (TLS_AES_256_GCM_SHA384)
               </div>
               <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3.5 space-y-1.5 shadow-inner">
-                <div className="text-primary-400 font-bold text-[12px] uppercase tracking-wider">Sarah (Nexus Support)</div>
+                <div className="text-primary-400 font-bold text-[12px] uppercase tracking-wider">Sarah (Ticket-it Support)</div>
                 <p className="text-slate-300 text-[12px]">
                   Hello! I am logged in and ready. Click the initialize button to begin our session immediately.
                 </p>
@@ -69,7 +69,7 @@ export const ContactChatTab: React.FC = () => {
               Support Connect Terminal
             </h3>
             <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-              Our advanced customer care widget docks floating in the bottom-right. Connect instantly with payment processing experts while keeping your support guides open.
+              Our advanced customer care widget docks floating in the bottom-right. Connect instantly with ticketing & widget setup experts while keeping your support guides open.
             </p>
           </div>
 

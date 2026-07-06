@@ -31,7 +31,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
     setTimeout(() => {
       const generatedNum = Math.floor(Math.random() * 900000) + 100000;
       const newTicket = {
-        id: `NX-${generatedNum}`,
+        id: `TK-${generatedNum}`,
         firstName,
         lastName,
         email,
@@ -67,7 +67,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
           <h2 className="text-2xl font-bold text-slate-900">Message Submitted!</h2>
           <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-            Thank you for contacting customer care. We have created support ticket <strong>#NX-{ticketNumber}</strong>. Our agents will respond to your registered email address within 24 hours.
+            Thank you for contacting customer care. We have created support ticket <strong>#TK-{ticketNumber}</strong>. Our agents will respond to your registered email address within 24 hours.
           </p>
           <button
             type="button"
@@ -210,7 +210,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   <Activity className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-bold text-slate-900 text-[14px]">Include details</p>
-                    <p className="mt-1 text-slate-500 text-[14px] font-normal">Help us speed up resolution by including transaction IDs, merchant references, and dates in your comments.</p>
+                    <p className="mt-1 text-slate-500 text-[14px] font-normal">Help us speed up resolution by including integration details, browser error logs, and steps to reproduce in your comments.</p>
                   </div>
                 </div>
               </div>
