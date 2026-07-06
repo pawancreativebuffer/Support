@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { HeroSection } from '../components/HeroSection';
 import { ServicesSection } from '../components/ServicesSection';
 import { VideoSection } from '../components/VideoSection';
@@ -8,49 +9,60 @@ import { FAQSection } from '../components/FAQSection';
 import { faqs } from '../data/faqs';
 
 export default function SupportPage() {
+  const router = useRouter();
   const [heroSearch, setHeroSearch] = useState('');
   const [faqCategory, setFaqCategory] = useState('Account');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
   const categories = ['Account', 'Billing', 'Developers', 'Pricing', 'Usage', 'System', 'Security'];
-  const searchTags = ["API Keys", "Billing", "Reset Password", "SSO & SAML", "Webhooks"];
+  const searchTags = ["SSO & SAML", "API Authentication", "WhatsApp Integration", "SLA Policies", "Agent Roles"];
 
   const handleTagClick = (tag: string) => {
-    if (tag === 'API Keys' || tag === 'Webhooks') {
-      setFaqCategory('Developers');
-    } else if (tag === 'Billing') {
-      setFaqCategory('Billing');
-    } else if (tag === 'Reset Password') {
-      setFaqCategory('Account');
-    } else if (tag === 'SSO & SAML') {
-      setFaqCategory('Security');
+    const slugMap: Record<string, string> = {
+      "SSO & SAML": "configuring-sso-saml",
+      "API Authentication": "authenticating-api-requests",
+      "WhatsApp Integration": "configuring-whatsapp-business",
+      "SLA Policies": "setting-up-sla-policies",
+      "Agent Roles": "roles-and-permissions"
+    };
+    const targetSlug = slugMap[tag];
+    if (targetSlug) {
+      router.push(`/article/${targetSlug}`);
     }
-    setTimeout(() => {
-      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
   };
 
   const handleHeroSearch = () => {
-    const query = heroSearch.toLowerCase();
-    if (query.includes('api') || query.includes('key') || query.includes('webhook') || query.includes('developer') || query.includes('integrate')) {
-      setFaqCategory('Developers');
-    } else if (query.includes('bill') || query.includes('invoice') || query.includes('pay') || query.includes('tax')) {
-      setFaqCategory('Billing');
-    } else if (query.includes('sso') || query.includes('saml') || query.includes('gdpr') || query.includes('hipaa') || query.includes('soc2') || query.includes('compliance') || query.includes('security')) {
-      setFaqCategory('Security');
-    } else if (query.includes('pass') || query.includes('user') || query.includes('team') || query.includes('invite') || query.includes('mfa')) {
-      setFaqCategory('Account');
-    } else if (query.includes('plan') || query.includes('sub') || query.includes('trial') || query.includes('free') || query.includes('enterprise')) {
-      setFaqCategory('Pricing');
-    } else if (query.includes('limit') || query.includes('usage') || query.includes('alert')) {
-      setFaqCategory('Usage');
-    } else if (query.includes('status') || query.includes('server') || query.includes('patch')) {
-      setFaqCategory('System');
+    const query = heroSearch.toLowerCase().trim();
+    if (!query) return;
+
+    if (query.includes('sso') || query.includes('saml')) {
+      router.push('/article/configuring-sso-saml');
+    } else if (query.includes('api') || query.includes('key') || query.includes('token') || query.includes('auth')) {
+      router.push('/article/authenticating-api-requests');
+    } else if (query.includes('whatsapp')) {
+      router.push('/article/configuring-whatsapp-business');
+    } else if (query.includes('sla') || query.includes('policy')) {
+      router.push('/article/setting-up-sla-policies');
+    } else if (query.includes('role') || query.includes('permission') || query.includes('member') || query.includes('team')) {
+      router.push('/article/roles-and-permissions');
+    } else if (query.includes('status') || query.includes('uptime') || query.includes('health') || query.includes('latency')) {
+      router.push('/article/system-health-monitoring');
+    } else if (query.includes('widget') || query.includes('embed') || query.includes('chat')) {
+      router.push('/article/embedding-chat-widget');
+    } else if (query.includes('survey') || query.includes('csat') || query.includes('satisfaction')) {
+      router.push('/article/managing-csat-surveys');
+    } else if (query.includes('shift') || query.includes('hours') || query.includes('schedule')) {
+      router.push('/article/configuring-agent-shifts');
+    } else if (query.includes('backup') || query.includes('export') || query.includes('retention') || query.includes('db')) {
+      router.push('/article/database-backup-exports');
+    } else if (query.includes('gdpr') || query.includes('privacy') || query.includes('delete') || query.includes('scrub')) {
+      router.push('/article/data-privacy-gdpr-compliance');
+    } else if (query.includes('ip') || query.includes('whitelist') || query.includes('mfa')) {
+      router.push('/article/enforcing-ip-whitelisting-mfa');
+    } else {
+      router.push('/article/ticketing-helpdesk');
     }
-    setTimeout(() => {
-      document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
   };
 
   return (

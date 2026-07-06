@@ -123,6 +123,34 @@ export const CATEGORIES: Category[] = [
           "Drag and drop custom field types into the ticket editor layout.",
           "Set validation rules and map fields to routing categories, then click Save."
         ]
+      },
+      {
+        slug: "setting-up-sla-policies",
+        title: "Setting Up SLA Policies",
+        description: "Define service level agreement (SLA) response and resolution rules to guarantee timely customer support.",
+        prerequisites: "You must have Manager or Administrator credentials.",
+        steps: [
+          "Navigate to Admin Dashboard > Settings > SLAs and click 'New Policy'.",
+          "Set the scope conditions (e.g., Ticket Source is Email, Priority is High).",
+          "Specify the target response time (e.g., within 4 hours) and resolution time (e.g., within 12 hours).",
+          "Define escalation paths, such as notifying team leads via Slack if the ticket is close to breaching SLA."
+        ],
+        explanationPoints: [
+          { title: "SLA Targets", detail: "SLAs can be configured to run on business operational hours or calendar hours." },
+          { title: "Escalation Triggers", detail: "Automated alerts can be configured for 30 minutes, 1 hour, or 2 hours prior to a breach." }
+        ]
+      },
+      {
+        slug: "managing-csat-surveys",
+        title: "Managing Customer Satisfaction (CSAT) Surveys",
+        description: "Gather feedback from users automatically after their tickets are resolved to monitor agent performance.",
+        prerequisites: "Ensure Ticket Status Settings has a 'Resolved' state configured.",
+        steps: [
+          "Go to Admin Settings > Workflows > Satisfaction Surveys.",
+          "Enable 'Send survey link upon ticket resolution'.",
+          "Customize the rating scale (e.g., Good/Bad or 1-5 stars) and add a custom feedback comment box.",
+          "Analyze feedback scores and trends in the Reports & Analytics tab."
+        ]
       }
     ]
   },
@@ -196,6 +224,17 @@ export const CATEGORIES: Category[] = [
           "Choose triggers and configure rules (e.g., user spends 30s on Pricing).",
           "Set up automatic messages and route to appropriate agents."
         ]
+      },
+      {
+        slug: "configuring-whatsapp-business",
+        title: "Configuring WhatsApp Business Integration",
+        description: "Connect your official WhatsApp Business number to Ticket-it to answer customer messages from the unified agent inbox.",
+        prerequisites: "Verify your business account credentials in Meta Business Suite.",
+        steps: [
+          "Go to Settings > Integrations > Channels and click 'Add WhatsApp'.",
+          "Log in to your Meta account to connect your WhatsApp Business Profile.",
+          "Configure the message router and select default agent queues to handle incoming WhatsApp chats."
+        ]
       }
     ]
   },
@@ -235,6 +274,17 @@ export const CATEGORIES: Category[] = [
           "Open your Profile Settings page or Admin settings.",
           "Select Canned Responses and click 'New Template'.",
           "Input the trigger key (e.g., '/greet') and write the template text."
+        ]
+      },
+      {
+        slug: "configuring-agent-shifts",
+        title: "Configuring Agent Shifts & Out of Office Status",
+        description: "Manage agent availability, timezone coverage, and automatic scheduling.",
+        prerequisites: "You must have Manager-level permissions or higher.",
+        steps: [
+          "Navigate to Admin Dashboard > Settings > Team Settings > Working Hours.",
+          "Set timezone, define start/end operational hours for each weekday, and assign agents to the schedule.",
+          "Agents can set their status to 'Away' or 'Out of Office' from their profile menu to pause auto-routing."
         ]
       }
     ]
@@ -305,6 +355,18 @@ export const CATEGORIES: Category[] = [
           "Pass user identities using TicketIt('identify', { email: 'user@example.com' }) to log them in automatically.",
           "Listen to frontend events using TicketIt('on', 'chat:started', callback)."
         ]
+      },
+      {
+        slug: "syncing-contacts-crm-api",
+        title: "Syncing Contacts with Salesforce/HubSpot API",
+        description: "Configure real-time automated contact sync between your CRM and Ticket-it databases.",
+        prerequisites: "A valid CRM Developer/Admin login credential.",
+        steps: [
+          "Go to Developer Settings > Integrations and select your CRM (Salesforce or HubSpot).",
+          "Click 'Connect Account' and authorize the connection using OAuth 2.0.",
+          "Map contact fields (e.g., Email, Phone, Company) and enable bidirectional sync to keep accounts updated."
+        ],
+        codeBlock: `# Synchronize contact via API PATCH request\ncurl -X PATCH https://api.ticket-it.com/v1/contacts/usr_987654 \\\n  -H "Authorization: Bearer tkt_sk_123456789" \\\n  -d '{"crm_id": "sf_contact_88772", "company": "Acme Corp"}'`
       }
     ]
   },
@@ -333,6 +395,17 @@ export const CATEGORIES: Category[] = [
           "Verify your local internet connection and router settings.",
           "Run a traceroute to our API server at api.ticket-it.com to identify network hops causing latency.",
           "Check your firewall or proxy server settings to ensure ports 80, 443, and 8080 are open for outbound traffic."
+        ]
+      },
+      {
+        slug: "database-backup-exports",
+        title: "Database Backup Exports & Retention Schedules",
+        description: "Configure automated database backup cycles and export raw data packages for compliance auditing.",
+        prerequisites: "You must have Owner permissions to access databases.",
+        steps: [
+          "Navigate to Admin Settings > System & Data > Database Backups.",
+          "Choose backup frequency (6h, 12h, 24h) and set your target AWS S3 or Azure Blob storage bucket.",
+          "Under exports, click 'Generate Export' to download ticket archives, agent logs, and client directories in ZIP format."
         ]
       }
     ]
@@ -383,6 +456,17 @@ export const CATEGORIES: Category[] = [
           "To trigger a customer right-to-be-forgotten request, go to Settings > Privacy & Compliance.",
           "Enter the user's email address and select 'Permanently Delete User Data'.",
           "The system will scrub all chat transcripts, support tickets, and contact records associated with that email within 48 hours."
+        ]
+      },
+      {
+        slug: "enforcing-ip-whitelisting-mfa",
+        title: "Enforcing IP Whitelisting & MFA Policies",
+        description: "Enforce strict security guardrails to restrict dashboard access to recognized corporate networks and require MFA for all agents.",
+        prerequisites: "Enterprise plan is required to configure IP whitelist controls.",
+        steps: [
+          "Go to Admin Settings > Security > Security Policies.",
+          "Add trusted CIDR blocks (e.g. 192.168.1.0/24) to the allowed IP Whitelist interface.",
+          "Toggle 'Enforce Multi-Factor Authentication (MFA)' to mandate authenticator verification on the next login attempt."
         ]
       }
     ]

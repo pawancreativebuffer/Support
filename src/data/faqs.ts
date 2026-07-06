@@ -294,5 +294,95 @@ export const faqs: FaqItem[] = [
     answer: "We take security very seriously. If you discover a vulnerability, please do not disclose it publicly. Report it directly to our security team via security@ticket-it.com. We operate a bug bounty program and reward verified findings in accordance with our disclosure guidelines.",
     category: "Security",
     helpfulCount: 55
+  },
+  {
+    question: "How can I configure agent collision detection?",
+    answer: "Ticket-it prevents multiple agents from answering the same ticket concurrently. When an agent opens a ticket, a live socket connection flags it. Other agents viewing it will see a colored indicator avatar and a banner warning: 'Agent Sarah is currently typing a reply.' If a second agent attempts to post, the system prompts them to verify Sarah's pending draft.",
+    category: "Account",
+    helpfulCount: 92
+  },
+  {
+    question: "Can I set up auto-responder rules for out-of-office agents?",
+    answer: "Yes. In Settings > Team > Working Hours, you can toggle 'Out of Office Auto-Reply'. When active, any ticket routed to an agent who is clocked out or away automatically triggers a preset friendly response, informing the customer when the agent returns or routing the ticket to an active backup teammate.",
+    category: "Account",
+    helpfulCount: 81
+  },
+  {
+    question: "How do I set up sub-billing accounts for multiple support channels?",
+    answer: "In Settings > Billing > Sub-organizations, you can invite distinct child entities to share your parent tier. You can allocate agent seat quotas to each organization and choose to receive either one unified parent invoice or individual prorated invoices for each sub-brand.",
+    category: "Billing",
+    helpfulCount: 47
+  },
+  {
+    question: "What happens to my data if my subscription is suspended?",
+    answer: "If your billing payment fails, Ticket-it enters a 14-day Grace Period during which all functions remain fully active. If unpaid after 14 days, the account is moved to 'Read-Only Mode' where agents can view past tickets but cannot reply or receive new entries. After 90 days of suspension, data is queued for automatic permanent deletion in line with our retention policy.",
+    category: "Billing",
+    helpfulCount: 66
+  },
+  {
+    question: "Can I send custom metadata with webhooks?",
+    answer: "Yes. When creating or updating tickets programmatically via API, you can include a 'metadata' JSON block containing key-value pairs (e.g. {\"checkout_id\": \"99882\", \"plan\": \"trial\"}). Ticket-it preserves this metadata and sends it back intact in the payloads of all related webhook events.",
+    category: "Developers",
+    helpfulCount: 145
+  },
+  {
+    question: "How does the widget communicate with custom React components?",
+    answer: "The Ticket-it frontend widget registers window-level custom events. You can listen to these events within your React components using `window.addEventListener('ticketit:loaded', callback)` or trigger widget methods programmatically by calling `window.ticketit('open')` or passing credentials dynamically via React hooks.",
+    category: "Developers",
+    helpfulCount: 119
+  },
+  {
+    question: "What is your pricing policy for Light Agents?",
+    answer: "Light Agents are free of charge and do not consume paid agent seats. They are restricted to read-only access on tickets, cannot communicate directly with external customers, but are allowed to review ticket history and leave internal private notes to collaborate with full support agents.",
+    category: "Pricing",
+    helpfulCount: 104
+  },
+  {
+    question: "Do you charge separately for live chat transcripts or attachment storage?",
+    answer: "Live chat transcripts are stored forever at no extra cost. Standard attachment storage is capped at 10GB for Pro plans and is unlimited for Enterprise plans. Extra storage for Pro plans can be purchased in 50GB increments from your Billing dashboard.",
+    category: "Pricing",
+    helpfulCount: 71
+  },
+  {
+    question: "How is the Monthly Active Users (MAU) limit calculated?",
+    answer: "MAU represents the count of unique end-users who create a ticket, initiate a chat, or receive a support response within a calendar month. We do not count anonymous help center visitors towards this quota, only identified users who engage in active support loops.",
+    category: "Usage",
+    helpfulCount: 87
+  },
+  {
+    question: "How do I request a temporary usage limit increase?",
+    answer: "If you anticipate a high-traffic event (e.g., product launch, holiday sales), go to Settings > Usage and click 'Configure Buffer'. You can request a temporary increase to your ticket or API limits for up to 72 hours, with usage billed at a standard prorated overage rate.",
+    category: "Usage",
+    helpfulCount: 53
+  },
+  {
+    question: "How do I configure DNS records for custom support email addresses?",
+    answer: "To handle outbound support mail under your domain, go to Settings > Channels > Email and add your address. You must verify ownership by adding three CNAME records for DKIM (domainkeys-identified-mail), one TXT record for SPF (sender-policy-framework), and an MX record pointing to our incoming email mailboxes.",
+    category: "System",
+    helpfulCount: 122
+  },
+  {
+    question: "Does Ticket-it have a status page API?",
+    answer: "Yes, our status portal publishes public JSON and RSS endpoints at `https://status.ticket-it.com/api/v2/summary`. Developers can query this endpoint to check system component latency, database load, and ongoing incident details to display on custom internal admin panels.",
+    category: "System",
+    helpfulCount: 68
+  },
+  {
+    question: "How does Ticket-it protect uploaded files from malware?",
+    answer: "Every file uploaded as a ticket attachment is scanned in real-time by our integrated antivirus filter before writing to storage. Any file flagged as suspicious is rejected with an upload error. Approved files are stored using server-side AES-256 encryption with expiring signed URLs.",
+    category: "Security",
+    helpfulCount: 99
+  },
+  {
+    question: "Can we restrict agent logins to specific countries?",
+    answer: "Yes, under Settings > Security > Access Controls, Enterprise administrators can configure Geo-Location restrictions. You can select specific countries from a whitelist, block connections originating from anonymous proxies or Tor exit nodes, and trigger security alerts for suspicious login behaviors.",
+    category: "Security",
+    helpfulCount: 88
+  },
+  {
+    question: "Does Ticket-it support field-level encryption for sensitive PII data?",
+    answer: "Yes, you can define custom ticket fields as 'Sensitive PII'. The data in these fields is encrypted at the application tier before database insertion using unique customer keys. Access is restricted and audited, and values can be auto-redacted in search index systems.",
+    category: "Security",
+    helpfulCount: 111
   }
 ];

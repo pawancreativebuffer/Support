@@ -4,6 +4,7 @@ import "./globals.css";
 import { LayoutDashboard } from "lucide-react";
 import ChatWidget from "../components/ChatWidget";
 import Header from "../components/Header";
+import Link from "next/link";
 
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700', '800'],
@@ -45,9 +46,25 @@ export default function RootLayout({
               © {new Date().getFullYear()} Ticket-it. All rights reserved.
             </div>
             <div className="flex gap-6 text-sm text-slate-400">
-              <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Privacy Policy</a>
-              <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Terms of Service</a>
-              <a href="#" className="hover:text-primary-400 transition-colors cursor-pointer">Contact</a>
+              <a 
+                href="https://ticket-it.com/wp-content/uploads/2025/07/Ticket-IT-Privacy-Policy-1.pdf" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-primary-400 transition-colors cursor-pointer"
+              >
+                Privacy Policy
+              </a>
+              <a 
+                href="https://ticket-it.com/wp-content/uploads/2025/05/ESL-Sales-Agreement-inclusive-of-End-User-Licence.pdf" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-primary-400 transition-colors cursor-pointer"
+              >
+                Terms of Service
+              </a>
+              <Link href="/contact" className="hover:text-primary-400 transition-colors cursor-pointer">
+                Contact
+              </Link>
             </div>
           </div>
         </footer>

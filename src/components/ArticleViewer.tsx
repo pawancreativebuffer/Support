@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ArrowLeft, Info, Zap, CheckCircle, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Info, Zap, CheckCircle, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import { Category, Article, TableData, ReceivingAccountData } from '../data/categories';
 import { InteractivePaymentForm } from './InteractivePaymentForm';
+import { faqs } from '../data/faqs';
 
 interface ArticleViewerProps {
   activeCategory: Category;
@@ -12,12 +13,72 @@ interface ArticleViewerProps {
   setFeedbackSubmitted: (val: boolean) => void;
 }
 
+const FAQ_MAPPINGS: Record<string, string[]> = {
+  "ticketing-helpdesk": ["Account", "Usage"],
+  "live-chat-widgets": ["Developers", "Usage"],
+  "agent-team-routing": ["Account"],
+  "api-integrations": ["Developers"],
+  "status-performance": ["System"],
+  "security-compliance": ["Security"]
+};
+
 export const ArticleViewer: React.FC<ArticleViewerProps> = ({
   activeCategory,
   activeArticle,
   feedbackSubmitted,
   setFeedbackSubmitted,
 }) => {
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setOpenFaqIndex(null);
+  }, [activeCategory, activeArticle]);
+
+  const relevantFaqCategories = FAQ_MAPPINGS[activeCategory.id] || [];
+  const relevantFaqs = faqs.filter(faq => relevantFaqCategories.includes(faq.category));
+
+  const renderRelatedFaqs = (isInsideCard: boolean = false) => {
+    if (relevantFaqs.length === 0) return null;
+
+    return (
+      <div className={isInsideCard ? 'border-t border-slate-100 pt-6 px-8 md:px-10 pb-4' : 'mt-8 bg-white rounded-3xl border border-slate-200 shadow-sm p-8 md:p-10'}>
+        <div className="flex items-center gap-2 mb-6">
+          <MessageSquare className="w-5 h-5 text-primary-500" />
+          <h3 className="text-xl font-bold text-slate-900">Frequently Asked Questions</h3>
+        </div>
+        <div className="space-y-4">
+          {relevantFaqs.map((faq, idx) => {
+            const isOpen = openFaqIndex === idx;
+            return (
+              <div 
+                key={idx} 
+                className="border border-slate-100 rounded-2xl overflow-hidden transition-all duration-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-200 hover:shadow-sm"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                  className="w-full flex items-center justify-between text-left p-5 font-bold text-slate-800 hover:text-primary-600 transition-colors cursor-pointer"
+                >
+                  <span className="pr-4">{faq.question}</span>
+                  {isOpen ? (
+                    <ChevronUp className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  )}
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5 pt-1 text-slate-600 text-sm md:text-base leading-relaxed border-t border-slate-100 bg-white animate-fadeIn">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   if (activeArticle === null) {
     /* CATEGORY VIEW: Lists all sub-items/articles as cards */
     return (
@@ -257,6 +318,9 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
           )}
         </div>
       </div>
+
+      {/* Frequently Asked Questions accordion (inside the card) */}
+      {renderRelatedFaqs(true)}
 
       {/* Feedback bottom block */}
       <div className="bg-slate-50 border-t border-slate-100 p-8 md:p-10 flex flex-col items-center justify-center text-center">
