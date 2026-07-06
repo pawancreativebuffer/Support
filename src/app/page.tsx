@@ -7,6 +7,7 @@ import { ServicesSection } from '../components/ServicesSection';
 import { VideoSection } from '../components/VideoSection';
 import { FAQSection } from '../components/FAQSection';
 import { faqs } from '../data/faqs';
+import { CATEGORIES } from '../data/categories';
 
 export default function SupportPage() {
   const router = useRouter();
@@ -36,6 +37,20 @@ export default function SupportPage() {
     const query = heroSearch.toLowerCase().trim();
     if (!query) return;
 
+    // 1. Try to find direct match in all article titles/descriptions
+    const allArticles = CATEGORIES.flatMap((cat) => cat.articles);
+    const matchedArticle = allArticles.find(
+      (art) =>
+        art.title.toLowerCase().includes(query) ||
+        art.description.toLowerCase().includes(query)
+    );
+
+    if (matchedArticle) {
+      router.push(`/article/${matchedArticle.slug}`);
+      return;
+    }
+
+    // 2. Fallback to hardcoded query groups
     if (query.includes('sso') || query.includes('saml')) {
       router.push('/article/configuring-sso-saml');
     } else if (query.includes('api') || query.includes('key') || query.includes('token') || query.includes('auth')) {
