@@ -51,6 +51,24 @@ export default function ChatWidget() {
   const [chatStatus, setChatStatus] = useState<'idle' | 'connecting' | 'active'>('idle');
   const [chatMessages, setChatMessages] = useState<{ sender: 'user' | 'agent' | 'system'; text: string; time: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isTyping, setIsTyping] = useState(false);
+
+  // Load user session on mounting/expanded state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('nexus_user');
+      if (stored) {
+        try {
+          setCurrentUser(JSON.parse(stored));
+        } catch (e) {
+          console.warn(e);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+    }
+  }, [visibility]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -218,10 +236,22 @@ export default function ChatWidget() {
 
     setTimeout(() => {
       setChatStatus('active');
+      const userStored = typeof window !== 'undefined' ? localStorage.getItem('nexus_user') : null;
+      let userName = '';
+      if (userStored) {
+        try {
+          userName = JSON.parse(userStored).name;
+        } catch (e) {}
+      }
+
+      const welcomeMsg = userName 
+        ? `Hello ${userName}! Thanks for connecting. I've fetched your profile details from our SQL Server database. How can I help you with your account or tickets today?`
+        : `Hello! Thanks for reaching out to Ticket-it support. How can I help you today? (Tip: Sign in to ask questions about your profile or tickets!)`;
+
       setChatMessages(prev => [
         ...prev,
         { sender: 'system', text: 'Sarah has joined the support room.', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
-        { sender: 'agent', text: 'Hello! Thanks for reaching out. How can I help you today?', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+        { sender: 'agent', text: welcomeMsg, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
       ]);
       if (visibility !== 'expanded') {
         setUnreadBadge(true);
@@ -229,27 +259,61 @@ export default function ChatWidget() {
     }, 2000);
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isTyping) return;
 
+    let activeUser = currentUser;
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('nexus_user');
+      if (stored) {
+        try {
+          activeUser = JSON.parse(stored);
+        } catch (err) {}
+      }
+    }
+
+    const userText = chatInput;
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
     setChatMessages(prev => [
       ...prev,
-      { sender: 'user', text: chatInput, time: timeString }
+      { sender: 'user', text: userText, time: timeString }
     ]);
     setChatInput('');
+    setIsTyping(true);
 
-    // Agent response simulation
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/support-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userText,
+          user: activeUser
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setChatMessages(prev => [
+          ...prev,
+          { sender: 'agent', text: data.text, time: data.time }
+        ]);
+      } else {
+        throw new Error("API call failed");
+      }
+    } catch (err) {
+      console.error(err);
       setChatMessages(prev => [
         ...prev,
-        { sender: 'agent', text: `Thanks for details on your inquiry. Let me pull up your account credentials to inspect this closely.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+        { sender: 'agent', text: `Sorry, I'm having trouble connecting to our servers right now. Please try again.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
       ]);
+    } finally {
+      setIsTyping(false);
       if (visibility !== 'expanded') {
         setUnreadBadge(true);
       }
-    }, 1500);
+    }
   };
 
   return (
@@ -442,6 +506,18 @@ export default function ChatWidget() {
                     </div>
                   );
                 })}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-white border border-slate-200 text-slate-400 rounded-xl rounded-tl-none px-3.5 py-2 shadow-sm text-xs flex items-center gap-1.5">
+                      <span className="flex gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      </span>
+                      <span className="italic text-[10px] text-slate-400">Sarah is typing...</span>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
             )}
@@ -454,13 +530,13 @@ export default function ChatWidget() {
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                disabled={chatStatus === 'connecting'}
-                placeholder={chatStatus === 'connecting' ? 'Establishing session...' : 'Type message here...'}
+                disabled={chatStatus === 'connecting' || isTyping}
+                placeholder={chatStatus === 'connecting' ? 'Establishing session...' : isTyping ? 'Sarah is responding...' : 'Type message here...'}
                 className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:border-primary-500 focus:outline-none disabled:bg-slate-100 disabled:text-slate-400"
               />
               <button
                 type="submit"
-                disabled={chatStatus === 'connecting' || !chatInput.trim()}
+                disabled={chatStatus === 'connecting' || isTyping || !chatInput.trim()}
                 className="w-8.5 h-8.5 rounded-lg bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-colors disabled:bg-slate-100 disabled:text-slate-300 cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />

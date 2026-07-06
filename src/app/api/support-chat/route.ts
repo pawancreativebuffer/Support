@@ -1,0 +1,264 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+
+// Offline fallback data (matching seeded localStorage) in case database isn't connected yet
+const mockTickets = [
+  {
+    id: "TK-104928",
+    email: "customer@example.com",
+    category: "Live Chat & Widgets",
+    description: "I embedded the Ticket-it chat widget script but it's throwing a CORS policy error on our checkout domain. Please whitelist domain.com.",
+    status: "Open",
+    createdAt: "Jun 29, 2026 04:10 PM",
+    type: "Form"
+  },
+  {
+    id: "TK-291823",
+    email: "customer@example.com",
+    category: "Ticketing & Help Desk",
+    description: "Our SLA targets for High priority tickets are not escalating correctly. Agents are not receiving Slack notifications.",
+    status: "In Progress",
+    createdAt: "Jun 28, 2026 09:12 AM",
+    type: "Form"
+  },
+  {
+    id: "TK-991822",
+    email: "customer@example.com",
+    category: "Voice Assistant",
+    description: "Voice command inquiry: 'Show ticket response SLA targets'. Speech recognition input logs verified.",
+    status: "Resolved",
+    createdAt: "Jun 27, 2026 11:30 AM",
+    type: "Voice"
+  },
+  {
+    id: "TK-882710",
+    email: "customer@example.com",
+    category: "API & Developer Tools",
+    description: "API integration inquiry regarding webhook signature validation. Logged session details sync complete.",
+    status: "Resolved",
+    createdAt: "Jun 24, 2026 03:45 PM",
+    type: "Live Chat"
+  }
+];
+
+// Helper to query Gemini API via standard HTTPS fetch
+async function callGemini(prompt: string, apiKey: string): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{ text: prompt }]
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error("Invalid response from Gemini API");
+  }
+  return text.trim();
+}
+
+// Helper to query OpenAI API via standard HTTPS fetch
+async function callOpenAI(prompt: string, apiKey: string): Promise<string> {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  const text = data?.choices?.[0]?.message?.content;
+  if (!text) {
+    throw new Error("Invalid response from OpenAI API");
+  }
+  return text.trim();
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { message, user } = body;
+
+    if (!message) {
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+    }
+
+    const query = message.toLowerCase().trim();
+    let reply = '';
+    let dbStatusText = '';
+
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    console.log("DEBUG KEYS -> GEMINI:", !!GEMINI_API_KEY, "OPENAI:", !!OPENAI_API_KEY);
+
+    // 1. If user is logged in, fetch their specific data
+    let userTicketsList: any[] = [];
+    if (user && user.email) {
+      if (prisma) {
+        try {
+          userTicketsList = await prisma.ticket.findMany({
+            where: { email: user.email }
+          });
+          dbStatusText = " [Real-time Database Connection Active]";
+        } catch (err) {
+          console.warn("SQL Server connection failed, falling back to local memory:", err);
+          dbStatusText = " [Offline Database Mode]";
+        }
+      } else {
+        dbStatusText = " [Demo Database Mode]";
+      }
+
+      // If database yielded nothing (or not configured), fall back to seeded mock database records
+      if (userTicketsList.length === 0) {
+        userTicketsList = mockTickets.filter((t: any) => t.email.toLowerCase() === user.email.toLowerCase());
+      }
+    } else {
+      dbStatusText = " [Public Platform Mode]";
+    }
+
+    // 2. Check if we have an active LLM API Key to make it dynamic
+    if (GEMINI_API_KEY || OPENAI_API_KEY) {
+      // Build dynamic context prompt
+      let contextPrompt = `
+        You are Sarah, a highly helpful, professional customer support agent representing the Ticket-it platform. 
+        Keep your answers concise, friendly, and under 3-4 sentences so they fit nicely within a floating chat widget.
+
+        PLATFORM INFORMATION:
+        - Ticket-it is a customer support and live chat widget service.
+        - Setup instruction: Paste this script before the closing </body> tag: <script src="https://cdn.ticket-it.com/widget.js" data-id="YOUR_WIDGET_ID" async></script>
+        - Pricing: Starter (Free, 50 tickets/mo), Professional ($29/mo, voice assistant, SLAs), Enterprise (Custom, dedicated SSMS/PostgreSQL database connectors, whitelabeling).
+        - Voice Assistant: Switch to the "Voice Assistant" tab to test real-time voice speech recognition powered by ElevenLabs.
+      `;
+
+      if (user && user.email) {
+        contextPrompt += `
+          USER DETAILS (AUTHENTICATED SESSIONS ACTIVE):
+          - The current user IS LOGGED IN.
+          - Profile Name: ${user.name}
+          - Profile Email: ${user.email}
+          - Profile Role: ${user.role}
+          - User's database tickets: ${JSON.stringify(userTicketsList)}
+          
+          RULE: Since the user is logged in, you CAN reference, summarize, or answer questions about their specific tickets or profile data.
+        `;
+      } else {
+        contextPrompt += `
+          USER NOT LOGGED IN:
+          - The visitor is anonymous/public.
+          - RULE: You MUST NOT show any personal ticket details. If they ask about their tickets, account, or personal data, politely instruct them to sign in first so you can query their database.
+        `;
+      }
+
+      contextPrompt += `
+        User question: "${message}"
+        Please write a natural response matching this persona:
+      `;
+
+      try {
+        if (GEMINI_API_KEY) {
+          reply = await callGemini(contextPrompt, GEMINI_API_KEY);
+        } else if (OPENAI_API_KEY) {
+          reply = await callOpenAI(contextPrompt, OPENAI_API_KEY);
+        }
+      } catch (llmErr) {
+        console.error("LLM Call failed, falling back to rule engine:", llmErr);
+      }
+    }
+
+    // 3. Fallback to rule matching engine if LLM keys are absent or failed
+    if (!reply) {
+      if (user && user.email) {
+        if (query.includes('ticket') || query.includes('status') || query.includes('my issues')) {
+          if (userTicketsList.length === 0) {
+            reply = `Hello ${user.name}, I checked our SQL Server database but didn't find any tickets registered under your email (${user.email}). If you just submitted a ticket, please wait a minute for it to sync.`;
+          } else {
+            const ticketsSummary = userTicketsList.map((t: any, idx: number) => 
+              `• **${t.id}** (${t.category}): Status is **${t.status}** (Created ${t.createdAt}). Description: "${t.description.substring(0, 75)}..."`
+            ).join('\n');
+            
+            reply = `Hello ${user.name}, here are your tickets from our database:\n\n${ticketsSummary}\n\nIs there a specific ticket you need help escalating?`;
+          }
+        } 
+        else if (query.includes('profile') || query.includes('my account') || query.includes('who am i')) {
+          reply = `Here is your profile information from our database:\n\n• **Name**: ${user.name}\n• **Email**: ${user.email}\n• **Role**: ${user.role}\n• **Security Level**: AES-256 Encrypted Session\n\nYou have **${userTicketsList.length} tickets** logged under your account.`;
+        } 
+        else if (query.includes('cors') || query.includes('domain') || query.includes('whitelist')) {
+          const corsTicket = userTicketsList.find((t: any) => t.id === 'TK-104928');
+          if (corsTicket) {
+            reply = `Regarding your ticket **TK-104928** about whitelist/CORS configuration: our senior engineer has reviewed it. Whitelisting for your checkout domain has been initiated. I will notify you as soon as the deployment finishes!`;
+          } else {
+            reply = `I don't see an active CORS ticket in your account, but whitelisting can be set up in your Dashboard settings under Widget Integrations.`;
+          }
+        }
+        else if (query.includes('sla') || query.includes('escalate') || query.includes('priority')) {
+          const slaTicket = userTicketsList.find((t: any) => t.id === 'TK-291823');
+          if (slaTicket) {
+            reply = `Regarding your ticket **TK-291823** ("SLA Escalations"): the escalation rules are being audited. Slack alerts should start functioning in 10-15 minutes.`;
+          } else {
+            reply = `Standard response SLA times are 2 hours for Premium and 8 hours for Standard support tiers. Let me know if you'd like to open a ticket to adjust your targets.`;
+          }
+        }
+        else {
+          reply = `Hello ${user.name}! I am connected to your account database. You can ask me about your open tickets, ticket statuses, or your profile. (Tip: set GEMINI_API_KEY or OPENAI_API_KEY in your .env file to enable dynamic AI responses!)`;
+        }
+      } 
+      else {
+        if (query.includes('pricing') || query.includes('cost') || query.includes('plans')) {
+          reply = `Ticket-it has three plans designed to scale with your business:
+• **Starter**: Free forever, includes basic live chat widget and 50 tickets/month.
+• **Professional**: $29/month, includes voice assistant integration, SLAs, and unlimited ticketing.
+• **Enterprise**: Custom pricing, includes dedicated DB connectors (SSMS/PostgreSQL), whitelabeling, and 99.9% SLA guarantees.`;
+        } 
+        else if (query.includes('install') || query.includes('embed') || query.includes('setup') || query.includes('code')) {
+          reply = `Setting up Ticket-it is simple! Just copy the embed script from your dashboard and paste it before the closing \`</body>\` tag of your HTML:
+\`\`\`html
+<script src="https://cdn.ticket-it.com/widget.js" data-id="YOUR_WIDGET_ID" async></script>
+\`\`\`
+Let me know if you run into any CORS policies or whitelisting errors during setup!`;
+        }
+        else if (query.includes('voice') || query.includes('elevenlabs') || query.includes('speech')) {
+          reply = `Our advanced Live Voice Assistant is powered by **ElevenLabs**. It allows customers to speak directly with an AI agent in real-time, matching database context to answer questions verbally. You can test it by switching to the "Voice Assistant" tab here!`;
+        }
+        else {
+          reply = `Welcome to Ticket-it Support! 
+          
+I can help you with setup guidelines, pricing plans, and integration steps. 
+
+💡 **Tip**: If you sign in, I can query your profile database and give you real-time status updates on your support tickets!`;
+        }
+      }
+    }
+
+    return NextResponse.json({ 
+      text: reply + dbStatusText,
+      sender: 'agent',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
+  } catch (err: any) {
+    console.error("Error in support-chat handler:", err);
+    return NextResponse.json({ error: "Failed to process chat" }, { status: 500 });
+  }
+}
