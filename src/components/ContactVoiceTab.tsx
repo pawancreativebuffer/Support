@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, ShieldAlert, Sparkles, Play, HelpCircle } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, ShieldAlert, Sparkles, HelpCircle } from 'lucide-react';
 
 interface VoiceMessage {
   id: string;
@@ -8,43 +8,6 @@ interface VoiceMessage {
   timestamp: string;
 }
 
-interface SpeechRecognitionResult {
-  transcript: string;
-}
-
-interface SpeechRecognitionResultList {
-  [index: number]: {
-    [index: number]: SpeechRecognitionResult;
-  };
-}
-
-interface SpeechRecognitionEvent {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionErrorEvent {
-  error: string;
-}
-
-interface SpeechRecognitionInstance {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onstart: (() => void) | null;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
-  onend: (() => void) | null;
-  start: () => void;
-  stop: () => void;
-}
-
-interface SpeechWindow extends Window {
-  SpeechRecognition?: new () => SpeechRecognitionInstance;
-  webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
-  webkitAudioContext?: typeof AudioContext;
-}
-
-// Module-level pure utility functions to prevent react-hooks/purity errors
 let messageIdCounter = 0;
 
 function generateUniqueId(): string {
@@ -57,63 +20,45 @@ function getCurrentTime(): string {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function getVoiceResponse(query: string): string {
-  const text = query.toLowerCase();
-
-  if (text.includes('ticket') || text.includes('submit') || text.includes('create')) {
-    return "To submit a support ticket, navigate to the 'Send Message' tab or click 'Contact' in the header. You can fill in the subject, select a category, and specify your issue. Our standard response time is under 24 hours.";
-  }
-  if (text.includes('sla') || text.includes('priority') || text.includes('response')) {
-    return "Ticket-it SLA response times vary by plan tier. Basic is 24 hours, Pro is 8 hours, and Enterprise accounts get urgent ticket routing with a 1-hour target response time and a 4-hour resolution SLA.";
-  }
-  if (text.includes('widget') || text.includes('embed') || text.includes('chat bubble')) {
-    return "You can embed the Ticket-it chat widget on your site. Go to Developer Settings > Widget, copy the script tag, and paste it before your website's body closing tag. Ensure your domain is whitelisted.";
-  }
-  if (text.includes('api') || text.includes('integration') || text.includes('developer')) {
-    return "Ticket-it offers REST APIs for tickets, webhooks, and widget control. Go to Developer settings to generate an API key and secure your calls using the Authorization Bearer header.";
-  }
-  if (text.includes('hours') || text.includes('contact') || text.includes('support') || text.includes('phone')) {
-    return "Our help desk hotlines are available 24/7. You can contact us via phone, live chat, or message tickets. Enterprise plan accounts have access to telephone priority bypass PINs.";
-  }
-  if (text.includes('hello') || text.includes('hi') || text.includes('hey')) {
-    return "Hello! How can I assist you with your Ticket-it support inquiry today? You can ask me about submitting tickets, embedding the chat widget, or SLA response times.";
-  }
-
-  return "I heard you, but that topic is outside my direct knowledge base. You can write a detailed message in the 'Send Message' tab or dial one of our global hotlines in the 'Call Us' tab for immediate assistance.";
-}
-
 export const ContactVoiceTab: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'listening' | 'processing' | 'speaking' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [isMuted, setIsMuted] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [showTextInput, setShowTextInput] = useState(false);
 
-  // References for Speech API and Audio Context
-  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  const synthRef = useRef<SpeechSynthesis | null>(null);
+  const agentId = 'agent_6401kwm3cms1fxaa0dp0mszb5p58';
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const conversationRef = useRef<any>(null);
 
-  // Initialize messages once on mount using async setTimeout to avoid react-hooks/set-state-in-effect warning
+  // Initialize messages once on mount
   useEffect(() => {
     const timer = setTimeout(() => {
       setMessages([
         {
           id: 'welcome',
           sender: 'assistant',
-          text: "Hello! I am your Ticket-it Voice Assistant. Click the microphone button and ask me about submitting tickets, widget embedding, developer APIs, or SLA targets.",
+          text: "Hello! I am your Ticket-it AI Voice Assistant. Click the microphone button to start our conversation.",
           timestamp: getCurrentTime()
         }
       ]);
     }, 0);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (conversationRef.current) {
+        try {
+          conversationRef.current.endSession();
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    };
   }, []);
 
   // Stop audio analyst utility
@@ -142,8 +87,7 @@ export const ContactVoiceTab: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
 
-      const speechWin = window as unknown as SpeechWindow;
-      const AudioContextClass = window.AudioContext || speechWin.webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) return;
 
       const audioContext = new AudioContextClass();
@@ -159,69 +103,95 @@ export const ContactVoiceTab: React.FC = () => {
     }
   }, []);
 
-  // Synthesize and speak text aloud
-  const speakText = useCallback((text: string) => {
-    if (isMuted || !synthRef.current) {
-      setStatus('idle');
-      return;
+  // ElevenLabs live conversation controls
+  const startElevenLabsSession = async () => {
+    try {
+      setStatus('processing');
+      setErrorMessage('');
+
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      await startAudioAnalysis();
+
+      // Dynamically import @elevenlabs/client to avoid SSR build issues
+      const { Conversation } = await import('@elevenlabs/client');
+
+      const conversation = await Conversation.startSession({
+        agentId: agentId,
+        onConnect: ({ conversationId }) => {
+          console.log("ElevenLabs Connected:", conversationId);
+          setStatus('listening');
+        },
+        onDisconnect: () => {
+          console.log("ElevenLabs Disconnected");
+          setStatus('idle');
+          stopAudioAnalysis();
+        },
+        onMessage: (message: { message: string; source: 'user' | 'ai' }) => {
+          setMessages(prev => [
+            ...prev,
+            {
+              id: generateUniqueId(),
+              sender: message.source === 'user' ? 'user' : 'assistant',
+              text: message.message,
+              timestamp: getCurrentTime()
+            }
+          ]);
+        },
+        onError: (error: any) => {
+          console.error("ElevenLabs Error:", error);
+          setErrorMessage(String(error?.message || error || "Failed to connect to ElevenLabs agent."));
+          setStatus('error');
+          stopAudioAnalysis();
+        },
+        onStatusChange: ({ status: statusVal }) => {
+          if (statusVal === 'connecting') {
+            setStatus('processing');
+          } else if (statusVal === 'connected') {
+            setStatus('listening');
+          } else if (statusVal === 'disconnected') {
+            setStatus('idle');
+          }
+        },
+        onModeChange: ({ mode: modeVal }) => {
+          if (modeVal === 'speaking') {
+            setStatus('speaking');
+          } else if (modeVal === 'listening') {
+            setStatus('listening');
+          }
+        }
+      });
+
+      conversationRef.current = conversation;
+    } catch (err: any) {
+      console.error("Failed to start ElevenLabs session:", err);
+      setErrorMessage(err?.message || String(err) || "Microphone access denied or connection failed.");
+      setStatus('error');
+      stopAudioAnalysis();
     }
+  };
 
-    synthRef.current.cancel();
+  const endElevenLabsSession = async () => {
+    if (conversationRef.current) {
+      try {
+        await conversationRef.current.endSession();
+      } catch (err) {
+        console.warn("Error ending ElevenLabs session:", err);
+      }
+      conversationRef.current = null;
+    }
+    setStatus('idle');
+    stopAudioAnalysis();
+  };
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = synthRef.current.getVoices();
-    const cleanVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural')));
-    const defaultEng = voices.find(v => v.lang.startsWith('en'));
-
-    utterance.voice = cleanVoice || defaultEng || null;
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    utterance.onend = () => {
-      setStatus('idle');
-    };
-
-    utterance.onerror = () => {
-      setStatus('idle');
-    };
-
-    synthRef.current.speak(utterance);
-  }, [isMuted]);
-
-  // Handle User Voice input processing
-  const handleUserVoiceInput = useCallback((transcript: string) => {
-    const userMsg: VoiceMessage = {
-      id: generateUniqueId(),
-      sender: 'user',
-      text: transcript,
-      timestamp: getCurrentTime()
-    };
-
-    setMessages(prev => [...prev, userMsg]);
-    setStatus('processing');
-
-    setTimeout(() => {
-      const responseText = getVoiceResponse(transcript);
-      const assistantMsg: VoiceMessage = {
-        id: generateUniqueId(),
-        sender: 'assistant',
-        text: responseText,
-        timestamp: getCurrentTime()
-      };
-
-      setMessages(prev => [...prev, assistantMsg]);
-      setStatus('speaking');
-      speakText(responseText);
-    }, 1200);
-  }, [speakText]);
-
-  const handleTextSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-    const query = inputValue;
-    setInputValue('');
-    handleUserVoiceInput(query);
-  }, [inputValue, handleUserVoiceInput]);
+  // Toggle speech listener
+  const toggleListening = () => {
+    if (status === 'idle' || status === 'error') {
+      startElevenLabsSession();
+    } else {
+      endElevenLabsSession();
+    }
+  };
 
   // Canvas visualizer loop
   const drawVisualizer = useCallback(() => {
@@ -348,98 +318,6 @@ export const ContactVoiceTab: React.FC = () => {
     render();
   }, [status]);
 
-  // Toggle speech listener
-  const toggleListening = () => {
-    if (synthRef.current) {
-      synthRef.current.cancel();
-    }
-
-    if (status === 'listening') {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      setStatus('idle');
-    } else {
-      setErrorMessage('');
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (e) {
-          console.warn("Recognition already active", e);
-        }
-      } else {
-        setErrorMessage("Speech Recognition client not loaded.");
-        setStatus('error');
-      }
-    }
-  };
-
-  // Setup listeners on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      synthRef.current = window.speechSynthesis;
-
-      const speechWin = window as unknown as SpeechWindow;
-      const SpeechRecognition = speechWin.SpeechRecognition || speechWin.webkitSpeechRecognition;
-
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => {
-          setStatus('listening');
-          startAudioAnalysis();
-        };
-
-        recognition.onresult = (event: SpeechRecognitionEvent) => {
-          const transcript = event.results[0][0].transcript;
-          if (transcript) {
-            handleUserVoiceInput(transcript);
-          }
-        };
-
-        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-          console.error("Speech recognition error:", event.error);
-
-          setTimeout(() => {
-            const errStr = String(event.error || '').toLowerCase();
-            if (errStr.includes('not-allowed') || errStr.includes('permission') || errStr.includes('denied')) {
-              setErrorMessage("Microphone access denied. Please verify browser permissions or type your question below.");
-            } else {
-              setErrorMessage(`Speech recognition error: "${event.error}". You can type below instead.`);
-            }
-            setStatus('error');
-            setShowTextInput(true);
-          }, 0);
-
-          stopAudioAnalysis();
-        };
-
-        recognition.onend = () => {
-          setStatus(prev => (prev === 'listening' ? 'idle' : prev));
-          stopAudioAnalysis();
-        };
-
-        recognitionRef.current = recognition;
-      } else {
-        setTimeout(() => {
-          setErrorMessage("Speech recognition is not natively supported in this browser. You can type below instead.");
-          setStatus('error');
-          setShowTextInput(true);
-        }, 0);
-      }
-    }
-
-    return () => {
-      stopAudioAnalysis();
-      if (synthRef.current) {
-        synthRef.current.cancel();
-      }
-    };
-  }, [startAudioAnalysis, handleUserVoiceInput, stopAudioAnalysis]);
-
   // Sync visualizer rendering
   useEffect(() => {
     drawVisualizer();
@@ -458,20 +336,15 @@ export const ContactVoiceTab: React.FC = () => {
   const toggleMute = () => {
     setIsMuted(prev => {
       const nextMuted = !prev;
-      if (nextMuted && synthRef.current) {
-        synthRef.current.cancel();
-        if (status === 'speaking') {
-          setStatus('idle');
+      if (conversationRef.current) {
+        try {
+          conversationRef.current.setMute(nextMuted);
+        } catch (e) {
+          console.warn("Could not set mute on ElevenLabs agent:", e);
         }
       }
       return nextMuted;
     });
-  };
-
-  const playSystemWelcome = () => {
-    const txt = "Hello! Click the microphone and ask me anything about your account.";
-    setStatus('speaking');
-    speakText(txt);
   };
 
   return (
@@ -496,7 +369,7 @@ export const ContactVoiceTab: React.FC = () => {
             <button
               onClick={toggleMute}
               className="absolute top-4 right-6 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors z-10 cursor-pointer"
-              title={isMuted ? "Unmute Assistant Voice" : "Mute Assistant Voice"}
+              title={isMuted ? "Unmute Mic" : "Mute Mic"}
             >
               {isMuted ? <VolumeX className="w-4.5 h-4.5 text-red-500" /> : <Volume2 className="w-4.5 h-4.5 text-green-400" />}
             </button>
@@ -504,7 +377,7 @@ export const ContactVoiceTab: React.FC = () => {
             {/* Glowing Visual Core */}
             <div className="relative w-44 h-44 rounded-full flex items-center justify-center z-10 my-6">
               <div className={`absolute inset-0 rounded-full bg-gradient-to-tr from-primary-500/20 via-indigo-500/10 to-purple-500/30 blur-xl transition-all duration-700 ${status === 'listening' ? 'scale-125 opacity-70 animate-pulse' :
-                  status === 'speaking' ? 'scale-110 opacity-60' : 'scale-95 opacity-30'
+                status === 'speaking' ? 'scale-110 opacity-60' : 'scale-95 opacity-30'
                 }`}></div>
 
               <div className={`absolute w-36 h-36 rounded-full border border-slate-800/80 bg-slate-900/90 flex flex-col items-center justify-center shadow-inner transition-transform duration-300 ${status === 'listening' ? 'scale-105 border-red-500/40' : ''
@@ -520,8 +393,8 @@ export const ContactVoiceTab: React.FC = () => {
                 {/* Status Indicator Text */}
                 <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-2">
                   {status === 'listening' ? 'LISTENING NOW' :
-                    status === 'processing' ? 'PROCESSING...' :
-                      status === 'speaking' ? 'SPEAKING' : 'READY'}
+                    status === 'speaking' ? 'SPEAKING' :
+                      status === 'processing' ? 'CONNECTING...' : 'READY'}
                 </span>
               </div>
             </div>
@@ -531,44 +404,17 @@ export const ContactVoiceTab: React.FC = () => {
               <button
                 type="button"
                 onClick={toggleListening}
-                className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer border ${status === 'listening'
-                    ? 'bg-red-600 border-red-500 hover:bg-red-700 text-white animate-pulse'
-                    : 'bg-primary-600 border-primary-500 hover:bg-primary-700 text-white'
+                className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer border ${status === 'listening' || status === 'speaking' || status === 'processing'
+                  ? 'bg-red-600 border-red-500 hover:bg-red-700 text-white animate-pulse'
+                  : 'bg-primary-600 border-primary-500 hover:bg-primary-700 text-white'
                   }`}
               >
-                {status === 'listening' ? <MicOff className="w-7 h-7" /> : <Mic className="w-7 h-7" />}
+                {status === 'listening' || status === 'speaking' || status === 'processing' ? <MicOff className="w-7 h-7" /> : <Mic className="w-7 h-7" />}
               </button>
 
               <p className="text-[12px] text-slate-400 text-center max-w-[280px]">
-                {status === 'listening' ? "Speak clearly. Click to submit voice..." : "Click microphone to talk to assistant."}
+                {status === 'listening' || status === 'speaking' || status === 'processing' ? "Conversation active. Click to end call." : "Click microphone to start call."}
               </p>
-
-              {/* Text Fallback Form */}
-              {showTextInput ? (
-                <form onSubmit={handleTextSubmit} className="w-full max-w-[340px] mt-3 flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 z-10 shadow-lg">
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Type your question here..."
-                    className="flex-1 bg-transparent border-0 text-white text-sm px-3 focus:outline-none focus:ring-0"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-primary-600 text-white text-sm px-5 py-2.5 rounded-xl hover:bg-primary-700 font-bold transition-all cursor-pointer active:scale-95 shadow-md"
-                  >
-                    Send
-                  </button>
-                </form>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowTextInput(true)}
-                  className="text-[11px] text-slate-500 hover:text-slate-300 underline mt-1 transition-colors cursor-pointer"
-                >
-                  Or type your request
-                </button>
-              )}
             </div>
 
             {status === 'error' && (
@@ -587,15 +433,6 @@ export const ContactVoiceTab: React.FC = () => {
             <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary-500" /> Voice Conversation Log
             </h4>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={playSystemWelcome}
-                className="text-xs text-primary-600 font-semibold hover:text-primary-700 flex items-center gap-1 cursor-pointer"
-              >
-                <Play className="w-3 h-3" /> Voice Intro
-              </button>
-            </div>
           </div>
 
           {/* Conversation list */}
@@ -605,8 +442,8 @@ export const ContactVoiceTab: React.FC = () => {
               return (
                 <div key={msg.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                   <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${isUser
-                      ? 'bg-primary-600 text-white rounded-tr-none'
-                      : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
+                    ? 'bg-primary-600 text-white rounded-tr-none'
+                    : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
                     }`}>
                     <p className="leading-relaxed select-text">{msg.text}</p>
                     <span className={`block text-[9px] mt-1.5 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'} font-semibold`}>
@@ -622,7 +459,7 @@ export const ContactVoiceTab: React.FC = () => {
           {/* Guidelines Footer */}
           <div className="bg-slate-50 border-t border-slate-100 p-3.5 flex items-start gap-2 text-xs text-slate-500">
             <HelpCircle className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" />
-            <p><strong>Suggested Voice Prompts:</strong> &quot;How do I submit a ticket?&quot; • &quot;Embed chat widget&quot; • &quot;SLA response times&quot; • &quot;API details&quot;</p>
+            <p><strong>Voice Assistant Controls:</strong> Speak into your microphone to talk to the agent in real time. Click the microphone button to start or end the conversation call.</p>
           </div>
 
         </div>
