@@ -25,6 +25,7 @@ export const ContactVoiceTab: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [isMuted, setIsMuted] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_6401kwm3cms1fxaa0dp0mszb5p58';
 
@@ -35,6 +36,20 @@ export const ContactVoiceTab: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const conversationRef = useRef<any>(null);
+
+  // Load user session on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('nexus_user');
+      if (stored) {
+        try {
+          setCurrentUser(JSON.parse(stored));
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    }
+  }, []);
 
   // Initialize messages once on mount
   useEffect(() => {
@@ -109,6 +124,56 @@ export const ContactVoiceTab: React.FC = () => {
       setStatus('processing');
       setErrorMessage('');
 
+      // Fetch dynamic voice prompt overrides if user is logged in
+      let conversationOverrides: any = undefined;
+
+      if (currentUser && currentUser.email) {
+        try {
+          const res = await fetch('/api/voice-context', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+          });
+          if (res.ok) {
+            const dbData = await res.json();
+            conversationOverrides = {
+              agent: {
+                prompt: {
+                  prompt: `You are Sarah, a highly helpful, professional customer support agent representing the Ticket-it platform. 
+You are speaking in real-time with the logged-in customer: ${dbData.profile.name} (${dbData.profile.email}).
+Under no circumstances should you talk about any other customer's details or accounts.
+Here is the customer's authenticated real-time data from our SQL Server database:
+- Profile: Name is ${dbData.profile.name}, email is ${dbData.profile.email}, phone is ${dbData.profile.phone}, address is ${dbData.profile.address}, and client organization is ${dbData.profile.client}.
+- Tickets: ${JSON.stringify(dbData.tickets)}
+- Batches: ${JSON.stringify(dbData.batches)}
+- File Notes: ${JSON.stringify(dbData.fileNotes)}
+- FTP Details: ${JSON.stringify(dbData.ftpDetails)}
+- Saved Templates: ${JSON.stringify(dbData.savedTemplates)}
+- Store Groups: ${JSON.stringify(dbData.storeGroups)}
+- Active API Integrations: ${JSON.stringify(dbData.userIntegrations)}
+- Outlets Count: ${dbData.outletsCount}
+
+Rule: Since the user is logged in and authenticated, you are authorized to verify, summarize, and tell them details from their tickets, batches, FTP settings, integrations, templates, or profile history when they ask. Keep answers conversational, natural, and friendly.`
+                }
+              }
+            };
+          }
+        } catch (dbErr) {
+          console.warn("Could not fetch database voice context, falling back to basic session:", dbErr);
+        }
+      } else {
+        // User is anonymous / NOT logged in
+        conversationOverrides = {
+          agent: {
+            prompt: {
+              prompt: `You are Sarah, a helpful customer support voice assistant for Ticket-it.
+The user is NOT logged in. You are speaking with an anonymous visitor.
+RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group, or system configurations under any circumstances. If they ask about their account, tickets, batches, or any personal details, politely inform them that they must close this voice session, sign in to their account on the portal first, and then return to use the voice assistant.`
+            }
+          }
+        };
+      }
+
       // Request microphone access
       await navigator.mediaDevices.getUserMedia({ audio: true });
       await startAudioAnalysis();
@@ -118,7 +183,8 @@ export const ContactVoiceTab: React.FC = () => {
 
       const conversation = await Conversation.startSession({
         agentId: agentId,
-        onConnect: ({ conversationId }) => {
+        overrides: conversationOverrides,
+        onConnect: ({ conversationId }: { conversationId: string }) => {
           console.log("ElevenLabs Connected:", conversationId);
           setStatus('listening');
         },
@@ -144,7 +210,7 @@ export const ContactVoiceTab: React.FC = () => {
           setStatus('error');
           stopAudioAnalysis();
         },
-        onStatusChange: ({ status: statusVal }) => {
+        onStatusChange: ({ status: statusVal }: { status: string }) => {
           if (statusVal === 'connecting') {
             setStatus('processing');
           } else if (statusVal === 'connected') {
@@ -153,14 +219,14 @@ export const ContactVoiceTab: React.FC = () => {
             setStatus('idle');
           }
         },
-        onModeChange: ({ mode: modeVal }) => {
+        onModeChange: ({ mode: modeVal }: { mode: string }) => {
           if (modeVal === 'speaking') {
             setStatus('speaking');
           } else if (modeVal === 'listening') {
             setStatus('listening');
           }
         }
-      });
+      } as any);
 
       conversationRef.current = conversation;
     } catch (err: any) {
