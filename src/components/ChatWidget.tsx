@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { 
-  MessageCircle, 
-  X, 
-  Minus, 
-  Send, 
+import {
+  MessageCircle,
+  X,
+  Minus,
+  Send,
   Clock
 } from 'lucide-react';
 
@@ -30,7 +30,7 @@ export default function ChatWidget() {
   const [width, setWidth] = useState(360);
   const [height, setHeight] = useState(480);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
-  
+
   const [isResizing, setIsResizing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -112,7 +112,7 @@ export default function ChatWidget() {
     const handleOpenChat = () => {
       setVisibility('expanded');
       setUnreadBadge(false);
-      
+
       // Initialize position in bottom-right corner when opened if not set
       if (typeof window !== 'undefined' && !position) {
         setPosition({
@@ -165,7 +165,7 @@ export default function ChatWidget() {
   const startDrag = (e: React.MouseEvent) => {
     // Avoid dragging if clicking buttons in the header
     if ((e.target as HTMLElement).closest('button')) return;
-    
+
     e.preventDefault();
     setIsDragging(true);
     startRef.current = {
@@ -206,7 +206,7 @@ export default function ChatWidget() {
 
         const newX = Math.max(0, Math.min(window.innerWidth - width, startRef.current.posX + dx));
         const newY = Math.max(0, Math.min(window.innerHeight - height, startRef.current.posY + dy));
-        
+
         setPosition({ x: newX, y: newY });
       }
     };
@@ -241,10 +241,10 @@ export default function ChatWidget() {
       if (userStored) {
         try {
           userName = JSON.parse(userStored).name;
-        } catch (e) {}
+        } catch (e) { }
       }
 
-      const welcomeMsg = userName 
+      const welcomeMsg = userName
         ? `Hello ${userName}! Thanks for connecting. I've fetched your profile details from our SQL Server database. How can I help you with your account or tickets today?`
         : `Hello! Thanks for reaching out to Ticket-it support. How can I help you today? (Tip: Sign in to ask questions about your profile or tickets!)`;
 
@@ -269,13 +269,13 @@ export default function ChatWidget() {
       if (stored) {
         try {
           activeUser = JSON.parse(stored);
-        } catch (err) {}
+        } catch (err) { }
       }
     }
 
     const userText = chatInput;
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+
     setChatMessages(prev => [
       ...prev,
       { sender: 'user', text: userText, time: timeString }
@@ -338,17 +338,16 @@ export default function ChatWidget() {
       {/* Floating Resizable and Draggable Chat Window - visible only when expanded */}
       {visibility === 'expanded' && (
         <div
-          style={{ 
-            width: `${width}px`, 
+          style={{
+            width: `${width}px`,
             height: `${height}px`,
             left: position ? `${position.x}px` : 'auto',
             top: position ? `${position.y}px` : 'auto',
             bottom: position ? 'auto' : '24px',
             right: position ? 'auto' : '24px',
           }}
-          className={`fixed z-50 bg-white border border-slate-200 shadow-2xl rounded-2xl flex flex-col overflow-hidden transition-shadow select-none ${
-            isResizing ? 'shadow-primary-100 ring-2 ring-primary-500/10' : ''
-          }`}
+          className={`fixed z-50 bg-white border border-slate-200 shadow-2xl rounded-2xl flex flex-col overflow-hidden transition-shadow select-none ${isResizing ? 'shadow-primary-100 ring-2 ring-primary-500/10' : ''
+            }`}
         >
           {/* Permanent Close Confirmation Modal Overlay */}
           {showCloseConfirm && (
@@ -395,7 +394,7 @@ export default function ChatWidget() {
           )}
 
           {/* Custom Drag Resize Handle (Top Left Corner) */}
-          <div 
+          <div
             onMouseDown={startResize}
             className="absolute top-0 left-0 w-4.5 h-4.5 cursor-nwse-resize z-50 flex items-center justify-center"
             title="Drag to resize chat window"
@@ -406,11 +405,10 @@ export default function ChatWidget() {
           </div>
 
           {/* Chat Window Header (Draggable Area) */}
-          <div 
+          <div
             onMouseDown={startDrag}
-            className={`bg-slate-50 border-b border-slate-200/80 px-4 py-3 flex items-center justify-between shadow-sm pl-6 select-none ${
-              isDragging ? 'cursor-grabbing' : 'cursor-grab'
-            }`}
+            className={`bg-slate-50 border-b border-slate-200/80 px-4 py-3 flex items-center justify-between shadow-sm pl-6 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
+              }`}
             title="Drag header to move chat window"
           >
             <div className="flex items-center gap-2 pointer-events-none">
@@ -425,7 +423,7 @@ export default function ChatWidget() {
                 <p className="text-[10px] text-slate-400 font-semibold uppercase">Customer Care Agent</p>
               </div>
             </div>
-            
+
             {/* Header controls: Minimize vs Close Permanently */}
             <div className="flex items-center gap-1.5 z-10">
               <button
@@ -495,9 +493,8 @@ export default function ChatWidget() {
                   const isUser = msg.sender === 'user';
                   return (
                     <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[80%] rounded-xl px-3.5 py-2 text-sm ${
-                        isUser ? 'bg-primary-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
-                      }`}>
+                      <div className={`max-w-[80%] rounded-xl px-3.5 py-2 text-sm ${isUser ? 'bg-primary-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
+                        }`}>
                         <p className="leading-relaxed select-text">{msg.text}</p>
                         <span className={`block text-[9px] mt-0.5 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>
                           {msg.time}
