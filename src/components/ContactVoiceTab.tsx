@@ -26,7 +26,7 @@ export const ContactVoiceTab: React.FC = () => {
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [isMuted, setIsMuted] = useState(false);
 
-  const agentId = 'agent_6401kwm3cms1fxaa0dp0mszb5p58';
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_6401kwm3cms1fxaa0dp0mszb5p58';
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
