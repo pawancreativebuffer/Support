@@ -27,7 +27,7 @@ export const ContactVoiceTab: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_6401kwm3cms1fxaa0dp0mszb5p58';
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -178,6 +178,11 @@ export const ContactVoiceTab: React.FC = () => {
 
   // ElevenLabs live conversation controls
   const startElevenLabsSession = async () => {
+    if (!agentId) {
+      setErrorMessage("ElevenLabs Agent ID is not configured. Please define NEXT_PUBLIC_ELEVENLABS_AGENT_ID in your environment (.env) file.");
+      setStatus('error');
+      return;
+    }
     try {
       setStatus('processing');
       setErrorMessage('');
@@ -237,11 +242,40 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
       await startAudioAnalysis();
 
       // Dynamically import @elevenlabs/client to avoid SSR build issues
-      const { Conversation } = await import('@elevenlabs/client');
+      const elevenlabsClient = await import('@elevenlabs/client');
+      const { Conversation } = elevenlabsClient;
+      const VoiceConversationClass = (elevenlabsClient as any).VoiceConversation;
 
-      const conversation = await Conversation.startSession({
-        agentId: agentId,
-        overrides: conversationOverrides,
+      // Safe patch for handleErrorEvent prototype bug in @elevenlabs/client SDK
+      if (VoiceConversationClass && VoiceConversationClass.prototype && !(VoiceConversationClass.prototype as any).__patchedForErrorEvent) {
+        const originalHandleErrorEvent = VoiceConversationClass.prototype.handleErrorEvent;
+        VoiceConversationClass.prototype.handleErrorEvent = function (event: any) {
+          if (!event || !event.error_event) {
+            console.error("Safeguarded ElevenLabs Error Event:", event);
+            const msg = event?.message || event?.reason || "Unknown ElevenLabs WebRTC connection error";
+            this.onError(`Server error: ${msg}`, { errorType: "unknown_error", details: event });
+            return;
+          }
+          if (originalHandleErrorEvent) {
+            originalHandleErrorEvent.call(this, event);
+          }
+        };
+        (VoiceConversationClass.prototype as any).__patchedForErrorEvent = true;
+      }
+
+      // Fetch signed URL if an API key is available
+      let signedUrl: string | null = null;
+      try {
+        const tokenRes = await fetch(`/api/voice-token?agent_id=${agentId}`);
+        if (tokenRes.ok) {
+          const tokenData = await tokenRes.json();
+          signedUrl = tokenData.signedUrl;
+        }
+      } catch (tokenErr) {
+        console.warn("Could not fetch signed URL token, checking public connection:", tokenErr);
+      }
+
+      const connectionConfig: any = {
         onConnect: ({ conversationId }: { conversationId: string }) => {
           console.log("ElevenLabs Connected:", conversationId);
           conversationIdRef.current = conversationId;
@@ -290,8 +324,20 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
             setStatus('listening');
           }
         }
-      } as any);
+      };
 
+      if (signedUrl) {
+        connectionConfig.signedUrl = signedUrl;
+        connectionConfig.overrides = conversationOverrides;
+        console.log("Using ElevenLabs signed URL session with prompt overrides.");
+      } else {
+        connectionConfig.agentId = agentId;
+        // Do not pass overrides when connecting anonymously to a public agent,
+        // because client-side overrides are rejected by the server on unauthenticated calls.
+        console.log("No ElevenLabs signed URL/API Key found. Connecting to agent publicly without prompt overrides.");
+      }
+
+      const conversation = await Conversation.startSession(connectionConfig);
       conversationRef.current = conversation;
     } catch (err: any) {
       console.error("Failed to start ElevenLabs session:", err);
