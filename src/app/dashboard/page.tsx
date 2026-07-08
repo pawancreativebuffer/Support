@@ -243,7 +243,7 @@ export default function DashboardPage() {
       activities.push({
         id: t.id,
         type: 'ticket',
-        title: `Raised Ticket: ${t.category}`,
+        title: `Support Ticket Submitted`,
         subtitle: `ID: ${t.id}`,
         description: t.description,
         status: t.status,
@@ -600,12 +600,22 @@ export default function DashboardPage() {
                               </h4>
 
                               {/* Description body */}
-                              <div className="bg-slate-50 border border-slate-150 p-4 rounded-2xl mt-1.5 group-hover:border-slate-300 transition-all max-w-full">
-                                <p className="text-xs text-slate-600 leading-relaxed italic line-clamp-3 select-text">
-                                  &quot;{act.description}&quot;
+                              <div className="bg-white border border-slate-200/80 p-5 rounded-2xl mt-2.5 group-hover:border-slate-350 hover:shadow-sm transition-all max-w-full space-y-3.5">
+                                {act.type === 'ticket' && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                                      Category
+                                    </span>
+                                    <span className="text-xs font-bold text-slate-700">
+                                      {act.rawItem.category}
+                                    </span>
+                                  </div>
+                                )}
+                                <p className="text-sm text-slate-600 leading-relaxed font-medium select-text">
+                                  {act.description}
                                 </p>
-                                <div className="flex items-center justify-between border-t border-slate-200/80 mt-3 pt-3">
-                                  <span className="text-[10px] text-slate-400 font-mono">{act.subtitle}</span>
+                                <div className="flex items-center justify-between border-t border-slate-100 mt-3 pt-3 text-xs">
+                                  <span className="font-mono font-bold text-slate-400">{act.subtitle}</span>
                                   
                                   <button
                                     onClick={() => {
@@ -613,7 +623,7 @@ export default function DashboardPage() {
                                       if (act.type === 'chat') setSelectedChat(act.rawItem);
                                       if (act.type === 'voice') setSelectedVoiceLog(act.rawItem);
                                     }}
-                                    className="text-[10px] font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 cursor-pointer"
+                                    className="font-bold text-primary-600 hover:text-primary-700 flex items-center gap-0.5 cursor-pointer"
                                   >
                                     View Full Context <ChevronRight className="w-3.5 h-3.5" />
                                   </button>
@@ -868,7 +878,7 @@ export default function DashboardPage() {
       {/* MODAL 1: TICKET CONVERSATION THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
             
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-start gap-4">
@@ -895,102 +905,115 @@ export default function DashboardPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-6">
-              
-              {/* Original Inquiry Description */}
-              <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Inquiry Description</p>
-                <p className="text-sm text-slate-700 leading-relaxed select-text font-medium">
-                  {selectedTicket.description}
-                </p>
-                <p className="text-[10px] text-slate-400 pt-2 font-mono border-t border-slate-200/60">
-                  Raised on: {selectedTicket.createdAt}
-                </p>
-              </div>
-
-              {/* Status Indicator & Resolve Action */}
-              <div className="flex flex-wrap items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xs font-bold text-slate-500 uppercase">Status:</span>
-                  <span className={`px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-widest border ${
-                    selectedTicket.status === 'Open'
-                      ? 'bg-blue-50 text-blue-650 border-blue-100'
-                      : selectedTicket.status === 'In Progress'
-                      ? 'bg-amber-50 text-amber-650 border-amber-100'
-                      : 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                  }`}>
-                    {selectedTicket.status}
-                  </span>
-                </div>
-                {selectedTicket.status !== 'Resolved' && (
-                  <button
-                    type="button"
-                    onClick={() => handleResolveTicket(selectedTicket.id)}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 border border-emerald-500/20"
-                  >
-                    <CheckSquare className="w-4 h-4" /> Mark as Resolved
-                  </button>
-                )}
-              </div>
-
-              {/* Discussion Thread */}
-              <div className="space-y-4">
-                <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest border-b border-slate-100 pb-2">
-                  Conversation Thread
-                </h4>
+            <div className="flex-1 p-6 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
                 
-                {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
-                  <p className="text-slate-400 text-xs italic text-center py-4">No replies yet. Your ticket is currently queued for support staff assignment.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {selectedTicket.replies.map((reply, idx) => {
-                      const isUser = reply.sender === 'customer';
-                      return (
-                        <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                            isUser 
-                              ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20' 
-                              : 'bg-slate-100 border border-slate-200/80 text-slate-700 rounded-tl-none'
-                          }`}>
-                            <p className="select-text">{reply.text}</p>
-                            <span className={`block text-[9px] mt-1 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>
-                              {reply.time}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
+                {/* Left Column: 5 cols (Inquiry Description & Status/Resolution) */}
+                <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
+                  
+                  {/* Original Inquiry Description */}
+                  <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-2 shadow-inner">
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Inquiry Description</p>
+                    <p className="text-base text-slate-855 leading-relaxed select-text font-semibold">
+                      {selectedTicket.description}
+                    </p>
+                    <p className="text-xs text-slate-550 pt-2 font-mono border-t border-slate-200/60">
+                      Raised on: {selectedTicket.createdAt}
+                    </p>
                   </div>
-                )}
+
+                  {/* Status Indicator & Resolve Action */}
+                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
+                    <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
+                      <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
+                        selectedTicket.status === 'Open'
+                          ? 'bg-blue-50 text-blue-650 border-blue-100'
+                          : selectedTicket.status === 'In Progress'
+                          ? 'bg-amber-50 text-amber-650 border-amber-100'
+                          : 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                      }`}>
+                        {selectedTicket.status}
+                      </span>
+                    </div>
+                    {selectedTicket.status !== 'Resolved' && (
+                      <button
+                        type="button"
+                        onClick={() => handleResolveTicket(selectedTicket.id)}
+                        className="w-full justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-2 border border-emerald-500/20 shadow-md shadow-emerald-500/10"
+                      >
+                        <CheckSquare className="w-4 h-4" /> Mark as Resolved
+                      </button>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Right Column: 7 cols (Conversation Thread & Reply Input) */}
+                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
+                  
+                  {/* Discussion Thread container */}
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[380px]">
+                    <h4 className="font-black text-slate-400 text-xs uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                      <MessageSquare className="w-4 h-4" /> Conversation Thread
+                    </h4>
+                    
+                    {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
+                      <p className="text-slate-500 text-sm italic text-center py-10">No replies yet. Your ticket is currently queued for support staff assignment.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {selectedTicket.replies.map((reply, idx) => {
+                          const isUser = reply.sender === 'customer';
+                          return (
+                            <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-semibold shadow-sm ${
+                                isUser 
+                                  ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20' 
+                                  : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
+                              }`}>
+                                <p className="select-text">{reply.text}</p>
+                                <span className={`block text-xs mt-1 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>
+                                  {reply.time}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Modal Footer Reply Form */}
+                  {selectedTicket.status !== 'Resolved' ? (
+                    <form 
+                      onSubmit={(e) => handleSendTicketReply(e, selectedTicket.id)}
+                      className="mt-4 pt-4 border-t border-slate-100 flex gap-2.5"
+                    >
+                      <input
+                        type="text"
+                        required
+                        value={ticketReplyText}
+                        onChange={(e) => setTicketReplyText(e.target.value)}
+                        placeholder="Type your message update to the support agent..."
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
+                      />
+                      <button
+                        type="submit"
+                        className="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-all cursor-pointer shadow hover:shadow-md hover:scale-105"
+                      >
+                        <Send className="w-4.5 h-4.5" />
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="mt-4 p-4.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl text-center text-xs font-bold text-emerald-600">
+                      This inquiry has been marked as resolved.
+                    </div>
+                  )}
+
+                </div>
+
               </div>
             </div>
-
-            {/* Modal Footer: Quick Reply Form */}
-            {selectedTicket.status !== 'Resolved' ? (
-              <form 
-                onSubmit={(e) => handleSendTicketReply(e, selectedTicket.id)}
-                className="p-4 bg-slate-50 border-t border-slate-100 flex gap-2"
-              >
-                <input
-                  type="text"
-                  required
-                  value={ticketReplyText}
-                  onChange={(e) => setTicketReplyText(e.target.value)}
-                  placeholder="Type your message update to the support agent..."
-                  className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs focus:border-primary-500 focus:outline-none text-slate-800 placeholder-slate-400"
-                />
-                <button
-                  type="submit"
-                  className="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-all cursor-pointer shadow"
-                >
-                  <Send className="w-4.5 h-4.5" />
-                </button>
-              </form>
-            ) : (
-              <div className="p-4 bg-emerald-50 border-t border-slate-100 text-center text-xs text-emerald-700 font-bold">
-                This inquiry is marked as resolved. Replying will reopen the ticket.
-              </div>
-            )}
           </div>
         </div>
       )}
