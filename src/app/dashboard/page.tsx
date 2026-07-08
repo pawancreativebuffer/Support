@@ -739,19 +739,19 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100">
+                <div className="p-6 pt-4 space-y-4">
                   {filteredTickets.map((ticket) => (
                     <div 
                       key={ticket.id} 
                       onClick={() => setSelectedTicket(ticket)}
-                      className="p-6 hover:bg-slate-50/50 transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                      className="bg-slate-50/50 border border-slate-200/80 p-5 rounded-2xl hover:bg-white hover:border-primary-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                     >
-                      <div className="space-y-1.5 flex-1">
+                      <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2 py-0.5 rounded">
+                          <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2.5 py-0.5 rounded">
                             {ticket.id}
                           </span>
-                          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${
+                          <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${
                             ticket.type === 'Voice'
                               ? 'bg-blue-50 text-blue-650 border-blue-100'
                               : ticket.type === 'Live Chat'
@@ -765,16 +765,16 @@ export default function DashboardPage() {
                             {ticket.category}
                           </span>
                           <span className="text-slate-300 text-xs">•</span>
-                          <span className="text-xs text-slate-400 font-medium">
+                          <span className="text-xs text-slate-450 font-medium">
                             {ticket.createdAt}
                           </span>
                         </div>
-                        <h4 className="font-bold text-slate-800 text-sm group-hover:text-primary-600 transition-colors">
+                        <p className="text-sm text-slate-600 leading-relaxed font-normal group-hover:text-slate-800 transition-colors line-clamp-2 select-text">
                           {ticket.description}
-                        </h4>
+                        </p>
                       </div>
                       
-                      <div className="flex items-center gap-4 justify-between md:justify-end">
+                      <div className="flex items-center gap-4 justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-100/60">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
                           ticket.status === 'Open'
                             ? 'bg-blue-50 text-blue-650 border-blue-100'
@@ -881,17 +881,18 @@ export default function DashboardPage() {
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
             
             {/* Header */}
-            <div className="p-6 border-b border-slate-100 flex justify-between items-start gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded border border-primary-100">
-                    {selectedTicket.id}
-                  </span>
-                  <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{selectedTicket.category}</span>
-                </div>
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
+                  {selectedTicket.id}
+                </span>
                 <h3 className="font-extrabold text-slate-800 text-lg select-text">
                   Discussion Thread
                 </h3>
+                <span className="text-slate-300 text-sm font-semibold hidden sm:inline">•</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:inline">
+                  {selectedTicket.category}
+                </span>
               </div>
               <button 
                 onClick={() => {
@@ -912,12 +913,14 @@ export default function DashboardPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
                   
                   {/* Original Inquiry Description */}
-                  <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-2 shadow-inner">
+                  <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner">
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">Inquiry Description</p>
-                    <p className="text-base text-slate-855 leading-relaxed select-text font-semibold">
-                      {selectedTicket.description}
-                    </p>
-                    <p className="text-xs text-slate-550 pt-2 font-mono border-t border-slate-200/60">
+                    <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
+                      <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed select-text font-normal">
+                        {selectedTicket.description}
+                      </p>
+                    </div>
+                    <p className="text-xs text-slate-400 pt-2 font-mono border-t border-slate-200/60">
                       Raised on: {selectedTicket.createdAt}
                     </p>
                   </div>
@@ -954,19 +957,37 @@ export default function DashboardPage() {
                   
                   {/* Discussion Thread container */}
                   <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[380px]">
-                    <h4 className="font-black text-slate-400 text-xs uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                      <MessageSquare className="w-4 h-4" /> Conversation Thread
-                    </h4>
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                      <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
+                        <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100">
+                          <MessageSquare className="w-4 h-4" />
+                        </span>
+                        Conversation Thread
+                      </h4>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                        Live updates
+                      </span>
+                    </div>
                     
                     {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
-                      <p className="text-slate-500 text-sm italic text-center py-10">No replies yet. Your ticket is currently queued for support staff assignment.</p>
+                      <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
+                        <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shadow-sm animate-pulse">
+                          <Clock className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-1">
+                          <h5 className="font-bold text-slate-700 text-sm">Queued for Assignment</h5>
+                          <p className="text-xs text-slate-500 max-w-[280px] mx-auto leading-relaxed">
+                            No replies yet. Your ticket is currently in queue and our support agents will respond to you shortly.
+                          </p>
+                        </div>
+                      </div>
                     ) : (
                       <div className="space-y-4">
                         {selectedTicket.replies.map((reply, idx) => {
                           const isUser = reply.sender === 'customer';
                           return (
                             <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-semibold shadow-sm ${
+                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-normal shadow-sm ${
                                 isUser 
                                   ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20' 
                                   : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
