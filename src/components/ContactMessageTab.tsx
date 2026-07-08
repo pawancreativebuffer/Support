@@ -15,6 +15,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
   const [comment, setComment] = useState('');
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [ticketNumber, setTicketNumber] = useState<number | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Sync initialTopic from props by tracking previous prop value in state
   const [prevInitialTopic, setPrevInitialTopic] = useState(initialTopic);
@@ -23,41 +24,85 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
     setPrevInitialTopic(initialTopic);
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    const stored = localStorage.getItem('nexus_user');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.email) {
+          setEmail(parsed.email);
+          setIsLoggedIn(true);
+          if (parsed.name) {
+            const parts = parsed.name.trim().split(' ');
+            if (parts.length > 0) {
+              setFirstName(parts[0]);
+              if (parts.length > 1) {
+                setLastName(parts.slice(1).join(' '));
+              } else {
+                setLastName('User');
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error parsing stored user:', err);
+      }
+    }
+  }, []);
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName || !lastName || !email || !comment) return;
 
     setFormStatus('loading');
-    setTimeout(() => {
-      const generatedNum = Math.floor(Math.random() * 900000) + 100000;
-      const newTicket = {
-        id: `TK-${generatedNum}`,
-        firstName,
-        lastName,
-        email,
-        category: topic || 'General Inquiry',
-        description: comment,
-        status: 'Open',
-        type: 'Form',
-        createdAt: new Date().toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          category: topic || 'General Inquiry',
+          description: comment
+        })
+      });
 
-      try {
+      if (res.ok) {
+        const data = await res.json();
+        setTicketNumber(data.ticketId);
+        setFormStatus('success');
+
+        // Maintain localStorage copy as fallback for widget state
+        const newTicket = {
+          id: data.ticketCode,
+          firstName,
+          lastName,
+          email,
+          category: topic || 'General Inquiry',
+          description: comment,
+          status: 'Open',
+          type: 'Form',
+          createdAt: new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
         const existing = localStorage.getItem('nexus_tickets');
         const tickets = existing ? JSON.parse(existing) : [];
         tickets.unshift(newTicket);
         localStorage.setItem('nexus_tickets', JSON.stringify(tickets));
-      } catch (err) {
-        console.error('Failed to save ticket', err);
+      } else {
+        const errData = await res.json();
+        alert(errData.error || 'Failed to submit ticket');
+        setFormStatus('idle');
       }
-
-      setTicketNumber(generatedNum);
-      setFormStatus('success');
-    }, 1500);
+    } catch (err) {
+      console.error('Failed to submit ticket:', err);
+      alert('Network error. Failed to submit ticket.');
+      setFormStatus('idle');
+    }
   };
 
   return (
@@ -100,10 +145,15 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   type="text"
                   required
                   pattern="[A-Za-z\s]+"
+                  readOnly={isLoggedIn}
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="e.g. Jane"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-colors"
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none transition-colors ${
+                    isLoggedIn 
+                      ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed font-medium' 
+                      : 'bg-slate-50 border-slate-200 focus:border-primary-500'
+                  }`}
                 />
               </div>
 
@@ -113,10 +163,15 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   type="text"
                   required
                   pattern="[A-Za-z\s]+"
+                  readOnly={isLoggedIn}
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="e.g. Doe"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-colors"
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none transition-colors ${
+                    isLoggedIn 
+                      ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed font-medium' 
+                      : 'bg-slate-50 border-slate-200 focus:border-primary-500'
+                  }`}
                 />
               </div>
             </div>
@@ -128,11 +183,21 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                 <input
                   type="email"
                   required
+                  readOnly={isLoggedIn}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. customer@example.com"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-colors"
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none transition-colors ${
+                    isLoggedIn 
+                      ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed font-medium' 
+                      : 'bg-slate-50 border-slate-200 focus:border-primary-500'
+                  }`}
                 />
+                {isLoggedIn && (
+                  <p className="text-[10px] text-slate-400 mt-1.5 font-semibold">
+                    Auto-filled from active session. Tickets automatically sync to your dashboard.
+                  </p>
+                )}
               </div>
 
               <div>

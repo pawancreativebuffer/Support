@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { postgresPrisma } from '@/lib/postgresDb';
 
 // Offline fallback data (matching seeded localStorage) in case database isn't connected yet
 const mockTickets = [
@@ -115,12 +116,71 @@ export async function POST(req: NextRequest) {
 
     // 1. If user is logged in, fetch their specific data
     let userTicketsList: any[] = [];
+    let userBatchesList: any[] = [];
+    let userOtherData: any = null;
     if (user && user.email) {
       if (prisma) {
         try {
           userTicketsList = await prisma.ticket.findMany({
             where: { email: user.email }
           });
+
+          const dbUser = await prisma.users.findFirst({
+            where: { Email: user.email }
+          });
+          if (dbUser) {
+            const userId = dbUser.Id;
+
+            const [
+              batches,
+              fileNotes,
+              ftpDetails,
+              savedTemplates,
+              storeGroups,
+              userGroups,
+              userIntegrations,
+              userOutlets
+            ] = await Promise.all([
+              prisma.batches.findMany({ where: { UserId: userId } }).catch(() => []),
+              prisma.fileNote.findMany({ where: { UserId: userId } }).catch(() => []),
+              prisma.ftpConfigurationDetails.findMany({ where: { UserId: userId } }).catch(() => []),
+              prisma.savedTemplateStates.findMany({ where: { UserId: userId } }).catch(() => []),
+              prisma.storeGroups.findMany({ where: { StoreGroupManagerId: userId } }).catch(() => []),
+              prisma.userGroup.findMany({ where: { UserId: userId } }).catch(() => []),
+              prisma.userIntegrations.findMany({ where: { UserId: userId } }).catch(() => []),
+              prisma.userOutlet.findMany({ where: { UserId: userId } }).catch(() => [])
+            ]);
+
+            userBatchesList = batches;
+            userOtherData = {
+              profile: {
+                id: dbUser.Id,
+                login: dbUser.Login,
+                email: dbUser.Email,
+                firstName: dbUser.FirstName,
+                lastName: dbUser.LastName,
+                phone: dbUser.Phone,
+                address: dbUser.AddressLine1,
+                client: dbUser.Client,
+                region: dbUser.RegionName,
+                isActive: dbUser.IsActive
+              },
+              fileNotes: fileNotes.map((f: any) => ({ id: f.Id, note: f.Notes, date: f.CreatedDate, file: f.FileName })),
+              ftpDetails: ftpDetails.map((ftp: any) => ({ id: ftp.Id, address: ftp.Address, username: ftp.Username, path: ftp.Path, isSFTP: ftp.IsSFTP })),
+              savedTemplates: savedTemplates.map((t: any) => ({ id: t.Id, templateName: t.TemplateName, quantity: t.TemplateQuantity })),
+              storeGroups: storeGroups.map((sg: any) => ({ id: sg.Id, name: sg.Name })),
+              userGroups: userGroups.map((g: any) => ({ groupId: g.GroupId })),
+              userIntegrations: userIntegrations.map((ui: any) => ({
+                id: ui.Id,
+                isUsingVend: ui.IsUsingVendApi,
+                isUsingShopfront: ui.IsUsingShopfrontApi,
+                isUsingREX: ui.IsUsingREXApi,
+                isUsingShopify: ui.IsUsingShopifyApi,
+                isUsingSwiftPOS: ui.IsUsingSwiftPOSApi
+              })),
+              userOutlets: userOutlets.map((uo: any) => ({ outletId: uo.OutletId }))
+            };
+          }
           dbStatusText = " [Real-time Database Connection Active]";
         } catch (err) {
           console.warn("SQL Server connection failed, falling back to local memory:", err);
@@ -160,8 +220,10 @@ export async function POST(req: NextRequest) {
           - Profile Email: ${user.email}
           - Profile Role: ${user.role}
           - User's database tickets: ${JSON.stringify(userTicketsList)}
+          - User's database batches: ${JSON.stringify(userBatchesList.map(b => ({ id: b.Id, name: b.Name, productAmount: b.ProductAmount, dateFrom: b.DateFrom, isPrinted: b.IsPrinted })))}
+          - Other database tables linked to the user: ${JSON.stringify(userOtherData)}
           
-          RULE: Since the user is logged in, you CAN reference, summarize, or answer questions about their specific tickets or profile data.
+          RULE: Since the user is logged in, you CAN reference, summarize, or answer questions about their specific tickets, batches, file notes, FTP details, saved templates, store/user groups, integrations, outlets, or profile data.
         `;
       } else {
         contextPrompt += `
@@ -194,16 +256,72 @@ export async function POST(req: NextRequest) {
           if (userTicketsList.length === 0) {
             reply = `Hello ${user.name}, I checked our SQL Server database but didn't find any tickets registered under your email (${user.email}). If you just submitted a ticket, please wait a minute for it to sync.`;
           } else {
-            const ticketsSummary = userTicketsList.map((t: any, idx: number) => 
-              `• **${t.id}** (${t.category}): Status is **${t.status}** (Created ${t.createdAt}). Description: "${t.description.substring(0, 75)}..."`
+            const ticketsSummary = userTicketsList.map((t: any, idx: number) =>
+              `• ${t.id} (${t.category}): Status is **${t.status}** (Created ${t.createdAt}). Description: "${t.description.substring(0, 75)}..."`
             ).join('\n');
-            
+
             reply = `Hello ${user.name}, here are your tickets from our database:\n\n${ticketsSummary}\n\nIs there a specific ticket you need help escalating?`;
           }
-        } 
+        }
+        else if (query.includes('batch') || query.includes('batches') || query.includes('my item') || query.includes('my products')) {
+          if (userBatchesList.length === 0) {
+            reply = `Hello ${user.name}, I checked our SQL Server database but didn't find any batches registered under your account.`;
+          } else {
+            const batchesSummary = userBatchesList.map((b: any) =>
+              `• **Batch #${b.Id}**: "${b.Name}" (${b.ProductAmount} products, Date: ${new Date(b.DateFrom).toLocaleDateString()}, Printed: ${b.IsPrinted ? 'Yes' : 'No'})`
+            ).join('\n');
+
+            reply = `Hello ${user.name}, you have **${userBatchesList.length} batches** registered in our database under your account:\n\n${batchesSummary}`;
+          }
+        }
+        else if (query.includes('template') || query.includes('saved template')) {
+          if (!userOtherData || !userOtherData.savedTemplates || userOtherData.savedTemplates.length === 0) {
+            reply = `Hello ${user.name}, I checked your account templates but didn't find any saved template states.`;
+          } else {
+            const tSummary = userOtherData.savedTemplates.map((t: any) => `• **${t.templateName}** (Quantity: ${t.quantity})`).join('\n');
+            reply = `Here are your saved templates from the database:\n\n${tSummary}`;
+          }
+        }
+        else if (query.includes('ftp') || query.includes('sftp') || query.includes('connection')) {
+          if (!userOtherData || !userOtherData.ftpDetails || userOtherData.ftpDetails.length === 0) {
+            reply = `Hello ${user.name}, I didn't find any active FTP configurations registered under your user ID.`;
+          } else {
+            const ftpSummary = userOtherData.ftpDetails.map((ftp: any) => `• **Host**: ${ftp.address} (Username: ${ftp.username}, Path: ${ftp.path}, SFTP: ${ftp.isSFTP ? 'Yes' : 'No'})`).join('\n');
+            reply = `Here are your FTP configurations from the database:\n\n${ftpSummary}`;
+          }
+        }
+        else if (query.includes('integration') || query.includes('api') || query.includes('sync')) {
+          if (!userOtherData || !userOtherData.userIntegrations || userOtherData.userIntegrations.length === 0) {
+            reply = `Hello ${user.name}, I didn't find any active API integrations under your user ID.`;
+          } else {
+            const activeInts = userOtherData.userIntegrations.map((ui: any) => {
+              const active = [];
+              if (ui.isUsingVend) active.push('Vend');
+              if (ui.isUsingShopfront) active.push('Shopfront');
+              if (ui.isUsingREX) active.push('REX');
+              if (ui.isUsingShopify) active.push('Shopify');
+              if (ui.isUsingSwiftPOS) active.push('SwiftPOS');
+              return `• **Integration ID #${ui.id}**: Active APIs: ${active.length > 0 ? active.join(', ') : 'None'}`;
+            }).join('\n');
+            reply = `Here are your API integrations registered in our database:\n\n${activeInts}`;
+          }
+        }
+        else if (query.includes('note') || query.includes('file note') || query.includes('notes')) {
+          if (!userOtherData || !userOtherData.fileNotes || userOtherData.fileNotes.length === 0) {
+            reply = `Hello ${user.name}, I didn't find any file notes or history logs under your user account.`;
+          } else {
+            const notesSummary = userOtherData.fileNotes.map((f: any) => `• **Note** (${new Date(f.date).toLocaleDateString()}): "${f.note}" (Attached: ${f.file || 'None'})`).join('\n');
+            reply = `Here are the notes logged in your database account:\n\n${notesSummary}`;
+          }
+        }
+        else if (query.includes('outlet') || query.includes('outlets') || query.includes('store group')) {
+          const outletCount = userOtherData?.userOutlets?.length || 0;
+          const storeGroupCount = userOtherData?.storeGroups?.length || 0;
+          reply = `Hello ${user.name}, you are linked to **${outletCount} outlet(s)** and manage **${storeGroupCount} store group(s)** in the database.`;
+        }
         else if (query.includes('profile') || query.includes('my account') || query.includes('who am i')) {
-          reply = `Here is your profile information from our database:\n\n• **Name**: ${user.name}\n• **Email**: ${user.email}\n• **Role**: ${user.role}\n• **Security Level**: AES-256 Encrypted Session\n\nYou have **${userTicketsList.length} tickets** logged under your account.`;
-        } 
+          reply = `Here is your profile information from our database:\n\n• **Name**: ${user.name}\n• **Email**: ${user.email}\n• **Role**: ${user.role}\n• **Security Level**: AES-256 Encrypted Session\n\nYou have **${userTicketsList.length} tickets**, **${userBatchesList.length} batches**, and custom configurations registered under your ID.`;
+        }
         else if (query.includes('cors') || query.includes('domain') || query.includes('whitelist')) {
           const corsTicket = userTicketsList.find((t: any) => t.id === 'TK-104928');
           if (corsTicket) {
@@ -221,16 +339,16 @@ export async function POST(req: NextRequest) {
           }
         }
         else {
-          reply = `Hello ${user.name}! I am connected to your account database. You can ask me about your open tickets, ticket statuses, or your profile. (Tip: set GEMINI_API_KEY or OPENAI_API_KEY in your .env file to enable dynamic AI responses!)`;
+          reply = `Hello ${user.name}! I am connected to your account database. You can ask me about your open tickets, batches, FTP configs, templates, active API integrations, notes, outlets, or your profile details!`;
         }
-      } 
+      }
       else {
         if (query.includes('pricing') || query.includes('cost') || query.includes('plans')) {
           reply = `Ticket-it has three plans designed to scale with your business:
 • **Starter**: Free forever, includes basic live chat widget and 50 tickets/month.
 • **Professional**: $29/month, includes voice assistant integration, SLAs, and unlimited ticketing.
 • **Enterprise**: Custom pricing, includes dedicated DB connectors (SSMS/PostgreSQL), whitelabeling, and 99.9% SLA guarantees.`;
-        } 
+        }
         else if (query.includes('install') || query.includes('embed') || query.includes('setup') || query.includes('code')) {
           reply = `Setting up Ticket-it is simple! Just copy the embed script from your dashboard and paste it before the closing \`</body>\` tag of your HTML:
 \`\`\`html
@@ -250,8 +368,67 @@ I can help you with setup guidelines, pricing plans, and integration steps.
         }
       }
     }
+    // Sync chat logs to PostgreSQL database
+    if (postgresPrisma) {
+      try {
+        const sessionKey = 'CH-882910'; // Default session key from ChatWidget
+        const emailClean = user && user.email ? user.email.trim().toLowerCase() : null;
+        const nameClean = user && user.name ? user.name.trim() : null;
 
-    return NextResponse.json({ 
+        // Find or create session
+        let session = await postgresPrisma.chatWidgetSession.findUnique({
+          where: { sessionKey }
+        });
+
+        if (!session) {
+          session = await postgresPrisma.chatWidgetSession.create({
+            data: {
+              sessionKey,
+              customerEmail: emailClean,
+              customerName: nameClean,
+              status: 'ACTIVE'
+            }
+          });
+        } else if (emailClean && session.customerEmail !== emailClean) {
+          // Associate session with user if logged in
+          session = await postgresPrisma.chatWidgetSession.update({
+            where: { sessionKey },
+            data: {
+              customerEmail: emailClean,
+              customerName: nameClean
+            }
+          });
+        }
+
+        // Add user message
+        await postgresPrisma.chatWidgetMessage.create({
+          data: {
+            sessionId: session.id,
+            senderType: 'USER',
+            text: message
+          }
+        });
+
+        // Add agent reply
+        await postgresPrisma.chatWidgetMessage.create({
+          data: {
+            sessionId: session.id,
+            senderType: 'AGENT',
+            text: reply
+          }
+        });
+
+        // Update session timestamp
+        await postgresPrisma.chatWidgetSession.update({
+          where: { id: session.id },
+          data: { updatedAt: new Date() }
+        });
+      } catch (pgErr) {
+        console.error("Failed to save widget chat message in PostgreSQL:", pgErr);
+      }
+    }
+
+    return NextResponse.json({
       text: reply + dbStatusText,
       sender: 'agent',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

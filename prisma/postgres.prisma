@@ -1,0 +1,124 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPPORT_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/postgres-client"
+}
+
+enum PortalRole {
+  ADMIN
+  AGENT
+  CUSTOMER
+}
+
+model PortalUser {
+  id           Int          @id @default(autoincrement())
+  email        String       @unique
+  name         String
+  passwordHash String
+  role         PortalRole   @default(CUSTOMER)
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relationships
+  raisedTickets   SupportTicket[] @relation("CustomerTickets")
+  assignedTickets SupportTicket[] @relation("AgentTickets")
+  sentMessages    TicketMessage[]
+  voiceLogs       VoiceSessionLog[]
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model SupportTicket {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Foreign keys
+  customerId  Int
+  agentId     Int?
+
+  // Relations
+  customer    PortalUser     @relation("CustomerTickets", fields: [customerId], references: [id], onDelete: Cascade)
+  agent       PortalUser?    @relation("AgentTickets", fields: [agentId], references: [id], onDelete: SetNull)
+  messages    TicketMessage[]
+}
+
+model TicketMessage {
+  id         Int           @id @default(autoincrement())
+  ticketId   Int
+  senderId   Int
+  text       String
+  isSystem   Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+
+  // Relations
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender     PortalUser    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+enum WidgetSessionStatus {
+  ACTIVE
+  CLOSED
+}
+
+model ChatWidgetSession {
+  id            Int                 @id @default(autoincrement())
+  sessionKey    String              @unique
+  customerName  String?
+  customerEmail String?
+  status        WidgetSessionStatus @default(ACTIVE)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  messages      ChatWidgetMessage[]
+}
+
+enum WidgetSenderType {
+  USER
+  AGENT
+  SYSTEM
+}
+
+model ChatWidgetMessage {
+  id         Int               @id @default(autoincrement())
+  sessionId  Int
+  senderType WidgetSenderType
+  text       String
+  createdAt  DateTime          @default(now())
+
+  // Relations
+  session    ChatWidgetSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model VoiceSessionLog {
+  id             Int         @id @default(autoincrement())
+  conversationId String      @unique
+  customerId     Int?
+  transcript     String?
+  audioUrl       String?
+  duration       Int?        // in seconds
+  createdAt      DateTime    @default(now())
+
+  // Relations
+  customer       PortalUser? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+}

@@ -1,27 +1,17 @@
 "use client";
 
 import React, { useState } from 'react';
-import { LayoutDashboard, Lock, Mail, ArrowRight, ShieldCheck, UserCheck, Eye, EyeOff, MessageSquare, FileText, Mic } from 'lucide-react';
+import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, Mic } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const [role, setRole] = useState<'customer' | 'admin'>('customer');
-  const [email, setEmail] = useState('customer@example.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleRoleSelect = (selectedRole: 'customer' | 'admin') => {
-    setRole(selectedRole);
-    if (selectedRole === 'customer') {
-      setEmail('customer@example.com');
-    } else {
-      setEmail('admin@example.com');
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -32,14 +22,22 @@ export default function LoginPage() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ login: email, password })
+      });
 
-      const user = {
-        name: role === 'customer' ? 'Jane Doe' : 'Alex Mercer',
-        email: email,
-        role: role === 'customer' ? 'Customer' : 'Admin'
-      };
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+
+      const user = data.user;
 
       try {
         localStorage.setItem('nexus_user', JSON.stringify(user));
@@ -48,9 +46,9 @@ export default function LoginPage() {
         const demoTickets = [
           {
             id: "TK-104928",
-            firstName: "Jane",
-            lastName: "Doe",
-            email: "customer@example.com",
+            firstName: user.name.split(' ')[0] || "Jane",
+            lastName: user.name.split(' ')[1] || "Doe",
+            email: user.email,
             category: "Live Chat & Widgets",
             description: "I embedded the Ticket-it chat widget script but it's throwing a CORS policy error on our checkout domain. Please whitelist domain.com.",
             status: "Open",
@@ -59,9 +57,9 @@ export default function LoginPage() {
           },
           {
             id: "TK-291823",
-            firstName: "Jane",
-            lastName: "Doe",
-            email: "customer@example.com",
+            firstName: user.name.split(' ')[0] || "Jane",
+            lastName: user.name.split(' ')[1] || "Doe",
+            email: user.email,
             category: "Ticketing & Help Desk",
             description: "Our SLA targets for High priority tickets are not escalating correctly. Agents are not receiving Slack notifications.",
             status: "In Progress",
@@ -70,9 +68,9 @@ export default function LoginPage() {
           },
           {
             id: "TK-991822",
-            firstName: "Jane",
-            lastName: "Doe",
-            email: "customer@example.com",
+            firstName: user.name.split(' ')[0] || "Jane",
+            lastName: user.name.split(' ')[1] || "Doe",
+            email: user.email,
             category: "Voice Assistant",
             description: "Voice command inquiry: 'Show ticket response SLA targets'. Speech recognition input logs verified.",
             status: "Resolved",
@@ -81,9 +79,9 @@ export default function LoginPage() {
           },
           {
             id: "TK-882710",
-            firstName: "Jane",
-            lastName: "Doe",
-            email: "customer@example.com",
+            firstName: user.name.split(' ')[0] || "Jane",
+            lastName: user.name.split(' ')[1] || "Doe",
+            email: user.email,
             category: "API & Developer Tools",
             description: "API integration inquiry regarding webhook signature validation. Logged session details sync complete.",
             status: "Resolved",
@@ -148,16 +146,16 @@ export default function LoginPage() {
         // Trigger header update
         window.dispatchEvent(new CustomEvent('auth-change'));
 
-        // Redirect based on role
-        if (role === 'customer') {
-          window.location.href = '/dashboard';
-        } else {
-          window.location.href = '/admin';
-        }
+        // Always redirect to customer dashboard
+        window.location.href = '/dashboard';
       } catch {
         setError('Storage security policy blocked session initiation.');
       }
-    }, 1000);
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -272,33 +270,7 @@ export default function LoginPage() {
             {/* Header Greeting */}
             <div className="space-y-1">
               <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Hello, Ticket Support</h3>
-              <p className="text-sm text-slate-500 font-medium">Select your portal and enter your credentials to proceed.</p>
-            </div>
-
-            {/* Role Selector Tabs */}
-            <div className="grid grid-cols-2 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/50">
-              <button
-                type="button"
-                onClick={() => handleRoleSelect('customer')}
-                className={`py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none border border-transparent ${role === 'customer'
-                  ? 'bg-white text-primary-600 shadow-sm border-slate-200/20'
-                  : 'text-slate-500 hover:text-slate-800'
-                  }`}
-              >
-                <UserCheck className="w-4 h-4" />
-                Customer
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRoleSelect('admin')}
-                className={`py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none border border-transparent ${role === 'admin'
-                  ? 'bg-white text-primary-600 shadow-sm border-slate-200/20'
-                  : 'text-slate-500 hover:text-slate-800'
-                  }`}
-              >
-                <ShieldCheck className="w-4 h-4" />
-                Admin Portal
-              </button>
+              <p className="text-sm text-slate-500 font-medium">Enter your registered client credentials to proceed.</p>
             </div>
 
             {/* Error Alert */}
@@ -312,18 +284,18 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Email Address</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Username / Login ID</label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                       <Mail className="w-4.5 h-4.5" />
                     </span>
                     <input
-                      type="email"
+                      type="text"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
-                      placeholder="name@example.com"
+                      placeholder="Enter your login username"
                     />
                   </div>
                 </div>
@@ -367,11 +339,6 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
-
-            {/* Demo Helper Banner */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-100 p-4 text-xs text-slate-500 leading-relaxed text-center font-medium">
-              <span className="font-bold text-slate-800">Quick Test Credentials:</span> Simply press sign in. Mock data will seed in your browser session storage automatically.
-            </div>
           </div>
 
         </div>

@@ -25,8 +25,10 @@ export const ContactVoiceTab: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [isMuted, setIsMuted] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || 'agent_6401kwm3cms1fxaa0dp0mszb5p58';
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
+
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -35,6 +37,78 @@ export const ContactVoiceTab: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const conversationRef = useRef<any>(null);
+  const conversationIdRef = useRef<string | null>(null);
+  const sessionStartTimeRef = useRef<number | null>(null);
+  const messagesRef = useRef<VoiceMessage[]>([]);
+
+  const saveVoiceSessionToDb = async (messagesList: VoiceMessage[]) => {
+    const cid = conversationIdRef.current;
+    if (!cid) return;
+
+    const durationSec = sessionStartTimeRef.current
+      ? Math.round((Date.now() - sessionStartTimeRef.current) / 1000)
+      : 0;
+
+    const transcriptText = messagesList
+      .filter(m => m.id !== 'welcome')
+      .map(m => `${m.sender === 'user' ? 'Customer' : 'Agent'}: ${m.text}`)
+      .join('\n');
+
+    if (!transcriptText.trim()) return;
+
+    try {
+      await fetch('/api/voice-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversationId: cid,
+          customerEmail: currentUser?.email || null,
+          transcript: transcriptText,
+          duration: durationSec
+        })
+      });
+      console.log("Voice session saved in PostgreSQL database.");
+
+      // Sync local storage as fallback/complement
+      const newLog = {
+        id: cid,
+        title: `Voice Session: ${cid.slice(0, 10)}...`,
+        status: 'Completed',
+        createdAt: new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        duration: `${durationSec}s`,
+        transcript: transcriptText,
+        confidence: '98%',
+        audioUrl: null
+      };
+
+      const existing = localStorage.getItem('nexus_voice_logs');
+      const logs = existing ? JSON.parse(existing) : [];
+      if (!logs.some((l: any) => l.id === cid)) {
+        logs.unshift(newLog);
+        localStorage.setItem('nexus_voice_logs', JSON.stringify(logs));
+      }
+    } catch (err) {
+      console.error("Failed to save voice log to database:", err);
+    }
+  };
+
+  // Load user session on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('nexus_user');
+      if (stored) {
+        try {
+          setCurrentUser(JSON.parse(stored));
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    }
+  }, []);
 
   // Initialize messages once on mount
   useEffect(() => {
@@ -105,38 +179,129 @@ export const ContactVoiceTab: React.FC = () => {
 
   // ElevenLabs live conversation controls
   const startElevenLabsSession = async () => {
+    if (!agentId) {
+      setErrorMessage("ElevenLabs Agent ID is not configured. Please define NEXT_PUBLIC_ELEVENLABS_AGENT_ID in your environment (.env) file.");
+      setStatus('error');
+      return;
+    }
     try {
       setStatus('processing');
       setErrorMessage('');
+
+      // Fetch dynamic voice prompt overrides if user is logged in
+      let conversationOverrides: any = undefined;
+
+      if (currentUser && currentUser.email) {
+        try {
+          const res = await fetch('/api/voice-context', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+          });
+          if (res.ok) {
+            const dbData = await res.json();
+            conversationOverrides = {
+              agent: {
+                prompt: {
+                  prompt: `You are Sarah, a highly helpful, professional customer support agent representing the Ticket-it platform. 
+You are speaking in real-time with the logged-in customer: ${dbData.profile.name} (${dbData.profile.email}).
+Under no circumstances should you talk about any other customer's details or accounts.
+Here is the customer's authenticated real-time data from our SQL Server database:
+- Profile: Name is ${dbData.profile.name}, email is ${dbData.profile.email}, phone is ${dbData.profile.phone}, address is ${dbData.profile.address}, and client organization is ${dbData.profile.client}.
+- Tickets: ${JSON.stringify(dbData.tickets)}
+- Batches: ${JSON.stringify(dbData.batches)}
+- File Notes: ${JSON.stringify(dbData.fileNotes)}
+- FTP Details: ${JSON.stringify(dbData.ftpDetails)}
+- Saved Templates: ${JSON.stringify(dbData.savedTemplates)}
+- Store Groups: ${JSON.stringify(dbData.storeGroups)}
+- Active API Integrations: ${JSON.stringify(dbData.userIntegrations)}
+- Outlets Count: ${dbData.outletsCount}
+
+Rule: Since the user is logged in and authenticated, you are authorized to verify, summarize, and tell them details from their tickets, batches, FTP settings, integrations, templates, or profile history when they ask. Keep answers conversational, natural, and friendly.`
+                }
+              }
+            };
+          }
+        } catch (dbErr) {
+          console.warn("Could not fetch database voice context, falling back to basic session:", dbErr);
+        }
+      } else {
+        // User is anonymous / NOT logged in
+        conversationOverrides = {
+          agent: {
+            prompt: {
+              prompt: `You are Sarah, a helpful customer support voice assistant for Ticket-it.
+The user is NOT logged in. You are speaking with an anonymous visitor.
+RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group, or system configurations under any circumstances. If they ask about their account, tickets, batches, or any personal details, politely inform them that they must close this voice session, sign in to their account on the portal first, and then return to use the voice assistant.`
+            }
+          }
+        };
+      }
 
       // Request microphone access
       await navigator.mediaDevices.getUserMedia({ audio: true });
       await startAudioAnalysis();
 
       // Dynamically import @elevenlabs/client to avoid SSR build issues
-      const { Conversation } = await import('@elevenlabs/client');
+      const elevenlabsClient = await import('@elevenlabs/client');
+      const { Conversation } = elevenlabsClient;
+      const VoiceConversationClass = (elevenlabsClient as any).VoiceConversation;
 
-      const conversation = await Conversation.startSession({
-        agentId: agentId,
-        onConnect: ({ conversationId }) => {
+      // Safe patch for handleErrorEvent prototype bug in @elevenlabs/client SDK
+      if (VoiceConversationClass && VoiceConversationClass.prototype && !(VoiceConversationClass.prototype as any).__patchedForErrorEvent) {
+        const originalHandleErrorEvent = VoiceConversationClass.prototype.handleErrorEvent;
+        VoiceConversationClass.prototype.handleErrorEvent = function (event: any) {
+          if (!event || !event.error_event) {
+            console.error("Safeguarded ElevenLabs Error Event:", event);
+            const msg = event?.message || event?.reason || "Unknown ElevenLabs WebRTC connection error";
+            this.onError(`Server error: ${msg}`, { errorType: "unknown_error", details: event });
+            return;
+          }
+          if (originalHandleErrorEvent) {
+            originalHandleErrorEvent.call(this, event);
+          }
+        };
+        (VoiceConversationClass.prototype as any).__patchedForErrorEvent = true;
+      }
+
+      // Fetch signed URL if an API key is available
+      let signedUrl: string | null = null;
+      try {
+        const tokenRes = await fetch(`/api/voice-token?agent_id=${agentId}`);
+        if (tokenRes.ok) {
+          const tokenData = await tokenRes.json();
+          signedUrl = tokenData.signedUrl;
+        }
+      } catch (tokenErr) {
+        console.warn("Could not fetch signed URL token, checking public connection:", tokenErr);
+      }
+
+      const connectionConfig: any = {
+        onConnect: ({ conversationId }: { conversationId: string }) => {
           console.log("ElevenLabs Connected:", conversationId);
+          conversationIdRef.current = conversationId;
+          sessionStartTimeRef.current = Date.now();
+          messagesRef.current = []; // Reset on new connect
           setStatus('listening');
         },
         onDisconnect: () => {
           console.log("ElevenLabs Disconnected");
           setStatus('idle');
           stopAudioAnalysis();
+          saveVoiceSessionToDb(messagesRef.current);
         },
         onMessage: (message: { message: string; source: 'user' | 'ai' }) => {
-          setMessages(prev => [
-            ...prev,
-            {
-              id: generateUniqueId(),
-              sender: message.source === 'user' ? 'user' : 'assistant',
-              text: message.message,
-              timestamp: getCurrentTime()
-            }
-          ]);
+          const newMsg = {
+            id: generateUniqueId(),
+            sender: (message.source === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+            text: message.message,
+            timestamp: getCurrentTime()
+          };
+          setMessages(prev => {
+            const next = [...prev, newMsg];
+            messagesRef.current = next;
+            return next;
+          });
         },
         onError: (error: any) => {
           console.error("ElevenLabs Error:", error);
@@ -144,7 +309,7 @@ export const ContactVoiceTab: React.FC = () => {
           setStatus('error');
           stopAudioAnalysis();
         },
-        onStatusChange: ({ status: statusVal }) => {
+        onStatusChange: ({ status: statusVal }: { status: string }) => {
           if (statusVal === 'connecting') {
             setStatus('processing');
           } else if (statusVal === 'connected') {
@@ -153,15 +318,32 @@ export const ContactVoiceTab: React.FC = () => {
             setStatus('idle');
           }
         },
-        onModeChange: ({ mode: modeVal }) => {
+        onModeChange: ({ mode: modeVal }: { mode: string }) => {
           if (modeVal === 'speaking') {
             setStatus('speaking');
           } else if (modeVal === 'listening') {
             setStatus('listening');
           }
         }
-      });
+      };
 
+      if (signedUrl) {
+        connectionConfig.signedUrl = signedUrl;
+        connectionConfig.overrides = conversationOverrides;
+        console.log("Using ElevenLabs signed URL session with prompt overrides.");
+      } else {
+        connectionConfig.agentId = agentId;
+        // Pass overrides with agentId connection as well.
+        // This works when "Allow client overrides" is enabled in the ElevenLabs agent dashboard.
+        if (conversationOverrides) {
+          connectionConfig.overrides = conversationOverrides;
+          console.log("Using ElevenLabs agentId session WITH client-side prompt overrides (database context injected).");
+        } else {
+          console.log("No overrides available. Connecting to agent publicly.");
+        }
+      }
+
+      const conversation = await Conversation.startSession(connectionConfig);
       conversationRef.current = conversation;
     } catch (err: any) {
       console.error("Failed to start ElevenLabs session:", err);
@@ -349,6 +531,8 @@ export const ContactVoiceTab: React.FC = () => {
 
   return (
     <div className="py-2 space-y-8 animate-fade-in">
+
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
 
         {/* Left Visual Voice Assistant Panel */}

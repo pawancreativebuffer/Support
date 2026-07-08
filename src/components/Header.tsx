@@ -63,11 +63,10 @@ export function Header() {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="hidden md:flex items-center gap-4">
-              <Link href={user.role === 'Admin' ? "/admin" : "/dashboard"} className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-primary-600 transition-colors cursor-pointer">
+              <Link href={user.role === 'Admin' ? "/admin" : "/dashboard"} className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-primary-600 transition-colors cursor-pointer" title={user.name}>
                 <div className="w-8 h-8 rounded-full bg-primary-50 border border-primary-200 text-primary-600 flex items-center justify-center font-bold uppercase">
                   {user.name ? user.name[0] : 'U'}
                 </div>
-                <span>{user.name}</span>
               </Link>
               <button 
                 onClick={handleLogout}
