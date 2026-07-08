@@ -26,29 +26,9 @@ export const ContactVoiceTab: React.FC = () => {
   const [messages, setMessages] = useState<VoiceMessage[]>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
 
   const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
 
-  // Check if ELEVENLABS_API_KEY is configured on the server
-  useEffect(() => {
-    const checkApiKey = async () => {
-      try {
-        const tokenRes = await fetch(`/api/voice-token?agent_id=${agentId}`);
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          setHasApiKey(!!tokenData.signedUrl);
-        } else {
-          setHasApiKey(false);
-        }
-      } catch (err) {
-        setHasApiKey(false);
-      }
-    };
-    if (agentId) {
-      checkApiKey();
-    }
-  }, [agentId]);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -353,9 +333,14 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
         console.log("Using ElevenLabs signed URL session with prompt overrides.");
       } else {
         connectionConfig.agentId = agentId;
-        // Do not pass overrides when connecting anonymously to a public agent,
-        // because client-side overrides are rejected by the server on unauthenticated calls.
-        console.log("No ElevenLabs signed URL/API Key found. Connecting to agent publicly without prompt overrides.");
+        // Pass overrides with agentId connection as well.
+        // This works when "Allow client overrides" is enabled in the ElevenLabs agent dashboard.
+        if (conversationOverrides) {
+          connectionConfig.overrides = conversationOverrides;
+          console.log("Using ElevenLabs agentId session WITH client-side prompt overrides (database context injected).");
+        } else {
+          console.log("No overrides available. Connecting to agent publicly.");
+        }
       }
 
       const conversation = await Conversation.startSession(connectionConfig);
@@ -546,18 +531,7 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
 
   return (
     <div className="py-2 space-y-8 animate-fade-in">
-      {hasApiKey === false && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4 text-amber-850 shadow-sm">
-          <ShieldAlert className="w-5.5 h-5.5 text-amber-600 flex-shrink-0 mt-0.5 animate-pulse" />
-          <div className="space-y-1">
-            <h5 className="font-extrabold text-sm text-amber-900">Developer Notice: ElevenLabs API Key Missing</h5>
-            <p className="text-xs text-amber-700 leading-relaxed font-medium">
-              No <code className="bg-amber-100/80 px-1.5 py-0.5 rounded font-mono text-[10px] font-bold text-amber-800">ELEVENLABS_API_KEY</code> is configured in your server environment (<code className="bg-amber-100/80 px-1.5 py-0.5 rounded font-mono text-[10px] font-bold text-amber-800">.env</code> file). 
-              The voice assistant is currently running in <strong>Default Public Mode</strong>. The call will connect, but the assistant <strong>cannot access or read database records</strong> (like your profile, tickets, batches) since custom prompt overrides are only allowed with secure, signed URL connections.
-            </p>
-          </div>
-        </div>
-      )}
+
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
 
