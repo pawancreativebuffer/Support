@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { postgresPrisma } from '@/lib/postgresDb';
 
 // Offline fallback data (matching seeded localStorage) in case database isn't connected yet
 const mockTickets = [
@@ -367,6 +368,66 @@ I can help you with setup guidelines, pricing plans, and integration steps.
         }
       }
     }
+    // Sync chat logs to PostgreSQL database
+    if (postgresPrisma) {
+      try {
+        const sessionKey = 'CH-882910'; // Default session key from ChatWidget
+        const emailClean = user && user.email ? user.email.trim().toLowerCase() : null;
+        const nameClean = user && user.name ? user.name.trim() : null;
+
+        // Find or create session
+        let session = await postgresPrisma.chatWidgetSession.findUnique({
+          where: { sessionKey }
+        });
+
+        if (!session) {
+          session = await postgresPrisma.chatWidgetSession.create({
+            data: {
+              sessionKey,
+              customerEmail: emailClean,
+              customerName: nameClean,
+              status: 'ACTIVE'
+            }
+          });
+        } else if (emailClean && session.customerEmail !== emailClean) {
+          // Associate session with user if logged in
+          session = await postgresPrisma.chatWidgetSession.update({
+            where: { sessionKey },
+            data: {
+              customerEmail: emailClean,
+              customerName: nameClean
+            }
+          });
+        }
+
+        // Add user message
+        await postgresPrisma.chatWidgetMessage.create({
+          data: {
+            sessionId: session.id,
+            senderType: 'USER',
+            text: message
+          }
+        });
+
+        // Add agent reply
+        await postgresPrisma.chatWidgetMessage.create({
+          data: {
+            sessionId: session.id,
+            senderType: 'AGENT',
+            text: reply
+          }
+        });
+
+        // Update session timestamp
+        await postgresPrisma.chatWidgetSession.update({
+          where: { id: session.id },
+          data: { updatedAt: new Date() }
+        });
+      } catch (pgErr) {
+        console.error("Failed to save widget chat message in PostgreSQL:", pgErr);
+      }
+    }
+
     return NextResponse.json({
       text: reply + dbStatusText,
       sender: 'agent',

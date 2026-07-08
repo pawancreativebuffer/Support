@@ -14,7 +14,19 @@ import {
   ChevronRight,
   Send,
   MessageSquare,
-  Mic
+  Mic,
+  Calendar,
+  History,
+  Activity,
+  ArrowRight,
+  User,
+  Layers,
+  FileText,
+  Database,
+  Play,
+  Sparkles,
+  HelpCircle,
+  Info
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -47,6 +59,7 @@ interface VoiceLogItem {
   duration: string;
   transcript: string;
   confidence: string;
+  audioUrl?: string | null;
 }
 
 export default function DashboardPage() {
@@ -55,34 +68,44 @@ export default function DashboardPage() {
   const [chats, setChats] = useState<ChatItem[]>([]);
   const [voiceLogs, setVoiceLogs] = useState<VoiceLogItem[]>([]);
   
-  // UI Filters & Search
+  // UI Tab System: 'overview' | 'tickets' | 'chats' | 'voice'
+  const [activeTab, setActiveTab] = useState<'overview' | 'tickets' | 'chats' | 'voice'>('overview');
+  
+  // Filters & Search
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Modals / Details Views
+  // Modals / Details
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
   const [ticketReplyText, setTicketReplyText] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const loadStoredData = () => {
+  const loadDatabaseData = async (email: string) => {
+    setIsRefreshing(true);
     try {
-      const storedTickets = localStorage.getItem('nexus_tickets');
-      if (storedTickets) {
-        setTickets(JSON.parse(storedTickets));
-      }
-      
-      const storedChats = localStorage.getItem('nexus_chats');
-      if (storedChats) {
-        setChats(JSON.parse(storedChats));
+      const ticketsRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
+      if (ticketsRes.ok) {
+        const data = await ticketsRes.json();
+        setTickets(data);
       }
 
-      const storedVoiceLogs = localStorage.getItem('nexus_voice_logs');
-      if (storedVoiceLogs) {
-        setVoiceLogs(JSON.parse(storedVoiceLogs));
+      const chatsRes = await fetch(`/api/chats?email=${encodeURIComponent(email)}`);
+      if (chatsRes.ok) {
+        const data = await chatsRes.json();
+        setChats(data);
+      }
+
+      const voiceRes = await fetch(`/api/voice-logs?email=${encodeURIComponent(email)}`);
+      if (voiceRes.ok) {
+        const data = await voiceRes.json();
+        setVoiceLogs(data);
       }
     } catch (err) {
-      console.error('Error loading session data', err);
+      console.error('Error loading database data:', err);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -98,113 +121,180 @@ export default function DashboardPage() {
             return;
           }
           setUser(parsed);
+          loadDatabaseData(parsed.email);
         } catch {
           window.location.href = '/login';
         }
       } else {
-        // Not logged in, redirect
         window.location.href = '/login';
       }
     };
 
     setTimeout(() => {
       checkUser();
-      loadStoredData();
     }, 0);
   }, []);
 
   // Close ticket / Sort out issue
-  const handleResolveTicket = (ticketId: string) => {
-    const updated = tickets.map(t => {
-      if (t.id === ticketId) {
-        return { ...t, status: 'Resolved' as const };
-      }
-      return t;
-    });
+  const handleResolveTicket = async (ticketId: string) => {
+    if (!user) return;
+    try {
+      const res = await fetch('/api/tickets/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId: ticketId,
+          action: 'resolve'
+        })
+      });
 
-    setTickets(updated);
-    localStorage.setItem('nexus_tickets', JSON.stringify(updated));
-    
-    // Sync current open detail modal
-    if (selectedTicket && selectedTicket.id === ticketId) {
-      setSelectedTicket(prev => prev ? { ...prev, status: 'Resolved' as const } : null);
+      if (res.ok) {
+        loadDatabaseData(user.email);
+        if (selectedTicket && selectedTicket.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, status: 'Resolved' as const } : null);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to resolve ticket:', err);
     }
   };
 
   // Send reply to agent in ticket discussion
-  const handleSendTicketReply = (e: React.FormEvent, ticketId: string) => {
+  const handleSendTicketReply = async (e: React.FormEvent, ticketId: string) => {
     e.preventDefault();
-    if (!ticketReplyText.trim()) return;
+    if (!ticketReplyText.trim() || !user) return;
 
+    const replyMsg = ticketReplyText;
+    setTicketReplyText('');
+
+    // Pre-insert locally for responsiveness
     const timeString = new Date().toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric'
     }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const newReply = {
+    const localReply = {
       sender: 'customer' as const,
-      text: ticketReplyText,
+      text: replyMsg,
       time: timeString
     };
 
-    const updated = tickets.map(t => {
-      if (t.id === ticketId) {
-        const existingReplies = t.replies || [];
-        // After customer replies, update ticket status back to 'Open' or keep 'In Progress'
-        return {
-          ...t,
-          status: t.status === 'Resolved' ? ('Open' as const) : t.status,
-          replies: [...existingReplies, newReply]
-        };
-      }
-      return t;
-    });
-
-    setTickets(updated);
-    localStorage.setItem('nexus_tickets', JSON.stringify(updated));
-    
-    // Sync modal view
-    const currentTicket = updated.find(t => t.id === ticketId);
-    if (currentTicket) {
-      setSelectedTicket(currentTicket);
+    if (selectedTicket) {
+      const existingReplies = selectedTicket.replies || [];
+      setSelectedTicket({
+        ...selectedTicket,
+        status: selectedTicket.status === 'Resolved' ? 'Open' : selectedTicket.status,
+        replies: [...existingReplies, localReply]
+      });
     }
-    
-    setTicketReplyText('');
 
-    // Simulate Agent Auto-Response response inside ticket after 2 seconds
-    setTimeout(() => {
-      const agentReply = {
-        sender: 'agent' as const,
-        text: "Thank you for the update. We have logged this description in our active diagnostics console. Our accounts administrator will inspect the transactions manually.",
-        time: new Date().toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric'
-        }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      const withAgentReply = updated.map(t => {
-        if (t.id === ticketId) {
-          const existingReplies = t.replies || [];
-          return {
-            ...t,
-            status: 'In Progress' as const,
-            replies: [...existingReplies, agentReply]
-          };
-        }
-        return t;
+    try {
+      const res = await fetch('/api/tickets/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId: ticketId,
+          senderEmail: user.email,
+          text: replyMsg
+        })
       });
 
-      setTickets(withAgentReply);
-      localStorage.setItem('nexus_tickets', JSON.stringify(withAgentReply));
-      
-      const refreshedTicket = withAgentReply.find(t => t.id === ticketId);
-      if (refreshedTicket) {
-        setSelectedTicket(refreshedTicket);
+      if (res.ok) {
+        const email = user.email;
+        const freshRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
+        if (freshRes.ok) {
+          const freshData = await freshRes.json();
+          setTickets(freshData);
+        }
+
+        setTimeout(async () => {
+          const latestRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
+          if (latestRes.ok) {
+            const latestData = await latestRes.json();
+            setTickets(latestData);
+            const currentTicket = latestData.find((t: any) => t.id === ticketId);
+            if (currentTicket) {
+              setSelectedTicket(currentTicket);
+            }
+          }
+        }, 2000);
       }
-    }, 2000);
+    } catch (err) {
+      console.error('Failed to send reply:', err);
+    }
   };
 
-  // Filter & Search logic
+  // Unified Chronological Activity History Generator
+  const getActivitiesList = () => {
+    const activities: {
+      id: string;
+      type: 'ticket' | 'chat' | 'voice';
+      title: string;
+      subtitle: string;
+      description: string;
+      status: string;
+      date: Date;
+      displayDate: string;
+      rawItem: any;
+    }[] = [];
+
+    // Add tickets to timeline
+    tickets.forEach(t => {
+      activities.push({
+        id: t.id,
+        type: 'ticket',
+        title: `Raised Ticket: ${t.category}`,
+        subtitle: `ID: ${t.id}`,
+        description: t.description,
+        status: t.status,
+        date: new Date(t.createdAt),
+        displayDate: t.createdAt,
+        rawItem: t
+      });
+    });
+
+    // Add chats to timeline
+    chats.forEach(c => {
+      let chatDate = new Date(c.updatedAt);
+      if (isNaN(chatDate.getTime())) {
+        chatDate = new Date();
+      }
+      activities.push({
+        id: c.id,
+        type: 'chat',
+        title: `Live Chat Assistant Session`,
+        subtitle: `${c.messages.length} messages exchanged`,
+        description: c.messages[c.messages.length - 1]?.text || 'Chat session initiated.',
+        status: c.status,
+        date: chatDate,
+        displayDate: c.updatedAt,
+        rawItem: c
+      });
+    });
+
+    // Add voice logs to timeline
+    voiceLogs.forEach(v => {
+      let voiceDate = new Date(v.createdAt);
+      if (isNaN(voiceDate.getTime())) {
+        voiceDate = new Date();
+      }
+      activities.push({
+        id: v.id,
+        type: 'voice',
+        title: `Voice Call with AI Assistant`,
+        subtitle: `Duration: ${v.duration}`,
+        description: v.transcript,
+        status: v.status,
+        date: voiceDate,
+        displayDate: v.createdAt,
+        rawItem: v
+      });
+    });
+
+    return activities.sort((a, b) => b.date.getTime() - a.date.getTime());
+  };
+
+  // Filters for Ticket list view
   const filteredTickets = tickets.filter(t => {
     const matchesFilter = ticketFilter === 'All' || t.status === ticketFilter;
     const matchesSearch = 
@@ -214,147 +304,428 @@ export default function DashboardPage() {
     return matchesFilter && matchesSearch;
   });
 
-  // Calculate ticket counts
-  const totalTicketsCount = tickets.length;
-  const openTicketsCount = tickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
-  const resolvedTicketsCount = tickets.filter(t => t.status === 'Resolved').length;
-  const activeChatsCount = chats.filter(c => c.status === 'Active' || c.status === 'Connecting').length;
+  const totalTickets = tickets.length;
+  const openTickets = tickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
+  const resolvedTickets = tickets.filter(t => t.status === 'Resolved').length;
+  const chatSessionsCount = chats.length;
+  const voiceSessionsCount = voiceLogs.length;
 
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+          <p className="text-slate-500 text-xs font-semibold tracking-wider">Syncing Workspace Session...</p>
+        </div>
       </div>
     );
   }
 
+  const activities = getActivitiesList();
+
   return (
-    <div className="bg-slate-50/50 min-h-screen pb-16">
-      {/* Header Banner */}
-      <div className="relative w-full bg-slate-900 border-b border-slate-950 py-12 mb-10 overflow-hidden text-white">
-        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-800/40 via-slate-900 to-slate-900 pointer-events-none" />
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="bg-slate-50/50 text-slate-800 min-h-screen font-sans selection:bg-primary-600 selection:text-white pb-20">
+
+      {/* Header / Top Navigation Bar */}
+      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
+              <User className="w-5 h-5" />
+            </div>
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="bg-primary-500/20 text-primary-300 border border-primary-500/30 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-                  {user.role} Workspace
-                </span>
+              <span className="text-[10px] font-black tracking-widest text-primary-600 uppercase">Customer Workspace</span>
+              <h2 className="text-base font-bold text-slate-800">Welcome Back, {user.name}</h2>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-primary-700 bg-primary-50 border border-primary-200 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-sm select-all">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse"></span>
+              {user.email}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Welcome Banner */}
+      <div className="max-w-7xl mx-auto px-6 pt-10">
+        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 md:p-10 shadow-sm">
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary-50/40 rounded-full blur-[80px] pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100">
+                <Sparkles className="w-3.5 h-3.5 text-primary-600" />
+                <span className="text-[10px] font-bold text-primary-700 uppercase tracking-widest">Workspace Dashboard</span>
               </div>
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-none">
-                Welcome back, {user.name}
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+                Monitor Your Support Operations
               </h1>
-              <p className="text-slate-400 text-base mt-2 max-w-xl font-medium">
-                Monitor live chat interactions, respond to support agent messages, and close resolved issues.
+              <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">
+                Review your registered tickets, read full conversations from live chat sessions, or view audio logs recorded from call consultations.
               </p>
             </div>
-            <Link 
-              href="/contact?tab=send-message" 
-              className="bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm px-6 py-3.5 rounded-full transition-all shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2 self-start md:self-auto cursor-pointer"
-            >
-              <Plus className="w-4 h-4" /> Create Support Ticket
-            </Link>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => loadDatabaseData(user.email)}
+                className="px-5 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                disabled={isRefreshing}
+              >
+                <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} /> 
+                {isRefreshing ? 'Refreshing...' : 'Refresh Records'}
+              </button>
+              <Link 
+                href="/contact?tab=send-message" 
+                className="px-6 py-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-md shadow-primary-600/10 flex items-center gap-2 border border-primary-500/20 cursor-pointer"
+              >
+                <Plus className="w-4.5 h-4.5" /> File New Ticket
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 space-y-10">
-        {/* Dashboard KPI cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-              <Ticket className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Tickets</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{totalTicketsCount}</h3>
-            </div>
+      {/* Statistics Cards */}
+      <div className="max-w-7xl mx-auto px-6 mt-10 space-y-10">
+        
+        <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <Ticket className="w-5 h-5 text-primary-600" />
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Total Cases</h4>
+            <div className="text-2xl font-extrabold text-slate-800 mt-1">{totalTickets}</div>
           </div>
 
-          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
-              <Clock className="w-6 h-6 animate-pulse" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active/Open</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{openTicketsCount}</h3>
-            </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <Clock className="w-5 h-5 text-amber-500" />
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Active / Open</h4>
+            <div className="text-2xl font-extrabold text-slate-800 mt-1">{openTickets}</div>
           </div>
 
-          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
-              <CheckCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Resolved Cases</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{resolvedTicketsCount}</h3>
-            </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <CheckCircle className="w-5 h-5 text-emerald-500" />
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Resolved</h4>
+            <div className="text-2xl font-extrabold text-slate-800 mt-1">{resolvedTickets}</div>
           </div>
 
-          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
-              <MessageCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Chat Sessions</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{activeChatsCount}</h3>
-            </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <MessageCircle className="w-5 h-5 text-sky-500" />
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Chats Recorded</h4>
+            <div className="text-2xl font-extrabold text-slate-800 mt-1">{chatSessionsCount}</div>
           </div>
-        </div>
 
-        {/* Dynamic Support Tickets section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Tickets List (8 columns) */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white border border-slate-200 shadow-sm rounded-3xl overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex flex-col gap-4">
-                <div className="space-y-1">
-                  <h3 className="font-bold text-slate-900 text-lg">My Raised Support Queries</h3>
-                  <p className="text-slate-500 text-xs font-medium">Click on any ticket to open discussion and resolve issues.</p>
-                </div>
-                
-                {/* Search query input */}
-                <div className="relative w-full">
-                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                    <Search className="w-4 h-4" />
-                  </span>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search tickets..."
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
-                  />
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all col-span-2 md:col-span-1">
+            <Mic className="w-5 h-5 text-primary-500" />
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Voice Sessions</h4>
+            <div className="text-2xl font-extrabold text-slate-800 mt-1">{voiceSessionsCount}</div>
+          </div>
+        </section>
+
+        {/* Tab Switching Menu */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* TAB 1: Overview */}
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${
+              activeTab === 'overview'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                activeTab === 'overview' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+              }`}>
+                <History className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-sm font-bold">Overview</span>
+                <span className={`block text-[10px] ${activeTab === 'overview' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Activity Timeline</span>
+              </div>
+            </div>
+          </button>
+
+          {/* TAB 2: Support Tickets */}
+          <button
+            onClick={() => setActiveTab('tickets')}
+            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${
+              activeTab === 'tickets'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                activeTab === 'tickets' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+              }`}>
+                <Ticket className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-sm font-bold">Support Tickets</span>
+                <span className={`block text-[10px] ${activeTab === 'tickets' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Manage support cases</span>
+              </div>
+            </div>
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${
+              activeTab === 'tickets' 
+                ? 'bg-white/20 text-white border-white/10' 
+                : 'bg-slate-100 text-slate-700 border-slate-200'
+            }`}>
+              {totalTickets}
+            </span>
+          </button>
+
+          {/* TAB 3: Live Chats */}
+          <button
+            onClick={() => setActiveTab('chats')}
+            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${
+              activeTab === 'chats'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                activeTab === 'chats' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+              }`}>
+                <MessageSquare className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-sm font-bold">Live Chats</span>
+                <span className={`block text-[10px] ${activeTab === 'chats' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Chat log sessions</span>
+              </div>
+            </div>
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${
+              activeTab === 'chats' 
+                ? 'bg-white/20 text-white border-white/10' 
+                : 'bg-slate-100 text-slate-700 border-slate-200'
+            }`}>
+              {chatSessionsCount}
+            </span>
+          </button>
+
+          {/* TAB 4: Voice Calls */}
+          <button
+            onClick={() => setActiveTab('voice')}
+            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${
+              activeTab === 'voice'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
+                activeTab === 'voice' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+              }`}>
+                <Mic className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-sm font-bold">Voice AI</span>
+                <span className={`block text-[10px] ${activeTab === 'voice' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Voice transcript logs</span>
+              </div>
+            </div>
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${
+              activeTab === 'voice' 
+                ? 'bg-white/20 text-white border-white/10' 
+                : 'bg-slate-100 text-slate-700 border-slate-200'
+            }`}>
+              {voiceSessionsCount}
+            </span>
+          </button>
+        </section>
+
+        {/* Tab Contents */}
+        <section>
+          
+          {/* TAB 1: OVERVIEW TIMELINE */}
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in">
+              {/* Left timeline column (8 cols) */}
+              <div className="lg:col-span-8 space-y-6">
+                <div className="bg-white border border-slate-200 p-6 rounded-3xl relative shadow-sm">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <History className="w-5 h-5 text-primary-600" /> Chronological Interaction History
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">A real-time audit log of every ticket raised, voice transcript logged, and chat started.</p>
+                    </div>
+                  </div>
+
+                  {activities.length === 0 ? (
+                    <div className="p-16 text-center space-y-4">
+                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                        <Activity className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-slate-600 text-sm">No Activities Registered</h5>
+                        <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">Complete a support form, initiate a chat session, or talk to our Voice Assistant to populate your history timeline.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative pl-6 border-l border-slate-200 space-y-8 ml-2 py-2">
+                      {activities.map((act, index) => {
+                        let dotColor = "bg-primary-500 ring-primary-100";
+                        let typeLabel = "Ticket";
+                        let typeColor = "text-primary-650 bg-primary-50 border-primary-100";
+
+                        if (act.type === 'chat') {
+                          dotColor = "bg-sky-500 ring-sky-100";
+                          typeLabel = "Live Chat";
+                          typeColor = "text-sky-600 bg-sky-50 border-sky-100";
+                        } else if (act.type === 'voice') {
+                          dotColor = "bg-blue-500 ring-blue-100";
+                          typeLabel = "Voice AI";
+                          typeColor = "text-blue-650 bg-blue-50 border-blue-100";
+                        }
+
+                        return (
+                          <div key={index} className="relative group">
+                            {/* Dot indicator */}
+                            <span className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full ${dotColor} border-2 border-white ring-4 transition-all group-hover:scale-125`} />
+
+                            <div className="space-y-1.5">
+                              {/* Meta information */}
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <span className={`text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${typeColor}`}>
+                                  {typeLabel}
+                                </span>
+                                <span className="text-slate-300 text-xs font-semibold">•</span>
+                                <span className="text-xs text-slate-400 font-semibold">{act.displayDate}</span>
+                              </div>
+
+                              {/* Title / Header */}
+                              <h4 className="text-sm font-bold text-slate-800 select-text">
+                                {act.title}
+                              </h4>
+
+                              {/* Description body */}
+                              <div className="bg-slate-50 border border-slate-150 p-4 rounded-2xl mt-1.5 group-hover:border-slate-300 transition-all max-w-full">
+                                <p className="text-xs text-slate-600 leading-relaxed italic line-clamp-3 select-text">
+                                  &quot;{act.description}&quot;
+                                </p>
+                                <div className="flex items-center justify-between border-t border-slate-200/80 mt-3 pt-3">
+                                  <span className="text-[10px] text-slate-400 font-mono">{act.subtitle}</span>
+                                  
+                                  <button
+                                    onClick={() => {
+                                      if (act.type === 'ticket') setSelectedTicket(act.rawItem);
+                                      if (act.type === 'chat') setSelectedChat(act.rawItem);
+                                      if (act.type === 'voice') setSelectedVoiceLog(act.rawItem);
+                                    }}
+                                    className="text-[10px] font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1 cursor-pointer"
+                                  >
+                                    View Full Context <ChevronRight className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Filtering tabs */}
-              <div className="flex border-b border-slate-100 bg-slate-50/50 p-2 gap-2 overflow-x-auto scrollbar-none">
-                {(['All', 'Open', 'In Progress', 'Resolved'] as const).map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setTicketFilter(status)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                      ticketFilter === status
-                        ? 'bg-white text-primary-600 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {status} ({status === 'All' ? tickets.length : tickets.filter(t => t.status === status).length})
-                  </button>
-                ))}
+              {/* Right widgets column (4 cols) */}
+              <div className="lg:col-span-4 space-y-6">
+                
+                {/* Voice Launcher Widget */}
+                <div className="bg-gradient-to-tr from-slate-900 via-slate-950 to-primary-950 border border-slate-900 p-6 rounded-3xl relative overflow-hidden shadow-md text-white">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-xl pointer-events-none" />
+                  
+                  <div className="space-y-4">
+                    <Sparkles className="w-8 h-8 text-primary-400 animate-pulse" />
+                    <h3 className="font-bold text-white text-sm">Need instant assistance?</h3>
+                    <p className="text-xs text-slate-350 leading-relaxed">
+                      Consult Sarah, our AI Voice Assistant. Speak directly about store layouts, orders, or support queries.
+                    </p>
+                    <Link 
+                      href="/contact?tab=voice-assistant"
+                      className="inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-xs transition-all shadow-lg shadow-primary-600/20 cursor-pointer border border-primary-500/30"
+                    >
+                      <Mic className="w-4 h-4" /> Start Voice Consultation
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Customer Support Info Guide Card */}
+                <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <Info className="w-4 h-4 text-primary-600" />
+                    <h4 className="text-xs font-black uppercase text-slate-700 tracking-widest">Portal Guidelines</h4>
+                  </div>
+                  <div className="space-y-3.5 text-xs text-slate-600 leading-relaxed">
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
+                      <p>Click on any activity item in your timeline or ticket row to see full transcripts and updates.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
+                      <p>Mark queries as resolved to close tickets. Replying will reopen a closed ticket thread automatically.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
+                      <p>Use the microphone widget in the Contact center to log hands-free voice assistance logs.</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: SUPPORT TICKETS DETAILS */}
+          {activeTab === 'tickets' && (
+            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm animate-fade-in">
+              <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">Registered Support Tickets</h3>
+                  <p className="text-xs text-slate-400 mt-1">Review raised cases, check reply threads, and close solved issues.</p>
+                </div>
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                      <Search className="w-4 h-4" />
+                    </span>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search tickets..."
+                      className="bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-primary-500 focus:bg-white focus:outline-none transition-all w-60"
+                    />
+                  </div>
+
+                  <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl">
+                    {(['All', 'Open', 'In Progress', 'Resolved'] as const).map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setTicketFilter(status)}
+                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                          ticketFilter === status
+                            ? 'bg-primary-600 text-white shadow'
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Tickets Table/List */}
               {filteredTickets.length === 0 ? (
-                <div className="p-12 text-center space-y-4">
-                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+                <div className="p-16 text-center space-y-4">
+                  <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-slate-400">
                     <Ticket className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 text-sm">No Tickets Found</h5>
-                    <p className="text-slate-500 text-xs mt-1">Submit a query using the contact page to populate this view.</p>
+                    <h5 className="font-bold text-slate-600 text-sm">No Tickets Matched</h5>
+                    <p className="text-slate-400 text-xs mt-1">No ticket data matches your search query or filter settings.</p>
                   </div>
                 </div>
               ) : (
@@ -363,189 +734,153 @@ export default function DashboardPage() {
                     <div 
                       key={ticket.id} 
                       onClick={() => setSelectedTicket(ticket)}
-                      className="p-6 hover:bg-slate-50/70 transition-colors cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      className="p-6 hover:bg-slate-50/50 transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                     >
-                      <div className="space-y-2 flex-1">
-                        <div className="flex items-center gap-2.5 flex-wrap">
-                          <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                      <div className="space-y-1.5 flex-1">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2 py-0.5 rounded">
                             {ticket.id}
                           </span>
-                          <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${
+                          <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${
                             ticket.type === 'Voice'
-                              ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                              ? 'bg-blue-50 text-blue-650 border-blue-100'
                               : ticket.type === 'Live Chat'
-                              ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              ? 'bg-sky-50 text-sky-650 border-sky-100'
+                              : 'bg-emerald-50 text-emerald-650 border-emerald-100'
                           }`}>
                             {ticket.type || 'Form'}
                           </span>
-                          <span className="text-xs font-semibold text-slate-400">•</span>
-                          <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                          <span className="text-slate-300 text-xs">•</span>
+                          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                             {ticket.category}
                           </span>
-                          <span className="text-xs font-semibold text-slate-400">•</span>
-                          <span className="text-xs text-slate-500 font-medium">
+                          <span className="text-slate-300 text-xs">•</span>
+                          <span className="text-xs text-slate-400 font-medium">
                             {ticket.createdAt}
                           </span>
                         </div>
-                        <h4 className="font-bold text-slate-900 text-[15px] group-hover:text-primary-600">
-                          {ticket.description.slice(0, 85)}
-                          {ticket.description.length > 85 ? '...' : ''}
+                        <h4 className="font-bold text-slate-800 text-sm group-hover:text-primary-600 transition-colors">
+                          {ticket.description}
                         </h4>
                       </div>
                       
                       <div className="flex items-center gap-4 justify-between md:justify-end">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
                           ticket.status === 'Open'
-                            ? 'bg-blue-50 text-blue-700 border-blue-100'
+                            ? 'bg-blue-50 text-blue-650 border-blue-100'
                             : ticket.status === 'In Progress'
-                            ? 'bg-amber-50 text-amber-700 border-amber-100'
-                            : 'bg-green-50 text-green-700 border-green-100'
+                            ? 'bg-amber-50 text-amber-650 border-amber-100'
+                            : 'bg-emerald-50 text-emerald-650 border-emerald-100'
                         }`}>
                           {ticket.status}
                         </span>
-                        <ChevronRight className="w-5 h-5 text-slate-400 hidden md:block" />
+                        <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all hidden md:block" />
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          </div>
+          )}
 
-          {/* Right Column: Chat History Sessions (4 columns) */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white border border-slate-200 shadow-sm rounded-3xl overflow-hidden p-6 space-y-4">
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5 text-indigo-600" />
-                  Live Chat Logs
-                </h3>
-                <p className="text-slate-500 text-xs font-medium">Transcripts of floating assistant widget chats.</p>
-              </div>
-
+          {/* TAB 3: LIVE CHATS */}
+          {activeTab === 'chats' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {chats.length === 0 ? (
-                <div className="p-8 text-center space-y-3 bg-slate-50 rounded-2xl border border-slate-100">
-                  <MessageSquare className="w-8 h-8 text-slate-400 mx-auto" />
+                <div className="col-span-full bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
+                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
                   <div>
-                    <h5 className="font-bold text-slate-900 text-xs">No Active Chats</h5>
-                    <p className="text-slate-500 text-[11px] mt-1 leading-relaxed">
-                      Initialize support sessions in the contact tab to record history.
-                    </p>
+                    <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
+                    <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3.5">
-                  {chats.map((chat) => (
-                    <div 
-                      key={chat.id}
-                      onClick={() => setSelectedChat(chat)}
-                      className="border border-slate-200/80 hover:border-slate-300 rounded-2xl p-4 transition-all hover:shadow-sm cursor-pointer space-y-3"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-slate-800 text-xs truncate">{chat.title}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
-                          chat.status === 'Active'
-                            ? 'bg-green-50 text-green-700 border-green-100 animate-pulse'
-                            : chat.status === 'Connecting'
-                            ? 'bg-amber-50 text-amber-700 border-amber-100'
-                            : 'bg-slate-50 text-slate-500 border-slate-200'
-                        }`}>
-                          {chat.status}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 leading-relaxed truncate">
-                        Latest: &quot;{chat.messages[chat.messages.length - 1]?.text || 'No messages'}&quot;
-                      </div>
-                      <div className="text-[10px] text-slate-400 font-semibold flex items-center justify-between">
-                        <span>{chat.messages.length} messages</span>
-                        <span>{chat.updatedAt.split(' ')[0]}</span>
-                      </div>
+                chats.map((chat) => (
+                  <div 
+                    key={chat.id}
+                    onClick={() => setSelectedChat(chat)}
+                    className="bg-white border border-slate-200 hover:border-primary-400 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer space-y-4 group"
+                  >
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <span className="font-bold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">{chat.title}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                        chat.status === 'Active'
+                          ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
+                          : 'bg-slate-50 text-slate-400 border-slate-200'
+                      }`}>
+                        {chat.status}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                    <p className="text-xs text-slate-500 italic line-clamp-2 leading-relaxed select-text">
+                      &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
+                    </p>
+                    <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100 pt-3">
+                      <span>{chat.messages.length} messages</span>
+                      <span>{chat.updatedAt.split(' ')[0]}</span>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
+          )}
 
-            {/* Voice Assistant Logs Card */}
-            <div className="bg-white border border-slate-200 shadow-sm rounded-3xl overflow-hidden p-6 space-y-4">
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-                  <Mic className="w-5 h-5 text-purple-600" />
-                  Voice Assistant Logs
-                </h3>
-                <p className="text-slate-500 text-xs font-medium">Transcripts of microphone speech recognition.</p>
-              </div>
-
+          {/* TAB 4: VOICE LOGS */}
+          {activeTab === 'voice' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {voiceLogs.length === 0 ? (
-                <div className="p-8 text-center space-y-3 bg-slate-50 rounded-2xl border border-slate-100">
-                  <Mic className="w-8 h-8 text-slate-400 mx-auto" />
+                <div className="col-span-full bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
+                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
                   <div>
-                    <h5 className="font-bold text-slate-900 text-xs">No Voice Logs</h5>
-                    <p className="text-slate-500 text-[11px] mt-1 leading-relaxed">
-                      Use microphone inputs in support chats or forms to record voice transcripts.
-                    </p>
+                    <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
+                    <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3.5">
-                  {voiceLogs.map((log) => (
-                    <div 
-                      key={log.id}
-                      onClick={() => setSelectedVoiceLog(log)}
-                      className="border border-slate-200/80 hover:border-slate-300 rounded-2xl p-4 transition-all hover:shadow-sm cursor-pointer space-y-3"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-slate-800 text-xs truncate">{log.title}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
-                          log.status === 'Completed'
-                            ? 'bg-purple-50 text-purple-700 border-purple-100'
-                            : 'bg-red-50 text-red-700 border-red-100'
-                        }`}>
-                          {log.status}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 leading-relaxed italic truncate">
-                        &quot;{log.transcript}&quot;
-                      </div>
-                      <div className="text-[10px] text-slate-400 font-semibold flex items-center justify-between">
-                        <span>Duration: {log.duration} • Conf: {log.confidence}</span>
-                        <span>{log.createdAt.split(' ')[0]}</span>
-                      </div>
+                voiceLogs.map((log) => (
+                  <div 
+                    key={log.id}
+                    onClick={() => setSelectedVoiceLog(log)}
+                    className="bg-white border border-slate-200 hover:border-primary-400 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer space-y-4 group"
+                  >
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <span className="font-bold text-slate-800 text-xs truncate group-hover:text-primary-650 transition-all">Voice Session</span>
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-blue-50 text-blue-650 border-blue-100">
+                        {log.status}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                    <p className="text-xs text-slate-500 italic line-clamp-2 leading-relaxed select-text">
+                      &quot;{log.transcript}&quot;
+                    </p>
+                    <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100 pt-3">
+                      <span className="text-primary-600">Duration: {log.duration}</span>
+                      <span>{log.createdAt.split(',')[0]}</span>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
-          </div>
-        </div>
+          )}
+
+        </section>
+
       </div>
 
-      {/* Ticket Details and Discussion Modal */}
+      {/* MODAL 1: TICKET CONVERSATION THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-fade-in">
-            {/* Modal Header */}
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
+            
+            {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-start gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                  <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                  <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded border border-primary-100">
                     {selectedTicket.id}
                   </span>
-                  <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${
-                    selectedTicket.type === 'Voice'
-                      ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                      : selectedTicket.type === 'Live Chat'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  }`}>
-                    {selectedTicket.type || 'Form'}
-                  </span>
-                  <span className="text-slate-300 text-xs font-bold">•</span>
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{selectedTicket.category}</span>
+                  <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{selectedTicket.category}</span>
                 </div>
-                <h3 className="font-bold text-slate-950 text-lg leading-tight">
-                  Raised by {selectedTicket.firstName} {selectedTicket.lastName}
+                <h3 className="font-extrabold text-slate-800 text-lg select-text">
+                  Discussion Thread
                 </h3>
               </div>
               <button 
@@ -553,7 +888,7 @@ export default function DashboardPage() {
                   setSelectedTicket(null);
                   setTicketReplyText('');
                 }}
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 transition-colors cursor-pointer border border-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -561,27 +896,28 @@ export default function DashboardPage() {
 
             {/* Modal Body */}
             <div className="flex-1 p-6 overflow-y-auto space-y-6">
-              {/* Original Issue Description */}
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 space-y-2">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Original Inquiry Description:</p>
+              
+              {/* Original Inquiry Description */}
+              <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Inquiry Description</p>
                 <p className="text-sm text-slate-700 leading-relaxed select-text font-medium">
                   {selectedTicket.description}
                 </p>
-                <p className="text-[10px] text-slate-400 pt-2 font-semibold border-t border-slate-200/50">
+                <p className="text-[10px] text-slate-400 pt-2 font-mono border-t border-slate-200/60">
                   Raised on: {selectedTicket.createdAt}
                 </p>
               </div>
 
               {/* Status Indicator & Resolve Action */}
-              <div className="flex flex-wrap items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl bg-white shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
                 <div className="flex items-center gap-2.5">
-                  <span className="text-xs font-bold text-slate-500 uppercase">Current Status:</span>
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
+                  <span className="text-xs font-bold text-slate-500 uppercase">Status:</span>
+                  <span className={`px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-widest border ${
                     selectedTicket.status === 'Open'
-                      ? 'bg-blue-50 text-blue-700'
+                      ? 'bg-blue-50 text-blue-650 border-blue-100'
                       : selectedTicket.status === 'In Progress'
-                      ? 'bg-amber-50 text-amber-700'
-                      : 'bg-green-50 text-green-700'
+                      ? 'bg-amber-50 text-amber-650 border-amber-100'
+                      : 'bg-emerald-50 text-emerald-650 border-emerald-100'
                   }`}>
                     {selectedTicket.status}
                   </span>
@@ -590,16 +926,16 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => handleResolveTicket(selectedTicket.id)}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1.5 border border-emerald-500/20"
                   >
-                    <CheckSquare className="w-4 h-4" /> Mark as Solved
+                    <CheckSquare className="w-4 h-4" /> Mark as Resolved
                   </button>
                 )}
               </div>
 
               {/* Discussion Thread */}
               <div className="space-y-4">
-                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">
+                <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest border-b border-slate-100 pb-2">
                   Conversation Thread
                 </h4>
                 
@@ -611,12 +947,12 @@ export default function DashboardPage() {
                       const isUser = reply.sender === 'customer';
                       return (
                         <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] rounded-xl px-4 py-2.5 text-sm ${
+                          <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
                             isUser 
-                              ? 'bg-primary-600 text-white rounded-tr-none' 
-                              : 'bg-slate-100 text-slate-700 rounded-tl-none border border-slate-200/50'
+                              ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20' 
+                              : 'bg-slate-100 border border-slate-200/80 text-slate-700 rounded-tl-none'
                           }`}>
-                            <p className="leading-relaxed select-text">{reply.text}</p>
+                            <p className="select-text">{reply.text}</p>
                             <span className={`block text-[9px] mt-1 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>
                               {reply.time}
                             </span>
@@ -641,49 +977,49 @@ export default function DashboardPage() {
                   value={ticketReplyText}
                   onChange={(e) => setTicketReplyText(e.target.value)}
                   placeholder="Type your message update to the support agent..."
-                  className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs focus:border-primary-500 focus:outline-none"
+                  className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs focus:border-primary-500 focus:outline-none text-slate-800 placeholder-slate-400"
                 />
                 <button
                   type="submit"
-                  className="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-colors cursor-pointer"
+                  className="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-all cursor-pointer shadow"
                 >
                   <Send className="w-4.5 h-4.5" />
                 </button>
               </form>
             ) : (
-              <div className="p-4 bg-green-50/50 border-t border-slate-100 text-center text-xs text-green-700 font-semibold">
-                This inquiry is marked as resolved and closed. Replying will reopen this ticket.
+              <div className="p-4 bg-emerald-50 border-t border-slate-100 text-center text-xs text-emerald-700 font-bold">
+                This inquiry is marked as resolved. Replying will reopen the ticket.
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* Chat Transcript Modal */}
+      {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[75vh] animate-fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <div>
                 <h3 className="font-bold text-slate-800 text-sm truncate">{selectedChat.title}</h3>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{selectedChat.status} session transcript</p>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{selectedChat.status} session transcript</p>
               </div>
               <button 
                 onClick={() => setSelectedChat(null)}
-                className="p-1 rounded-lg hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                className="p-1 rounded-lg bg-slate-150 hover:bg-slate-200 text-slate-455 hover:text-slate-700 transition-colors cursor-pointer border border-slate-200/50"
               >
                 <X className="w-4.5 h-4.5" />
               </button>
             </div>
 
             {/* Transcript Messages Body */}
-            <div className="flex-1 p-5 overflow-y-auto bg-slate-50/30 space-y-3">
+            <div className="flex-1 p-5 overflow-y-auto bg-slate-50/20 space-y-4">
               {selectedChat.messages.map((msg, idx) => {
                 if (msg.sender === 'system') {
                   return (
                     <div key={idx} className="text-center">
-                      <span className="inline-block bg-slate-200/80 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      <span className="inline-block bg-slate-100 border border-slate-200 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full">
                         {msg.text}
                       </span>
                     </div>
@@ -692,11 +1028,11 @@ export default function DashboardPage() {
                 const isUser = msg.sender === 'user';
                 return (
                   <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] rounded-xl px-3.5 py-2 text-xs leading-relaxed ${
-                      isUser ? 'bg-primary-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
+                    <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
+                      isUser ? 'bg-primary-650 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-none shadow-sm'
                     }`}>
                       <p className="select-text">{msg.text}</p>
-                      <span className={`block text-[9px] mt-0.5 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>
+                      <span className={`block text-[9px] mt-1 text-right ${isUser ? 'text-primary-200' : 'text-slate-400'}`}>
                         {msg.time}
                       </span>
                     </div>
@@ -706,66 +1042,75 @@ export default function DashboardPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-100 bg-white text-center text-[10px] text-slate-400 font-semibold">
+            <div className="p-4 border-t border-slate-100 bg-slate-50 text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest">
               Live chat session logged and encrypted.
             </div>
           </div>
         </div>
       )}
 
-      {/* Voice Log Details Modal */}
+      {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[75vh] animate-fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <div>
-                <h3 className="font-bold text-slate-800 text-sm truncate">{selectedVoiceLog.title}</h3>
-                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">{selectedVoiceLog.id} speech session log</p>
+                <h3 className="font-bold text-slate-800 text-sm truncate">AI Voice Session</h3>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Session ID: {selectedVoiceLog.id.slice(0, 10)}...</p>
               </div>
               <button 
                 onClick={() => setSelectedVoiceLog(null)}
-                className="p-1 rounded-lg hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                className="p-1 rounded-lg bg-slate-150 hover:bg-slate-200 text-slate-455 hover:text-slate-700 transition-colors cursor-pointer border border-slate-200/50"
               >
                 <X className="w-4.5 h-4.5" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="flex-1 p-6 bg-slate-50/30 space-y-6">
-              <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Microphone Input Transcript:</p>
-                <p className="text-sm text-slate-700 font-medium italic leading-relaxed select-text">
+            <div className="flex-1 p-6 bg-slate-50/20 space-y-6">
+              
+              {/* Animated wave */}
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex items-center justify-center gap-1.5 h-16">
+                <span className="w-1 bg-primary-500 rounded h-8 animate-pulse" />
+                <span className="w-1 bg-primary-500 rounded h-12 animate-pulse [animation-delay:0.2s]" />
+                <span className="w-1 bg-primary-500 rounded h-6 animate-pulse [animation-delay:0.4s]" />
+                <span className="w-1 bg-primary-500 rounded h-10 animate-pulse [animation-delay:0.1s]" />
+                <span className="w-1 bg-primary-500 rounded h-4 animate-pulse [animation-delay:0.3s]" />
+                <span className="w-1 bg-primary-500 rounded h-8 animate-pulse [animation-delay:0.5s]" />
+                <span className="w-1 bg-primary-500 rounded h-12 animate-pulse [animation-delay:0.2s]" />
+                <span className="w-1 bg-primary-500 rounded h-6 animate-pulse [animation-delay:0.6s]" />
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Audio Transcript</p>
+                <p className="text-xs text-slate-700 font-medium italic leading-relaxed select-text">
                   &quot;{selectedVoiceLog.transcript}&quot;
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase">Duration</span>
+                <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                  <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
                   <span className="text-xs font-bold text-slate-700 mt-1 block">{selectedVoiceLog.duration}</span>
                 </div>
-                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase">Confidence</span>
-                  <span className="text-xs font-bold text-slate-700 mt-1 block">{selectedVoiceLog.confidence} Match</span>
+                <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                  <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
+                  <span className="text-xs font-bold mt-1 block text-primary-650">{selectedVoiceLog.confidence} Match</span>
                 </div>
               </div>
 
-              <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex items-center justify-between">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Session Status</span>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
-                  selectedVoiceLog.status === 'Completed'
-                    ? 'bg-purple-50 text-purple-700 border-purple-100'
-                    : 'bg-red-50 text-red-700 border-red-100'
-                }`}>
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center justify-between">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border bg-blue-50 text-blue-650 border-blue-100">
                   {selectedVoiceLog.status}
                 </span>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-100 bg-white text-center text-[10px] text-slate-400 font-semibold">
-              Voice recognition speech logs synced.
+            <div className="p-4 border-t border-slate-100 bg-slate-50 text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest">
+              Voice transcription logs synced.
             </div>
           </div>
         </div>

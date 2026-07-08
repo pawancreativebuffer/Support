@@ -36,6 +36,64 @@ export const ContactVoiceTab: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const conversationRef = useRef<any>(null);
+  const conversationIdRef = useRef<string | null>(null);
+  const sessionStartTimeRef = useRef<number | null>(null);
+  const messagesRef = useRef<VoiceMessage[]>([]);
+
+  const saveVoiceSessionToDb = async (messagesList: VoiceMessage[]) => {
+    const cid = conversationIdRef.current;
+    if (!cid) return;
+
+    const durationSec = sessionStartTimeRef.current
+      ? Math.round((Date.now() - sessionStartTimeRef.current) / 1000)
+      : 0;
+
+    const transcriptText = messagesList
+      .filter(m => m.id !== 'welcome')
+      .map(m => `${m.sender === 'user' ? 'Customer' : 'Agent'}: ${m.text}`)
+      .join('\n');
+
+    if (!transcriptText.trim()) return;
+
+    try {
+      await fetch('/api/voice-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          conversationId: cid,
+          customerEmail: currentUser?.email || null,
+          transcript: transcriptText,
+          duration: durationSec
+        })
+      });
+      console.log("Voice session saved in PostgreSQL database.");
+
+      // Sync local storage as fallback/complement
+      const newLog = {
+        id: cid,
+        title: `Voice Session: ${cid.slice(0, 10)}...`,
+        status: 'Completed',
+        createdAt: new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        duration: `${durationSec}s`,
+        transcript: transcriptText,
+        confidence: '98%',
+        audioUrl: null
+      };
+
+      const existing = localStorage.getItem('nexus_voice_logs');
+      const logs = existing ? JSON.parse(existing) : [];
+      if (!logs.some((l: any) => l.id === cid)) {
+        logs.unshift(newLog);
+        localStorage.setItem('nexus_voice_logs', JSON.stringify(logs));
+      }
+    } catch (err) {
+      console.error("Failed to save voice log to database:", err);
+    }
+  };
 
   // Load user session on mount
   useEffect(() => {
@@ -186,23 +244,29 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
         overrides: conversationOverrides,
         onConnect: ({ conversationId }: { conversationId: string }) => {
           console.log("ElevenLabs Connected:", conversationId);
+          conversationIdRef.current = conversationId;
+          sessionStartTimeRef.current = Date.now();
+          messagesRef.current = []; // Reset on new connect
           setStatus('listening');
         },
         onDisconnect: () => {
           console.log("ElevenLabs Disconnected");
           setStatus('idle');
           stopAudioAnalysis();
+          saveVoiceSessionToDb(messagesRef.current);
         },
         onMessage: (message: { message: string; source: 'user' | 'ai' }) => {
-          setMessages(prev => [
-            ...prev,
-            {
-              id: generateUniqueId(),
-              sender: message.source === 'user' ? 'user' : 'assistant',
-              text: message.message,
-              timestamp: getCurrentTime()
-            }
-          ]);
+          const newMsg = {
+            id: generateUniqueId(),
+            sender: (message.source === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+            text: message.message,
+            timestamp: getCurrentTime()
+          };
+          setMessages(prev => {
+            const next = [...prev, newMsg];
+            messagesRef.current = next;
+            return next;
+          });
         },
         onError: (error: any) => {
           console.error("ElevenLabs Error:", error);

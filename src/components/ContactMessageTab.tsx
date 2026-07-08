@@ -23,41 +23,59 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
     setPrevInitialTopic(initialTopic);
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName || !lastName || !email || !comment) return;
 
     setFormStatus('loading');
-    setTimeout(() => {
-      const generatedNum = Math.floor(Math.random() * 900000) + 100000;
-      const newTicket = {
-        id: `TK-${generatedNum}`,
-        firstName,
-        lastName,
-        email,
-        category: topic || 'General Inquiry',
-        description: comment,
-        status: 'Open',
-        type: 'Form',
-        createdAt: new Date().toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric'
-        }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          category: topic || 'General Inquiry',
+          description: comment
+        })
+      });
 
-      try {
+      if (res.ok) {
+        const data = await res.json();
+        setTicketNumber(data.ticketId);
+        setFormStatus('success');
+
+        // Maintain localStorage copy as fallback for widget state
+        const newTicket = {
+          id: data.ticketCode,
+          firstName,
+          lastName,
+          email,
+          category: topic || 'General Inquiry',
+          description: comment,
+          status: 'Open',
+          type: 'Form',
+          createdAt: new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }) + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
         const existing = localStorage.getItem('nexus_tickets');
         const tickets = existing ? JSON.parse(existing) : [];
         tickets.unshift(newTicket);
         localStorage.setItem('nexus_tickets', JSON.stringify(tickets));
-      } catch (err) {
-        console.error('Failed to save ticket', err);
+      } else {
+        const errData = await res.json();
+        alert(errData.error || 'Failed to submit ticket');
+        setFormStatus('idle');
       }
-
-      setTicketNumber(generatedNum);
-      setFormStatus('success');
-    }, 1500);
+    } catch (err) {
+      console.error('Failed to submit ticket:', err);
+      alert('Network error. Failed to submit ticket.');
+      setFormStatus('idle');
+    }
   };
 
   return (

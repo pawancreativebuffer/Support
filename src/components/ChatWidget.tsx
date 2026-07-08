@@ -369,6 +369,16 @@ export default function ChatWidget() {
                           chats[chatIndex].status = 'Closed';
                           localStorage.setItem('nexus_chats', JSON.stringify(chats));
                         }
+                        
+                        // Notify PostgreSQL database
+                        fetch('/api/chats', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            sessionKey: 'CH-882910',
+                            status: 'Closed'
+                          })
+                        }).catch(err => console.error('Failed to close session in postgres:', err));
                       } catch (err) {
                         console.error(err);
                       }
