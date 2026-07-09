@@ -69,7 +69,13 @@ export async function POST(req: NextRequest) {
           where: { email: portalEmail }
         });
 
-        if (!existingPortalUser) {
+        if (existingPortalUser) {
+          if (existingPortalUser.role !== 'CUSTOMER') {
+            return NextResponse.json({
+              error: 'Access denied. This login is reserved for customers only.'
+            }, { status: 403 });
+          }
+        } else {
           console.log(`Syncing user to PostgreSQL portal database: ${portalEmail}`);
           await postgresPrisma.portalUser.create({
             data: {
