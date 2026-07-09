@@ -3,7 +3,7 @@ import { postgresPrisma } from '@/lib/postgresDb';
 
 export async function POST(req: NextRequest) {
   try {
-    const { ticketId, senderEmail, text, action } = await req.json();
+    const { ticketId, senderEmail, text, action, attachmentUrl, attachmentName } = await req.json();
 
     if (!ticketId) {
       return NextResponse.json({ error: 'Ticket ID is required' }, { status: 400 });
@@ -69,53 +69,29 @@ export async function POST(req: NextRequest) {
         ticketId: parsedId,
         senderId: sender.id,
         text: text,
+        attachmentUrl: attachmentUrl || null,
+        attachmentName: attachmentName || null,
         isSystem: false
       }
     });
 
-    // Update ticket status back to OPEN or IN_PROGRESS when customer replies
-    if (ticket.status === 'RESOLVED') {
+    // If sender is agent/admin, update status to IN_PROGRESS and assign agent
+    if (sender.role === 'AGENT' || sender.role === 'ADMIN') {
       await postgresPrisma.supportTicket.update({
         where: { id: parsedId },
-        data: { status: 'OPEN' }
-      });
-    }
-
-    // If sender is CUSTOMER, simulate an agent response in PostgreSQL immediately so it persists
-    if (sender.role === 'CUSTOMER') {
-      // Find or create a mock Agent user in the database
-      let agent = await postgresPrisma.portalUser.findFirst({
-        where: { role: 'AGENT' }
-      });
-
-      if (!agent) {
-        agent = await postgresPrisma.portalUser.create({
-          data: {
-            email: 'agent@ticket-it.com',
-            name: 'Sarah (Support Agent)',
-            passwordHash: '',
-            role: 'AGENT',
-            isActive: true
-          }
-        });
-      }
-
-      // Add agent reply in PostgreSQL (simulated delay is handled on frontend, but we persist it immediately in DB)
-      // This ensures that when the client queries the ticket history, the response is stored!
-      await postgresPrisma.ticketMessage.create({
         data: {
-          ticketId: parsedId,
-          senderId: agent.id,
-          text: 'Thank you for the update. We have logged this description in our active diagnostics console. Our accounts administrator will inspect the transactions manually.',
-          isSystem: false
+          status: 'IN_PROGRESS',
+          agentId: sender.id
         }
       });
-
-      // Set ticket status to IN_PROGRESS
-      await postgresPrisma.supportTicket.update({
-        where: { id: parsedId },
-        data: { status: 'IN_PROGRESS' }
-      });
+    } else {
+      // If customer replied, and ticket was resolved, mark it open again
+      if (ticket.status === 'RESOLVED') {
+        await postgresPrisma.supportTicket.update({
+          where: { id: parsedId },
+          data: { status: 'OPEN' }
+        });
+      }
     }
 
     return NextResponse.json({ success: true, message: userMessage });

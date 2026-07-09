@@ -45,13 +45,15 @@ enum TicketPriority {
 }
 
 model SupportTicket {
-  id          Int            @id @default(autoincrement())
-  title       String
-  description String
-  status      TicketStatus   @default(OPEN)
-  priority    TicketPriority @default(MEDIUM)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id             Int            @id @default(autoincrement())
+  title          String
+  description    String
+  status         TicketStatus   @default(OPEN)
+  priority       TicketPriority @default(MEDIUM)
+  attachmentUrl  String?
+  attachmentName String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   // Foreign keys
   customerId Int
@@ -64,12 +66,14 @@ model SupportTicket {
 }
 
 model TicketMessage {
-  id        Int      @id @default(autoincrement())
-  ticketId  Int
-  senderId  Int
-  text      String
-  isSystem  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  ticketId       Int
+  senderId       Int
+  text           String
+  attachmentUrl  String?
+  attachmentName String?
+  isSystem       Boolean  @default(false)
+  createdAt      DateTime @default(now())
 
   // Relations
   ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)

@@ -62,8 +62,8 @@ export default function RootLayout({
               >
                 Terms of Service
               </a>
-              <Link href="/contact" className="hover:text-primary-400 transition-colors cursor-pointer">
-                Contact
+              <Link href="/agent-login" className="hover:text-primary-400 transition-colors cursor-pointer">
+                Agent Login
               </Link>
             </div>
           </div>

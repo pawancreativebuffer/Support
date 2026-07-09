@@ -40,7 +40,61 @@ export async function GET(req: NextRequest) {
       return NextResponse.json([]);
     }
 
-    // Map to client format
+    // If agent or admin, return all tickets
+    if (portalUser.role === 'AGENT' || portalUser.role === 'ADMIN') {
+      const allTickets = await postgresPrisma.supportTicket.findMany({
+        include: {
+          customer: true,
+          messages: {
+            include: {
+              sender: true
+            },
+            orderBy: {
+              createdAt: 'asc'
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      const formattedTickets = allTickets.map(t => ({
+        id: `TK-${t.id}`,
+        firstName: t.customer.name.split(' ')[0] || 'Client',
+        lastName: t.customer.name.split(' ').slice(1).join(' ') || 'User',
+        email: t.customer.email,
+        category: t.title,
+        description: t.description,
+        status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+        type: 'Form',
+        attachmentUrl: t.attachmentUrl,
+        attachmentName: t.attachmentName,
+        createdAt: t.createdAt.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        replies: t.messages.map(m => ({
+          sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+          text: m.text,
+          attachmentUrl: m.attachmentUrl,
+          attachmentName: m.attachmentName,
+          time: m.createdAt.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        }))
+      }));
+
+      return NextResponse.json(formattedTickets);
+    }
+
+    // Map to client format for customer
     const formattedTickets = portalUser.raisedTickets.map(t => ({
       id: `TK-${t.id}`,
       firstName: portalUser.name.split(' ')[0] || 'Client',
@@ -50,6 +104,8 @@ export async function GET(req: NextRequest) {
       description: t.description,
       status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
       type: 'Form',
+      attachmentUrl: t.attachmentUrl,
+      attachmentName: t.attachmentName,
       createdAt: t.createdAt.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -60,6 +116,8 @@ export async function GET(req: NextRequest) {
       replies: t.messages.map(m => ({
         sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
         text: m.text,
+        attachmentUrl: m.attachmentUrl,
+        attachmentName: m.attachmentName,
         time: m.createdAt.toLocaleString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -78,7 +136,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, category, description, type } = await req.json();
+    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName } = await req.json();
 
     if (!email || !description) {
       return NextResponse.json({ error: 'Email and description are required' }, { status: 400 });
@@ -116,7 +174,9 @@ export async function POST(req: NextRequest) {
         description: description,
         status: 'OPEN',
         priority: 'MEDIUM',
-        customerId: portalUser.id
+        customerId: portalUser.id,
+        attachmentUrl: attachmentUrl || null,
+        attachmentName: attachmentName || null
       }
     });
 
