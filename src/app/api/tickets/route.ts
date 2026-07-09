@@ -40,7 +40,57 @@ export async function GET(req: NextRequest) {
       return NextResponse.json([]);
     }
 
-    // Map to client format
+    // If agent or admin, return all tickets
+    if (portalUser.role === 'AGENT' || portalUser.role === 'ADMIN') {
+      const allTickets = await postgresPrisma.supportTicket.findMany({
+        include: {
+          customer: true,
+          messages: {
+            include: {
+              sender: true
+            },
+            orderBy: {
+              createdAt: 'asc'
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      const formattedTickets = allTickets.map(t => ({
+        id: `TK-${t.id}`,
+        firstName: t.customer.name.split(' ')[0] || 'Client',
+        lastName: t.customer.name.split(' ').slice(1).join(' ') || 'User',
+        email: t.customer.email,
+        category: t.title,
+        description: t.description,
+        status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+        type: 'Form',
+        createdAt: t.createdAt.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        replies: t.messages.map(m => ({
+          sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+          text: m.text,
+          time: m.createdAt.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        }))
+      }));
+
+      return NextResponse.json(formattedTickets);
+    }
+
+    // Map to client format for customer
     const formattedTickets = portalUser.raisedTickets.map(t => ({
       id: `TK-${t.id}`,
       firstName: portalUser.name.split(' ')[0] || 'Client',

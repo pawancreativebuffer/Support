@@ -73,12 +73,23 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // Update ticket status back to OPEN or IN_PROGRESS when customer replies
-    if (ticket.status === 'RESOLVED') {
+    // If sender is agent/admin, update status to IN_PROGRESS and assign agent
+    if (sender.role === 'AGENT' || sender.role === 'ADMIN') {
       await postgresPrisma.supportTicket.update({
         where: { id: parsedId },
-        data: { status: 'OPEN' }
+        data: {
+          status: 'IN_PROGRESS',
+          agentId: sender.id
+        }
       });
+    } else {
+      // If customer replied, and ticket was resolved, mark it open again
+      if (ticket.status === 'RESOLVED') {
+        await postgresPrisma.supportTicket.update({
+          where: { id: parsedId },
+          data: { status: 'OPEN' }
+        });
+      }
     }
 
     return NextResponse.json({ success: true, message: userMessage });
