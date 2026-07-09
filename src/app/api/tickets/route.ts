@@ -134,6 +134,16 @@ export async function GET(req: NextRequest) {
   }
 }
 
+import crypto from 'crypto';
+
+function generateMagicToken(ticketId: number, email: string) {
+  const secret = process.env.UPLOADTHING_TOKEN || 'ticket-it-secret-salt';
+  return crypto.createHmac('sha256', secret)
+               .update(`${ticketId}-${email.toLowerCase()}`)
+               .digest('hex')
+               .substring(0, 16);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName } = await req.json();
@@ -186,7 +196,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ticketId: newTicket.id,
-      ticketCode: `TK-${newTicket.id}`
+      ticketCode: `TK-${newTicket.id}`,
+      magicToken: generateMagicToken(newTicket.id, portalEmail)
     });
   } catch (error) {
     console.error('Error creating ticket:', error);

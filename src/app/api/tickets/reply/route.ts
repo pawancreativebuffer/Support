@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { postgresPrisma } from '@/lib/postgresDb';
 
+import crypto from 'crypto';
+
+function generateMagicToken(ticketId: number, email: string) {
+  const secret = process.env.UPLOADTHING_TOKEN || 'ticket-it-secret-salt';
+  return crypto.createHmac('sha256', secret)
+               .update(`${ticketId}-${email.toLowerCase()}`)
+               .digest('hex')
+               .substring(0, 16);
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { ticketId, senderEmail, text, action, attachmentUrl, attachmentName } = await req.json();
+    const { ticketId, senderEmail, text, action, attachmentUrl, attachmentName, token } = await req.json();
 
     if (!ticketId) {
       return NextResponse.json({ error: 'Ticket ID is required' }, { status: 400 });
@@ -61,6 +71,19 @@ export async function POST(req: NextRequest) {
 
     if (!sender) {
       return NextResponse.json({ error: 'Sender account not found in portal database' }, { status: 404 });
+    }
+
+    // Strict validation: if sender is CUSTOMER, enforce ownership and/or magic token
+    if (sender.role === 'CUSTOMER') {
+      if (ticket.customerId !== sender.id) {
+        return NextResponse.json({ error: 'Access denied. You do not own this ticket.' }, { status: 403 });
+      }
+      if (token) {
+        const expectedToken = generateMagicToken(parsedId, ticket.customer.email);
+        if (token !== expectedToken) {
+          return NextResponse.json({ error: 'Access denied. Invalid tracking token.' }, { status: 403 });
+        }
+      }
     }
 
     // Save the user's message in PostgreSQL
