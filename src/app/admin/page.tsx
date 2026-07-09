@@ -823,14 +823,14 @@ export default function AdminPage() {
                   </div>
 
                   {/* Status Filters */}
-                  <div className="flex items-center h-[38px] rounded-xl border border-slate-250 bg-slate-50 p-1">
+                  <div className="flex items-center h-[38px] rounded-xl border border-slate-200/60 bg-white p-1">
                     {(['All', 'Open', 'Resolved'] as const).map(f => (
                       <button
                         key={f}
                         onClick={() => setTicketFilter(f)}
-                        className={`h-full px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center ${ticketFilter === f
-                          ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
-                          : 'text-slate-400 hover:text-slate-700'
+                        className={`h-full px-3.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center ${ticketFilter === f
+                          ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/20'
+                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                           }`}
                       >
                         {f === 'Open' ? 'Active' : f}
@@ -844,15 +844,15 @@ export default function AdminPage() {
                       onClick={() => setShowPriorityFilters(!showPriorityFilters)}
                       className={`h-[38px] px-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
                         showPriorityFilters || priorityFilter !== 'All'
-                          ? 'bg-slate-800 text-white border-slate-800 shadow-sm shadow-slate-800/10'
-                          : 'bg-white text-slate-655 border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
+                          ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm shadow-primary-100/30'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                       }`}
                       title="Filter by Priority"
                     >
                       <SlidersHorizontal className="w-3.5 h-3.5" />
                       <span>Filters</span>
                       {priorityFilter !== 'All' && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shadow-sm" />
                       )}
                     </button>
 
