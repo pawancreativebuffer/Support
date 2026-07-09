@@ -429,9 +429,10 @@ I can help you with setup guidelines, pricing plans, and integration steps.
     }
 
     return NextResponse.json({
-      text: reply + dbStatusText,
+      text: reply,
       sender: 'agent',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      dbStatus: dbStatusText.trim()
     });
 
   } catch (err: any) {
