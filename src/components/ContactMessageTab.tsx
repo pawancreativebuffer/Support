@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { CheckCircle, Send, Shield, Clock, Lock, Activity } from 'lucide-react';
+import { CheckCircle, Send, Shield, Clock, Lock, Activity, Paperclip, FileText, Trash2, Loader2 } from 'lucide-react';
 import { Topic } from '../data/topics';
+import { useUploadThing } from '../lib/uploadthing';
 
 interface ContactMessageTabProps {
   topics: Topic[];
@@ -16,6 +17,28 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [ticketNumber, setTicketNumber] = useState<number | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [attachment, setAttachment] = useState<{ url: string; name: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const { startUpload } = useUploadThing("ticketAttachment", {
+    onClientUploadComplete: (res) => {
+      if (res && res[0]) {
+        setAttachment({
+          url: res[0].url,
+          name: res[0].name
+        });
+      }
+      setUploading(false);
+    },
+    onUploadError: (error: Error) => {
+      alert(`Upload failed: ${error.message}`);
+      setUploading(false);
+    },
+    onUploadBegin: () => {
+      setUploading(true);
+    }
+  });
 
   // Sync initialTopic from props by tracking previous prop value in state
   const [prevInitialTopic, setPrevInitialTopic] = useState(initialTopic);
@@ -64,7 +87,9 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
           lastName,
           email,
           category: topic || 'General Inquiry',
-          description: comment
+          description: comment,
+          attachmentUrl: attachment?.url || null,
+          attachmentName: attachment?.name || null
         })
       });
 
@@ -83,6 +108,8 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
           description: comment,
           status: 'Open',
           type: 'Form',
+          attachmentUrl: attachment?.url || null,
+          attachmentName: attachment?.name || null,
           createdAt: new Date().toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -123,6 +150,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
               setComment('');
               setFormStatus('idle');
               setTicketNumber(null);
+              setAttachment(null);
             }}
             className="mt-6 px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-colors cursor-pointer"
           >
@@ -231,6 +259,60 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                 placeholder="Please detail your inquiry here..."
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none resize-none transition-colors"
               />
+            </div>
+
+            {/* Attachment Area */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">File Attachment (Optional)</span>
+                <span className="text-[10px] text-slate-400 font-medium">Excel, PDF, Images up to 16MB</span>
+              </div>
+              
+              {!attachment && !uploading && (
+                <div>
+                  <input
+                    type="file"
+                    id="file-upload"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) startUpload([file]);
+                    }}
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"
+                  >
+                    <Paperclip className="w-3.5 h-3.5 text-primary-600" />
+                    Attach File
+                  </label>
+                </div>
+              )}
+
+              {uploading && (
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                  <Loader2 className="w-4 h-4 text-primary-600 animate-spin" />
+                  Uploading file to cloud storage...
+                </div>
+              )}
+
+              {attachment && (
+                <div className="flex items-center justify-between bg-white border border-slate-100 rounded-xl p-3 shadow-sm">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-700 truncate max-w-[200px] sm:max-w-xs">{attachment.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAttachment(null)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             <button

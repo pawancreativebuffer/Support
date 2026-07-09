@@ -28,9 +28,13 @@ import {
   HelpCircle,
   Info,
   Volume2,
-  VolumeX
+  VolumeX,
+  Paperclip,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { useUploadThing } from '@/lib/uploadthing';
 
 interface TicketItem {
   id: string;
@@ -42,7 +46,15 @@ interface TicketItem {
   status: 'Open' | 'In Progress' | 'Resolved';
   createdAt: string;
   type?: 'Form' | 'Voice' | 'Live Chat';
-  replies?: { sender: 'customer' | 'agent'; text: string; time: string }[];
+  attachmentUrl?: string | null;
+  attachmentName?: string | null;
+  replies?: { 
+    sender: 'customer' | 'agent'; 
+    text: string; 
+    time: string; 
+    attachmentUrl?: string | null; 
+    attachmentName?: string | null; 
+  }[];
 }
 
 interface ChatItem {
@@ -148,6 +160,20 @@ export default function DashboardPage() {
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Pagination & Limits
+  const [visibleActivities, setVisibleActivities] = useState(5);
+  const [ticketsPage, setTicketsPage] = useState(1);
+  const ticketsPerPage = 5;
+  const [chatsPage, setChatsPage] = useState(1);
+  const chatsPerPage = 6;
+  const [voicePage, setVoicePage] = useState(1);
+  const voicePerPage = 6;
+
+  // Reset page numbers on filter/search change
+  useEffect(() => {
+    setTicketsPage(1);
+  }, [searchQuery, ticketFilter]);
+
   // Modals / Details
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
@@ -155,6 +181,28 @@ export default function DashboardPage() {
   const [audioPlaybackError, setAudioPlaybackError] = useState(false);
   const [ticketReplyText, setTicketReplyText] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [replyAttachment, setReplyAttachment] = useState<{ url: string; name: string } | null>(null);
+  const [replyUploading, setReplyUploading] = useState(false);
+
+  const { startUpload: startReplyUpload } = useUploadThing("ticketAttachment", {
+    onClientUploadComplete: (res) => {
+      if (res && res[0]) {
+        setReplyAttachment({
+          url: res[0].url,
+          name: res[0].name
+        });
+      }
+      setReplyUploading(false);
+    },
+    onUploadError: (error: Error) => {
+      alert(`Upload failed: ${error.message}`);
+      setReplyUploading(false);
+    },
+    onUploadBegin: () => {
+      setReplyUploading(true);
+    }
+  });
 
   useEffect(() => {
     setAudioPlaybackError(false);
@@ -254,7 +302,9 @@ export default function DashboardPage() {
     const localReply = {
       sender: 'customer' as const,
       text: replyMsg,
-      time: timeString
+      time: timeString,
+      attachmentUrl: replyAttachment?.url || null,
+      attachmentName: replyAttachment?.name || null
     };
 
     if (selectedTicket) {
@@ -273,11 +323,14 @@ export default function DashboardPage() {
         body: JSON.stringify({
           ticketId: ticketId,
           senderEmail: user.email,
-          text: replyMsg
+          text: replyMsg,
+          attachmentUrl: replyAttachment?.url || null,
+          attachmentName: replyAttachment?.name || null
         })
       });
 
       if (res.ok) {
+        setReplyAttachment(null);
         const email = user.email;
         const freshRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
         if (freshRes.ok) {
@@ -623,7 +676,7 @@ export default function DashboardPage() {
                     </div>
                   ) : (
                     <div className="relative pl-6 border-l border-slate-200 space-y-8 ml-2 py-2">
-                      {activities.map((act, index) => {
+                      {activities.slice(0, visibleActivities).map((act, index) => {
                         let dotColor = "bg-primary-500 ring-primary-100";
                         let typeLabel = "Ticket";
                         let typeColor = "text-primary-650 bg-primary-50 border-primary-100";
@@ -692,6 +745,16 @@ export default function DashboardPage() {
                           </div>
                         );
                       })}
+                      {visibleActivities < activities.length && (
+                        <div className="pt-4 flex justify-center">
+                          <button
+                            onClick={() => setVisibleActivities(prev => prev + 5)}
+                            className="px-6 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                          >
+                            Load More Activity
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -798,7 +861,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="p-6 pt-4 space-y-4">
-                  {filteredTickets.map((ticket) => (
+                  {filteredTickets.slice((ticketsPage - 1) * ticketsPerPage, ticketsPage * ticketsPerPage).map((ticket) => (
                     <div
                       key={ticket.id}
                       onClick={() => setSelectedTicket(ticket)}
@@ -844,6 +907,29 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Pagination Controls */}
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4">
+                    <span className="text-xs text-slate-500 font-bold">
+                      Showing {Math.min(filteredTickets.length, (ticketsPage - 1) * ticketsPerPage + 1)} to {Math.min(filteredTickets.length, ticketsPage * ticketsPerPage)} of {filteredTickets.length} tickets
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={ticketsPage === 1}
+                        onClick={() => setTicketsPage(prev => prev - 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
+                        onClick={() => setTicketsPage(prev => prev + 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -851,9 +937,9 @@ export default function DashboardPage() {
 
           {/* TAB 3: LIVE CHATS */}
           {activeTab === 'chats' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+            <div className="space-y-6 animate-fade-in w-full">
               {chats.length === 0 ? (
-                <div className="col-span-full bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
                   <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
                   <div>
                     <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
@@ -861,55 +947,82 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ) : (
-                chats.map((chat) => (
-                  <div
-                    key={chat.id}
-                    onClick={() => setSelectedChat(chat)}
-                    className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
-                  >
-                    <div className="space-y-3.5">
-                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                        <div className="flex items-center gap-2 truncate">
-                          <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100 flex-shrink-0">
-                            <MessageCircle className="w-3.5 h-3.5" />
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {chats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map((chat) => (
+                      <div
+                        key={chat.id}
+                        onClick={() => setSelectedChat(chat)}
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                      >
+                        <div className="space-y-3.5">
+                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100 flex-shrink-0">
+                                <MessageCircle className="w-3.5 h-3.5" />
+                              </span>
+                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
+                                {chat.title}
+                              </span>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
+                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
+                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
+                              }`}>
+                              {chat.status}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                            &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
+                          </p>
+                        </div>
+
+                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
+                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
+                            {chat.messages.length} messages
                           </span>
-                          <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                            {chat.title}
+                          <span className="text-slate-450 flex items-center gap-1">
+                            <Calendar className="w-3 h-3 text-slate-400" />
+                            {chat.updatedAt}
                           </span>
                         </div>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
-                          ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
-                          : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                          }`}>
-                          {chat.status}
-                        </span>
                       </div>
+                    ))}
+                  </div>
 
-                      <p className="text-xs text-slate-550 leading-relaxed font-normal line-clamp-2 select-text">
-                        &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
-                      </p>
-                    </div>
-
-                    <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                      <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                        {chat.messages.length} messages
-                      </span>
-                      <span className="text-slate-450 flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-slate-400" />
-                        {chat.updatedAt}
-                      </span>
+                  {/* Chats Pagination */}
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                    <span className="text-xs text-slate-500 font-bold">
+                      Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={chatsPage === 1}
+                        onClick={() => setChatsPage(prev => prev - 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        disabled={chatsPage * chatsPerPage >= chats.length}
+                        onClick={() => setChatsPage(prev => prev + 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
-                ))
+                </>
               )}
             </div>
           )}
 
           {/* TAB 4: VOICE LOGS */}
           {activeTab === 'voice' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+            <div className="space-y-6 animate-fade-in w-full">
               {voiceLogs.length === 0 ? (
-                <div className="col-span-full bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
                   <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
                   <div>
                     <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
@@ -917,46 +1030,73 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ) : (
-                voiceLogs.map((log) => (
-                  <div
-                    key={log.id}
-                    onClick={() => setSelectedVoiceLog(log)}
-                    className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
-                  >
-                    <div className="space-y-3.5">
-                      <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                        <div className="flex items-center gap-2 truncate">
-                          <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
-                            <Mic className="w-3.5 h-3.5" />
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {voiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map((log) => (
+                      <div
+                        key={log.id}
+                        onClick={() => setSelectedVoiceLog(log)}
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                      >
+                        <div className="space-y-3.5">
+                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
+                                <Mic className="w-3.5 h-3.5" />
+                              </span>
+                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
+                                Voice Session
+                              </span>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
+                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
+                              }`}>
+                              {log.status}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                            &quot;{log.transcript}&quot;
+                          </p>
+                        </div>
+
+                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
+                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
+                            Duration: {log.duration}
                           </span>
-                          <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                            Voice Session
+                          <span className="text-slate-450 flex items-center gap-1">
+                            <Calendar className="w-3 h-3 text-slate-400" />
+                            {log.createdAt}
                           </span>
                         </div>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
-                          ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                          : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                          }`}>
-                          {log.status}
-                        </span>
                       </div>
+                    ))}
+                  </div>
 
-                      <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                        &quot;{log.transcript}&quot;
-                      </p>
-                    </div>
-
-                    <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                      <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                        Duration: {log.duration}
-                      </span>
-                      <span className="text-slate-450 flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-slate-400" />
-                        {log.createdAt}
-                      </span>
+                  {/* Voice Pagination */}
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                    <span className="text-xs text-slate-500 font-bold">
+                      Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={voicePage === 1}
+                        onClick={() => setVoicePage(prev => prev - 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        disabled={voicePage * voicePerPage >= voiceLogs.length}
+                        onClick={() => setVoicePage(prev => prev + 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
-                ))
+                </>
               )}
             </div>
           )}
@@ -997,7 +1137,7 @@ export default function DashboardPage() {
 
             {/* Modal Body */}
             <div className="flex-1 p-6 overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
 
                 {/* Left Column: 5 cols (Inquiry Description & Status/Resolution) */}
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
@@ -1014,6 +1154,24 @@ export default function DashboardPage() {
                       Raised on: {selectedTicket.createdAt}
                     </p>
                   </div>
+
+                  {/* Ticket Attachments */}
+                  {selectedTicket.attachmentUrl && (
+                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
+                      <div className="flex flex-wrap gap-2.5">
+                        <a
+                          href={selectedTicket.attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm max-w-full"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-primary-600 shrink-0" />
+                          <span className="truncate text-slate-800">{selectedTicket.attachmentName || 'View Attachment'}</span>
+                        </a>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Status Indicator & Resolve Action */}
                   <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
@@ -1045,7 +1203,7 @@ export default function DashboardPage() {
                 <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
 
                   {/* Discussion Thread container */}
-                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[380px]">
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 min-h-[380px] flex flex-col">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                       <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
                         <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100">
@@ -1059,7 +1217,7 @@ export default function DashboardPage() {
                     </div>
 
                     {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
-                      <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
+                      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
                         <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shadow-sm animate-pulse">
                           <Clock className="w-5 h-5" />
                         </div>
@@ -1081,6 +1239,25 @@ export default function DashboardPage() {
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
                                 <p className="select-text">{reply.text}</p>
+                                
+                                {reply.attachmentUrl && (
+                                  <div className={`mt-2 pt-2 border-t ${isUser ? 'border-white/20' : 'border-slate-200'} flex`}>
+                                    <a
+                                      href={reply.attachmentUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all truncate max-w-full ${
+                                        isUser
+                                          ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
+                                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-250'
+                                      }`}
+                                    >
+                                      <FileText className="w-3.5 h-3.5 shrink-0" />
+                                      <span className="truncate">{reply.attachmentName || 'View Attachment'}</span>
+                                    </a>
+                                  </div>
+                                )}
+
                                 <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isUser ? 'text-white/80' : 'text-slate-500'}`}>
                                   {reply.time}
                                 </span>
@@ -1094,25 +1271,68 @@ export default function DashboardPage() {
 
                   {/* Modal Footer Reply Form */}
                   {selectedTicket.status !== 'Resolved' ? (
-                    <form
-                      onSubmit={(e) => handleSendTicketReply(e, selectedTicket.id)}
-                      className="mt-4 pt-4 border-t border-slate-100 flex gap-2.5"
-                    >
-                      <input
-                        type="text"
-                        required
-                        value={ticketReplyText}
-                        onChange={(e) => setTicketReplyText(e.target.value)}
-                        placeholder="Type your message update to the support agent..."
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
-                      />
-                      <button
-                        type="submit"
-                        className="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-all cursor-pointer shadow hover:shadow-md hover:scale-105"
+                    <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
+                      {replyAttachment && (
+                        <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-2.5 shadow-sm animate-fade-in">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <FileText className="w-4 h-4 text-primary-600 shrink-0" />
+                            <span className="text-xs font-bold text-slate-700 truncate max-w-[200px] sm:max-w-xs">{replyAttachment.name}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setReplyAttachment(null)}
+                            className="p-1 text-red-500 hover:bg-red-55 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                      
+                      {replyUploading && (
+                        <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                          <Loader2 className="w-3.5 h-3.5 text-primary-600 animate-spin" />
+                          Uploading reply file...
+                        </div>
+                      )}
+
+                      <form
+                        onSubmit={(e) => handleSendTicketReply(e, selectedTicket.id)}
+                        className="flex gap-2.5"
                       >
-                        <Send className="w-4.5 h-4.5" />
-                      </button>
-                    </form>
+                        <input
+                          type="file"
+                          id="reply-file-upload"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) startReplyUpload([file]);
+                          }}
+                        />
+                        <label
+                          htmlFor="reply-file-upload"
+                          className="w-12 h-12 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-all shrink-0 hover:border-primary-400"
+                          title="Attach file"
+                        >
+                          <Paperclip className="w-5 h-5 text-slate-500 hover:text-primary-600" />
+                        </label>
+
+                        <input
+                          type="text"
+                          required
+                          value={ticketReplyText}
+                          onChange={(e) => setTicketReplyText(e.target.value)}
+                          placeholder="Type your message update to the support agent..."
+                          className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
+                        />
+                        <button
+                          type="submit"
+                          disabled={replyUploading}
+                          className="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-all cursor-pointer shadow hover:shadow-md hover:scale-105 disabled:bg-primary-400 disabled:cursor-not-allowed"
+                        >
+                          <Send className="w-4.5 h-4.5" />
+                        </button>
+                      </form>
+                    </div>
                   ) : (
                     <div className="mt-4 p-4.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl text-center text-xs font-bold text-emerald-600">
                       This inquiry has been marked as resolved.

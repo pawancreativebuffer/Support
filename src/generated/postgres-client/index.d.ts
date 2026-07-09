@@ -2755,6 +2755,8 @@ export namespace Prisma {
     description: string | null
     status: $Enums.TicketStatus | null
     priority: $Enums.TicketPriority | null
+    attachmentUrl: string | null
+    attachmentName: string | null
     createdAt: Date | null
     updatedAt: Date | null
     customerId: number | null
@@ -2767,6 +2769,8 @@ export namespace Prisma {
     description: string | null
     status: $Enums.TicketStatus | null
     priority: $Enums.TicketPriority | null
+    attachmentUrl: string | null
+    attachmentName: string | null
     createdAt: Date | null
     updatedAt: Date | null
     customerId: number | null
@@ -2779,6 +2783,8 @@ export namespace Prisma {
     description: number
     status: number
     priority: number
+    attachmentUrl: number
+    attachmentName: number
     createdAt: number
     updatedAt: number
     customerId: number
@@ -2805,6 +2811,8 @@ export namespace Prisma {
     description?: true
     status?: true
     priority?: true
+    attachmentUrl?: true
+    attachmentName?: true
     createdAt?: true
     updatedAt?: true
     customerId?: true
@@ -2817,6 +2825,8 @@ export namespace Prisma {
     description?: true
     status?: true
     priority?: true
+    attachmentUrl?: true
+    attachmentName?: true
     createdAt?: true
     updatedAt?: true
     customerId?: true
@@ -2829,6 +2839,8 @@ export namespace Prisma {
     description?: true
     status?: true
     priority?: true
+    attachmentUrl?: true
+    attachmentName?: true
     createdAt?: true
     updatedAt?: true
     customerId?: true
@@ -2928,6 +2940,8 @@ export namespace Prisma {
     description: string
     status: $Enums.TicketStatus
     priority: $Enums.TicketPriority
+    attachmentUrl: string | null
+    attachmentName: string | null
     createdAt: Date
     updatedAt: Date
     customerId: number
@@ -2959,6 +2973,8 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     priority?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
@@ -2975,6 +2991,8 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     priority?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
@@ -2989,6 +3007,8 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     priority?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
@@ -3003,13 +3023,15 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     priority?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
   }
 
-  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "createdAt" | "updatedAt" | "customerId" | "agentId", ExtArgs["result"]["supportTicket"]>
+  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "attachmentUrl" | "attachmentName" | "createdAt" | "updatedAt" | "customerId" | "agentId", ExtArgs["result"]["supportTicket"]>
   export type SupportTicketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
@@ -3038,6 +3060,8 @@ export namespace Prisma {
       description: string
       status: $Enums.TicketStatus
       priority: $Enums.TicketPriority
+      attachmentUrl: string | null
+      attachmentName: string | null
       createdAt: Date
       updatedAt: Date
       customerId: number
@@ -3473,6 +3497,8 @@ export namespace Prisma {
     readonly description: FieldRef<"SupportTicket", 'String'>
     readonly status: FieldRef<"SupportTicket", 'TicketStatus'>
     readonly priority: FieldRef<"SupportTicket", 'TicketPriority'>
+    readonly attachmentUrl: FieldRef<"SupportTicket", 'String'>
+    readonly attachmentName: FieldRef<"SupportTicket", 'String'>
     readonly createdAt: FieldRef<"SupportTicket", 'DateTime'>
     readonly updatedAt: FieldRef<"SupportTicket", 'DateTime'>
     readonly customerId: FieldRef<"SupportTicket", 'Int'>
@@ -3951,6 +3977,8 @@ export namespace Prisma {
     ticketId: number | null
     senderId: number | null
     text: string | null
+    attachmentUrl: string | null
+    attachmentName: string | null
     isSystem: boolean | null
     createdAt: Date | null
   }
@@ -3960,6 +3988,8 @@ export namespace Prisma {
     ticketId: number | null
     senderId: number | null
     text: string | null
+    attachmentUrl: string | null
+    attachmentName: string | null
     isSystem: boolean | null
     createdAt: Date | null
   }
@@ -3969,6 +3999,8 @@ export namespace Prisma {
     ticketId: number
     senderId: number
     text: number
+    attachmentUrl: number
+    attachmentName: number
     isSystem: number
     createdAt: number
     _all: number
@@ -3992,6 +4024,8 @@ export namespace Prisma {
     ticketId?: true
     senderId?: true
     text?: true
+    attachmentUrl?: true
+    attachmentName?: true
     isSystem?: true
     createdAt?: true
   }
@@ -4001,6 +4035,8 @@ export namespace Prisma {
     ticketId?: true
     senderId?: true
     text?: true
+    attachmentUrl?: true
+    attachmentName?: true
     isSystem?: true
     createdAt?: true
   }
@@ -4010,6 +4046,8 @@ export namespace Prisma {
     ticketId?: true
     senderId?: true
     text?: true
+    attachmentUrl?: true
+    attachmentName?: true
     isSystem?: true
     createdAt?: true
     _all?: true
@@ -4106,6 +4144,8 @@ export namespace Prisma {
     ticketId: number
     senderId: number
     text: string
+    attachmentUrl: string | null
+    attachmentName: string | null
     isSystem: boolean
     createdAt: Date
     _count: TicketMessageCountAggregateOutputType | null
@@ -4134,6 +4174,8 @@ export namespace Prisma {
     ticketId?: boolean
     senderId?: boolean
     text?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     isSystem?: boolean
     createdAt?: boolean
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
@@ -4145,6 +4187,8 @@ export namespace Prisma {
     ticketId?: boolean
     senderId?: boolean
     text?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     isSystem?: boolean
     createdAt?: boolean
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
@@ -4156,6 +4200,8 @@ export namespace Prisma {
     ticketId?: boolean
     senderId?: boolean
     text?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     isSystem?: boolean
     createdAt?: boolean
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
@@ -4167,11 +4213,13 @@ export namespace Prisma {
     ticketId?: boolean
     senderId?: boolean
     text?: boolean
+    attachmentUrl?: boolean
+    attachmentName?: boolean
     isSystem?: boolean
     createdAt?: boolean
   }
 
-  export type TicketMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ticketId" | "senderId" | "text" | "isSystem" | "createdAt", ExtArgs["result"]["ticketMessage"]>
+  export type TicketMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ticketId" | "senderId" | "text" | "attachmentUrl" | "attachmentName" | "isSystem" | "createdAt", ExtArgs["result"]["ticketMessage"]>
   export type TicketMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ticket?: boolean | SupportTicketDefaultArgs<ExtArgs>
     sender?: boolean | PortalUserDefaultArgs<ExtArgs>
@@ -4196,6 +4244,8 @@ export namespace Prisma {
       ticketId: number
       senderId: number
       text: string
+      attachmentUrl: string | null
+      attachmentName: string | null
       isSystem: boolean
       createdAt: Date
     }, ExtArgs["result"]["ticketMessage"]>
@@ -4627,6 +4677,8 @@ export namespace Prisma {
     readonly ticketId: FieldRef<"TicketMessage", 'Int'>
     readonly senderId: FieldRef<"TicketMessage", 'Int'>
     readonly text: FieldRef<"TicketMessage", 'String'>
+    readonly attachmentUrl: FieldRef<"TicketMessage", 'String'>
+    readonly attachmentName: FieldRef<"TicketMessage", 'String'>
     readonly isSystem: FieldRef<"TicketMessage", 'Boolean'>
     readonly createdAt: FieldRef<"TicketMessage", 'DateTime'>
   }
@@ -8400,6 +8452,8 @@ export namespace Prisma {
     description: 'description',
     status: 'status',
     priority: 'priority',
+    attachmentUrl: 'attachmentUrl',
+    attachmentName: 'attachmentName',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     customerId: 'customerId',
@@ -8414,6 +8468,8 @@ export namespace Prisma {
     ticketId: 'ticketId',
     senderId: 'senderId',
     text: 'text',
+    attachmentUrl: 'attachmentUrl',
+    attachmentName: 'attachmentName',
     isSystem: 'isSystem',
     createdAt: 'createdAt'
   };
@@ -8713,6 +8769,8 @@ export namespace Prisma {
     description?: StringFilter<"SupportTicket"> | string
     status?: EnumTicketStatusFilter<"SupportTicket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
+    attachmentUrl?: StringNullableFilter<"SupportTicket"> | string | null
+    attachmentName?: StringNullableFilter<"SupportTicket"> | string | null
     createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
@@ -8728,6 +8786,8 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    attachmentUrl?: SortOrderInput | SortOrder
+    attachmentName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -8746,6 +8806,8 @@ export namespace Prisma {
     description?: StringFilter<"SupportTicket"> | string
     status?: EnumTicketStatusFilter<"SupportTicket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
+    attachmentUrl?: StringNullableFilter<"SupportTicket"> | string | null
+    attachmentName?: StringNullableFilter<"SupportTicket"> | string | null
     createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
@@ -8761,6 +8823,8 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    attachmentUrl?: SortOrderInput | SortOrder
+    attachmentName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -8781,6 +8845,8 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"SupportTicket"> | string
     status?: EnumTicketStatusWithAggregatesFilter<"SupportTicket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityWithAggregatesFilter<"SupportTicket"> | $Enums.TicketPriority
+    attachmentUrl?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
+    attachmentName?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
     customerId?: IntWithAggregatesFilter<"SupportTicket"> | number
@@ -8795,6 +8861,8 @@ export namespace Prisma {
     ticketId?: IntFilter<"TicketMessage"> | number
     senderId?: IntFilter<"TicketMessage"> | number
     text?: StringFilter<"TicketMessage"> | string
+    attachmentUrl?: StringNullableFilter<"TicketMessage"> | string | null
+    attachmentName?: StringNullableFilter<"TicketMessage"> | string | null
     isSystem?: BoolFilter<"TicketMessage"> | boolean
     createdAt?: DateTimeFilter<"TicketMessage"> | Date | string
     ticket?: XOR<SupportTicketScalarRelationFilter, SupportTicketWhereInput>
@@ -8806,6 +8874,8 @@ export namespace Prisma {
     ticketId?: SortOrder
     senderId?: SortOrder
     text?: SortOrder
+    attachmentUrl?: SortOrderInput | SortOrder
+    attachmentName?: SortOrderInput | SortOrder
     isSystem?: SortOrder
     createdAt?: SortOrder
     ticket?: SupportTicketOrderByWithRelationInput
@@ -8820,6 +8890,8 @@ export namespace Prisma {
     ticketId?: IntFilter<"TicketMessage"> | number
     senderId?: IntFilter<"TicketMessage"> | number
     text?: StringFilter<"TicketMessage"> | string
+    attachmentUrl?: StringNullableFilter<"TicketMessage"> | string | null
+    attachmentName?: StringNullableFilter<"TicketMessage"> | string | null
     isSystem?: BoolFilter<"TicketMessage"> | boolean
     createdAt?: DateTimeFilter<"TicketMessage"> | Date | string
     ticket?: XOR<SupportTicketScalarRelationFilter, SupportTicketWhereInput>
@@ -8831,6 +8903,8 @@ export namespace Prisma {
     ticketId?: SortOrder
     senderId?: SortOrder
     text?: SortOrder
+    attachmentUrl?: SortOrderInput | SortOrder
+    attachmentName?: SortOrderInput | SortOrder
     isSystem?: SortOrder
     createdAt?: SortOrder
     _count?: TicketMessageCountOrderByAggregateInput
@@ -8848,6 +8922,8 @@ export namespace Prisma {
     ticketId?: IntWithAggregatesFilter<"TicketMessage"> | number
     senderId?: IntWithAggregatesFilter<"TicketMessage"> | number
     text?: StringWithAggregatesFilter<"TicketMessage"> | string
+    attachmentUrl?: StringNullableWithAggregatesFilter<"TicketMessage"> | string | null
+    attachmentName?: StringNullableWithAggregatesFilter<"TicketMessage"> | string | null
     isSystem?: BoolWithAggregatesFilter<"TicketMessage"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"TicketMessage"> | Date | string
   }
@@ -9138,6 +9214,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
@@ -9151,6 +9229,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -9163,6 +9243,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
@@ -9176,6 +9258,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -9189,6 +9273,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -9200,6 +9286,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9210,6 +9298,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -9218,6 +9308,8 @@ export namespace Prisma {
 
   export type TicketMessageCreateInput = {
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
     ticket: SupportTicketCreateNestedOneWithoutMessagesInput
@@ -9229,12 +9321,16 @@ export namespace Prisma {
     ticketId: number
     senderId: number
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
   }
 
   export type TicketMessageUpdateInput = {
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ticket?: SupportTicketUpdateOneRequiredWithoutMessagesNestedInput
@@ -9246,6 +9342,8 @@ export namespace Prisma {
     ticketId?: IntFieldUpdateOperationsInput | number
     senderId?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9255,12 +9353,16 @@ export namespace Prisma {
     ticketId: number
     senderId: number
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
   }
 
   export type TicketMessageUpdateManyMutationInput = {
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9270,6 +9372,8 @@ export namespace Prisma {
     ticketId?: IntFieldUpdateOperationsInput | number
     senderId?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9663,6 +9767,21 @@ export namespace Prisma {
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -9695,6 +9814,8 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -9713,6 +9834,8 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -9725,6 +9848,8 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -9757,6 +9882,24 @@ export namespace Prisma {
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
   }
 
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -9783,6 +9926,8 @@ export namespace Prisma {
     ticketId?: SortOrder
     senderId?: SortOrder
     text?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
     isSystem?: SortOrder
     createdAt?: SortOrder
   }
@@ -9798,6 +9943,8 @@ export namespace Prisma {
     ticketId?: SortOrder
     senderId?: SortOrder
     text?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
     isSystem?: SortOrder
     createdAt?: SortOrder
   }
@@ -9807,6 +9954,8 @@ export namespace Prisma {
     ticketId?: SortOrder
     senderId?: SortOrder
     text?: SortOrder
+    attachmentUrl?: SortOrder
+    attachmentName?: SortOrder
     isSystem?: SortOrder
     createdAt?: SortOrder
   }
@@ -9815,21 +9964,6 @@ export namespace Prisma {
     id?: SortOrder
     ticketId?: SortOrder
     senderId?: SortOrder
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type EnumWidgetSessionStatusFilter<$PrismaModel = never> = {
@@ -9885,24 +10019,6 @@ export namespace Prisma {
 
   export type ChatWidgetSessionSumOrderByAggregateInput = {
     id?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type EnumWidgetSessionStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -10239,6 +10355,10 @@ export namespace Prisma {
     set?: $Enums.TicketPriority
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput = {
     create?: XOR<PortalUserCreateWithoutRaisedTicketsInput, PortalUserUncheckedCreateWithoutRaisedTicketsInput>
     connectOrCreate?: PortalUserCreateOrConnectWithoutRaisedTicketsInput
@@ -10333,10 +10453,6 @@ export namespace Prisma {
     connectOrCreate?: ChatWidgetMessageCreateOrConnectWithoutSessionInput | ChatWidgetMessageCreateOrConnectWithoutSessionInput[]
     createMany?: ChatWidgetMessageCreateManySessionInputEnvelope
     connect?: ChatWidgetMessageWhereUniqueInput | ChatWidgetMessageWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type EnumWidgetSessionStatusFieldUpdateOperationsInput = {
@@ -10543,6 +10659,20 @@ export namespace Prisma {
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -10574,6 +10704,23 @@ export namespace Prisma {
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -10601,42 +10748,11 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type NestedEnumWidgetSessionStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.WidgetSessionStatus | EnumWidgetSessionStatusFieldRefInput<$PrismaModel>
     in?: $Enums.WidgetSessionStatus[] | ListEnumWidgetSessionStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.WidgetSessionStatus[] | ListEnumWidgetSessionStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumWidgetSessionStatusFilter<$PrismaModel> | $Enums.WidgetSessionStatus
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumWidgetSessionStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -10671,6 +10787,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
@@ -10683,6 +10801,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     agentId?: number | null
@@ -10704,6 +10824,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
@@ -10716,6 +10838,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -10734,6 +10858,8 @@ export namespace Prisma {
 
   export type TicketMessageCreateWithoutSenderInput = {
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
     ticket: SupportTicketCreateNestedOneWithoutMessagesInput
@@ -10743,6 +10869,8 @@ export namespace Prisma {
     id?: number
     ticketId: number
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
   }
@@ -10809,6 +10937,8 @@ export namespace Prisma {
     description?: StringFilter<"SupportTicket"> | string
     status?: EnumTicketStatusFilter<"SupportTicket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
+    attachmentUrl?: StringNullableFilter<"SupportTicket"> | string | null
+    attachmentName?: StringNullableFilter<"SupportTicket"> | string | null
     createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
@@ -10855,6 +10985,8 @@ export namespace Prisma {
     ticketId?: IntFilter<"TicketMessage"> | number
     senderId?: IntFilter<"TicketMessage"> | number
     text?: StringFilter<"TicketMessage"> | string
+    attachmentUrl?: StringNullableFilter<"TicketMessage"> | string | null
+    attachmentName?: StringNullableFilter<"TicketMessage"> | string | null
     isSystem?: BoolFilter<"TicketMessage"> | boolean
     createdAt?: DateTimeFilter<"TicketMessage"> | Date | string
   }
@@ -10954,6 +11086,8 @@ export namespace Prisma {
 
   export type TicketMessageCreateWithoutTicketInput = {
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
     sender: PortalUserCreateNestedOneWithoutSentMessagesInput
@@ -10963,6 +11097,8 @@ export namespace Prisma {
     id?: number
     senderId: number
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
   }
@@ -11074,6 +11210,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
@@ -11086,6 +11224,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -11145,6 +11285,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
@@ -11157,6 +11299,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -11381,6 +11525,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     agentId?: number | null
@@ -11392,6 +11538,8 @@ export namespace Prisma {
     description: string
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -11401,6 +11549,8 @@ export namespace Prisma {
     id?: number
     ticketId: number
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
   }
@@ -11419,6 +11569,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
@@ -11431,6 +11583,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11443,6 +11597,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11453,6 +11609,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
@@ -11465,6 +11623,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -11477,6 +11637,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -11484,6 +11646,8 @@ export namespace Prisma {
 
   export type TicketMessageUpdateWithoutSenderInput = {
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ticket?: SupportTicketUpdateOneRequiredWithoutMessagesNestedInput
@@ -11493,6 +11657,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     ticketId?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11501,6 +11667,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     ticketId?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11535,12 +11703,16 @@ export namespace Prisma {
     id?: number
     senderId: number
     text: string
+    attachmentUrl?: string | null
+    attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
   }
 
   export type TicketMessageUpdateWithoutTicketInput = {
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sender?: PortalUserUpdateOneRequiredWithoutSentMessagesNestedInput
@@ -11550,6 +11722,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     senderId?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11558,6 +11732,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     senderId?: IntFieldUpdateOperationsInput | number
     text?: StringFieldUpdateOperationsInput | string
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

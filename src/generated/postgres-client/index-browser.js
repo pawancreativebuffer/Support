@@ -134,6 +134,8 @@ exports.Prisma.SupportTicketScalarFieldEnum = {
   description: 'description',
   status: 'status',
   priority: 'priority',
+  attachmentUrl: 'attachmentUrl',
+  attachmentName: 'attachmentName',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   customerId: 'customerId',
@@ -145,6 +147,8 @@ exports.Prisma.TicketMessageScalarFieldEnum = {
   ticketId: 'ticketId',
   senderId: 'senderId',
   text: 'text',
+  attachmentUrl: 'attachmentUrl',
+  attachmentName: 'attachmentName',
   isSystem: 'isSystem',
   createdAt: 'createdAt'
 };

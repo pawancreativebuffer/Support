@@ -3,7 +3,7 @@ import { postgresPrisma } from '@/lib/postgresDb';
 
 export async function POST(req: NextRequest) {
   try {
-    const { ticketId, senderEmail, text, action } = await req.json();
+    const { ticketId, senderEmail, text, action, attachmentUrl, attachmentName } = await req.json();
 
     if (!ticketId) {
       return NextResponse.json({ error: 'Ticket ID is required' }, { status: 400 });
@@ -69,6 +69,8 @@ export async function POST(req: NextRequest) {
         ticketId: parsedId,
         senderId: sender.id,
         text: text,
+        attachmentUrl: attachmentUrl || null,
+        attachmentName: attachmentName || null,
         isSystem: false
       }
     });

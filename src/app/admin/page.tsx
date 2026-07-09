@@ -16,9 +16,14 @@ import {
   User,
   Sparkles,
   Info,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  Paperclip,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { useUploadThing } from '@/lib/uploadthing';
 
 interface TicketItem {
   id: string;
@@ -30,7 +35,15 @@ interface TicketItem {
   status: 'Open' | 'In Progress' | 'Resolved';
   createdAt: string;
   type?: 'Form' | 'Voice' | 'Live Chat';
-  replies?: { sender: 'customer' | 'agent'; text: string; time: string }[];
+  attachmentUrl?: string | null;
+  attachmentName?: string | null;
+  replies?: { 
+    sender: 'customer' | 'agent'; 
+    text: string; 
+    time: string; 
+    attachmentUrl?: string | null; 
+    attachmentName?: string | null; 
+  }[];
 }
 
 export default function AdminPage() {
@@ -42,10 +55,42 @@ export default function AdminPage() {
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Pagination & Limits
+  const [visibleActivities, setVisibleActivities] = useState(5);
+  const [ticketsPage, setTicketsPage] = useState(1);
+  const ticketsPerPage = 5;
+
+  // Reset page numbers on filter/search change
+  useEffect(() => {
+    setTicketsPage(1);
+  }, [searchQuery, ticketFilter]);
+
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
   const [ticketReplyText, setTicketReplyText] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [replyAttachment, setReplyAttachment] = useState<{ url: string; name: string } | null>(null);
+  const [replyUploading, setReplyUploading] = useState(false);
+
+  const { startUpload: startReplyUpload } = useUploadThing("ticketAttachment", {
+    onClientUploadComplete: (res) => {
+      if (res && res[0]) {
+        setReplyAttachment({
+          url: res[0].url,
+          name: res[0].name
+        });
+      }
+      setReplyUploading(false);
+    },
+    onUploadError: (error: Error) => {
+      alert(`Upload failed: ${error.message}`);
+      setReplyUploading(false);
+    },
+    onUploadBegin: () => {
+      setReplyUploading(true);
+    }
+  });
 
   // Toast System
   const [toasts, setToasts] = useState<{ id: string; message: string }[]>([]);
@@ -216,7 +261,9 @@ export default function AdminPage() {
     const localReply = {
       sender: 'agent' as const,
       text: replyMsg,
-      time: timeString
+      time: timeString,
+      attachmentUrl: replyAttachment?.url || null,
+      attachmentName: replyAttachment?.name || null
     };
 
     if (selectedTicket) {
@@ -235,11 +282,14 @@ export default function AdminPage() {
         body: JSON.stringify({
           ticketId: ticketId,
           senderEmail: user.email,
-          text: replyMsg
+          text: replyMsg,
+          attachmentUrl: replyAttachment?.url || null,
+          attachmentName: replyAttachment?.name || null
         })
       });
 
       if (res.ok) {
+        setReplyAttachment(null);
         loadDatabaseData(user.email);
       }
     } catch (err) {
@@ -479,8 +529,8 @@ export default function AdminPage() {
         <section>
           {/* TAB 1: OVERVIEW TIMELINE */}
           {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 gap-8 items-start animate-fade-in max-w-4xl">
-              <div className="bg-white border border-slate-200 p-6 rounded-3xl relative shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in">
+              <div className="lg:col-span-8 bg-white border border-slate-200 p-6 rounded-3xl relative shadow-sm">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                   <div>
                     <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -502,7 +552,7 @@ export default function AdminPage() {
                   </div>
                 ) : (
                   <div className="relative pl-6 border-l border-slate-200 space-y-8 ml-2 py-2">
-                    {activities.map((act, index) => {
+                    {activities.slice(0, visibleActivities).map((act, index) => {
                       const requiresReply = needsReply(act.rawItem);
                       const dotColor = act.rawItem.status === 'Resolved' 
                         ? "bg-emerald-500 ring-emerald-100" 
@@ -563,8 +613,62 @@ export default function AdminPage() {
                         </div>
                       );
                     })}
+                    {visibleActivities < activities.length && (
+                      <div className="pt-4 flex justify-center">
+                        <button
+                          onClick={() => setVisibleActivities(prev => prev + 5)}
+                          className="px-6 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                        >
+                          Load More Activity
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
+              </div>
+
+              {/* Right widgets column (4 cols) */}
+              <div className="lg:col-span-4 space-y-6">
+                {/* Agent Welcome Console Widget */}
+                <div className="bg-gradient-to-tr from-slate-900 via-slate-950 to-primary-950 border border-slate-900 p-6 rounded-3xl relative overflow-hidden shadow-md text-white">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-xl pointer-events-none" />
+
+                  <div className="space-y-4">
+                    <Sparkles className="w-8 h-8 text-primary-400 animate-pulse" />
+                    <h3 className="font-bold text-white text-sm">Agent Dispatch Console</h3>
+                    <p className="text-xs text-slate-350 leading-relaxed">
+                      You are logged in as a support agent. Manage ticket queues, answer customer inquiries with attachments, and track active cases.
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('tickets')}
+                      className="inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-xs transition-all shadow-lg shadow-primary-600/20 cursor-pointer border border-primary-500/30"
+                    >
+                      <Ticket className="w-4 h-4" /> Go to Tickets Queue
+                    </button>
+                  </div>
+                </div>
+
+                {/* Agent Guidelines Card */}
+                <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-4 shadow-sm">
+                  <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <Info className="w-4 h-4 text-primary-600" />
+                    <h4 className="text-xs font-black uppercase text-slate-700 tracking-widest">Agent Guidelines</h4>
+                  </div>
+                  <div className="space-y-3.5 text-xs text-slate-650 leading-relaxed">
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
+                      <p>Check "Chronological Ticket Activity" to track the latest customer responses.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
+                      <p>Ensure to review ticket attachments for context before replying.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
+                      <p>Mark tickets as "Resolved" when issues are solved to keep queues clear.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -619,7 +723,8 @@ export default function AdminPage() {
                   <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">Try modifying your search queries or updating your status filter categories.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <>
+                  <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -632,7 +737,7 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100/60">
-                      {filteredTickets.map(ticket => {
+                      {filteredTickets.slice((ticketsPage - 1) * ticketsPerPage, ticketsPage * ticketsPerPage).map(ticket => {
                         const requiresReply = needsReply(ticket);
                         return (
                           <tr key={ticket.id} className="hover:bg-slate-50/50 transition-colors group">
@@ -679,7 +784,30 @@ export default function AdminPage() {
                     </tbody>
                   </table>
                 </div>
-              )}
+
+                {/* Pagination Controls */}
+                <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
+                  <span className="text-xs text-slate-500 font-bold">
+                    Showing {Math.min(filteredTickets.length, (ticketsPage - 1) * ticketsPerPage + 1)} to {Math.min(filteredTickets.length, ticketsPage * ticketsPerPage)} of {filteredTickets.length} tickets
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={ticketsPage === 1}
+                      onClick={() => setTicketsPage(prev => prev - 1)}
+                      className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
+                      onClick={() => setTicketsPage(prev => prev + 1)}
+                      className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </>)}
             </div>
           )}
         </section>
@@ -717,7 +845,7 @@ export default function AdminPage() {
 
             {/* Modal Body */}
             <div className="flex-1 p-6 overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
 
                 {/* Left Column: Inquiry Metadata & Status */}
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
@@ -736,6 +864,24 @@ export default function AdminPage() {
                       <p className="text-[10px] text-slate-400 font-mono pt-1">Raised: {selectedTicket.createdAt}</p>
                     </div>
                   </div>
+
+                  {/* Ticket Attachments */}
+                  {selectedTicket.attachmentUrl && (
+                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
+                      <div className="flex flex-wrap gap-2.5">
+                        <a
+                          href={selectedTicket.attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm max-w-full"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-primary-600 shrink-0" />
+                          <span className="truncate text-slate-850">{selectedTicket.attachmentName || 'View Attachment'}</span>
+                        </a>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Status Indicator & Resolve Action */}
                   <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
@@ -767,7 +913,7 @@ export default function AdminPage() {
                 <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
                   
                   {/* Discussion Thread container */}
-                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[380px]">
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 min-h-[380px] flex flex-col">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                       <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
                         <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100">
@@ -781,7 +927,7 @@ export default function AdminPage() {
                     </div>
 
                     {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
-                      <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
+                      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
                         <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shadow-sm animate-pulse">
                           <Clock className="w-5 h-5" />
                         </div>
@@ -804,9 +950,28 @@ export default function AdminPage() {
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
                                 <div className="text-[10px] font-bold opacity-60 mb-1">
-                                  {isAgent ? 'Sarah (Support Agent)' : `${selectedTicket.firstName} ${selectedTicket.lastName}`}
+                                  {isAgent ? `${user?.name || 'Sarah'} (Support Agent)` : `${selectedTicket.firstName} ${selectedTicket.lastName}`}
                                 </div>
                                 <p className="select-text">{reply.text}</p>
+
+                                {reply.attachmentUrl && (
+                                  <div className={`mt-2 pt-2 border-t ${isAgent ? 'border-white/20' : 'border-slate-200'} flex`}>
+                                    <a
+                                      href={reply.attachmentUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all truncate max-w-full ${
+                                        isAgent
+                                          ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
+                                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-250'
+                                      }`}
+                                    >
+                                      <FileText className="w-3.5 h-3.5 shrink-0" />
+                                      <span className="truncate">{reply.attachmentName || 'View Attachment'}</span>
+                                    </a>
+                                  </div>
+                                )}
+
                                 <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isAgent ? 'text-white/80' : 'text-slate-500'}`}>
                                   {reply.time}
                                 </span>
@@ -820,25 +985,67 @@ export default function AdminPage() {
 
                   {/* Reply Form */}
                   {selectedTicket.status !== 'Resolved' ? (
-                    <form
-                      onSubmit={(e) => handleSendTicketReply(e, selectedTicket.id)}
-                      className="mt-4 pt-4 border-t border-slate-100 flex gap-2.5"
-                    >
-                      <input
-                        type="text"
-                        value={ticketReplyText}
-                        onChange={(e) => setTicketReplyText(e.target.value)}
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
-                        placeholder="Type your support reply..."
-                      />
-                      <button
-                        type="submit"
-                        disabled={!ticketReplyText.trim()}
-                        className="px-5 py-3 bg-primary-600 hover:bg-primary-750 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-primary-600/10 cursor-pointer border border-primary-500/20"
+                    <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
+                      {replyAttachment && (
+                        <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-2.5 shadow-sm animate-fade-in">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <FileText className="w-4 h-4 text-primary-600 shrink-0" />
+                            <span className="text-xs font-bold text-slate-700 truncate max-w-[200px] sm:max-w-xs">{replyAttachment.name}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setReplyAttachment(null)}
+                            className="p-1 text-red-500 hover:bg-red-55 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                      
+                      {replyUploading && (
+                        <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+                          <Loader2 className="w-3.5 h-3.5 text-primary-600 animate-spin" />
+                          Uploading reply file...
+                        </div>
+                      )}
+
+                      <form
+                        onSubmit={(e) => handleSendTicketReply(e, selectedTicket.id)}
+                        className="flex gap-2.5"
                       >
-                        Send <Send className="w-3.5 h-3.5" />
-                      </button>
-                    </form>
+                        <input
+                          type="file"
+                          id="reply-file-upload"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) startReplyUpload([file]);
+                          }}
+                        />
+                        <label
+                          htmlFor="reply-file-upload"
+                          className="w-12 h-12 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-all shrink-0 hover:border-primary-400"
+                          title="Attach file"
+                        >
+                          <Paperclip className="w-5 h-5 text-slate-500 hover:text-primary-600" />
+                        </label>
+
+                        <input
+                          type="text"
+                          value={ticketReplyText}
+                          onChange={(e) => setTicketReplyText(e.target.value)}
+                          className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                          placeholder="Type your support reply..."
+                        />
+                        <button
+                          type="submit"
+                          disabled={!ticketReplyText.trim() || replyUploading}
+                          className="px-5 py-3 bg-primary-600 hover:bg-primary-750 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-primary-600/10 cursor-pointer border border-primary-500/20"
+                        >
+                          Send <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </form>
+                    </div>
                   ) : (
                     <div className="mt-4 p-4.5 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-2xl flex items-center gap-3 text-xs font-bold leading-relaxed">
                       <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />

@@ -68,6 +68,8 @@ export async function GET(req: NextRequest) {
         description: t.description,
         status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
         type: 'Form',
+        attachmentUrl: t.attachmentUrl,
+        attachmentName: t.attachmentName,
         createdAt: t.createdAt.toLocaleString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -78,6 +80,8 @@ export async function GET(req: NextRequest) {
         replies: t.messages.map(m => ({
           sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
           text: m.text,
+          attachmentUrl: m.attachmentUrl,
+          attachmentName: m.attachmentName,
           time: m.createdAt.toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -100,6 +104,8 @@ export async function GET(req: NextRequest) {
       description: t.description,
       status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
       type: 'Form',
+      attachmentUrl: t.attachmentUrl,
+      attachmentName: t.attachmentName,
       createdAt: t.createdAt.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -110,6 +116,8 @@ export async function GET(req: NextRequest) {
       replies: t.messages.map(m => ({
         sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
         text: m.text,
+        attachmentUrl: m.attachmentUrl,
+        attachmentName: m.attachmentName,
         time: m.createdAt.toLocaleString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -128,7 +136,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, category, description, type } = await req.json();
+    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName } = await req.json();
 
     if (!email || !description) {
       return NextResponse.json({ error: 'Email and description are required' }, { status: 400 });
@@ -166,7 +174,9 @@ export async function POST(req: NextRequest) {
         description: description,
         status: 'OPEN',
         priority: 'MEDIUM',
-        customerId: portalUser.id
+        customerId: portalUser.id,
+        attachmentUrl: attachmentUrl || null,
+        attachmentName: attachmentName || null
       }
     });
 
