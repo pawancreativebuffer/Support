@@ -345,22 +345,16 @@ export default function AdminPage() {
               <User className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] font-black tracking-widest text-primary-600 uppercase">Agent Console</span>
-              <h2 className="text-base font-bold text-slate-800">{user.name}</h2>
+              <span className="text-[10px] font-black tracking-widest text-primary-600 uppercase">Agent Workspace</span>
+              <h2 className="text-base font-bold text-slate-800">Welcome Back, {user.name}</h2>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-bold text-primary-700 bg-primary-50 border border-primary-200 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-primary-700 bg-primary-50 border border-primary-200 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-sm select-all">
               <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse"></span>
-              {user.email} (Agent)
+              {user.email}
             </span>
-            <button
-              onClick={handleLogout}
-              className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-150 border border-red-100 px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-sm focus:outline-none"
-            >
-              Sign Out
-            </button>
           </div>
         </div>
       </header>
