@@ -10,6 +10,7 @@ import {
   Search,
   X,
   AlertTriangle,
+  AlertCircle,
   CheckSquare,
   ChevronRight,
   Send,
@@ -182,6 +183,54 @@ export default function DashboardPage() {
   const [ticketReplyText, setTicketReplyText] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Toast System
+  const [toasts, setToasts] = useState<{ id: string; message: string }[]>([]);
+
+  // Sound Synthesizer (Web Audio API)
+  const playSupportChime = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      const gain2 = audioCtx.createGain();
+
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      // Note 1 (C5, chime-like)
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(523.25, now);
+      gain1.gain.setValueAtTime(0.15, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc1.start(now);
+      osc1.stop(now + 0.35);
+
+      // Note 2 (E5, arpeggio arpeggio note)
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(659.25, now + 0.12);
+      gain2.gain.setValueAtTime(0.15, now + 0.12);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+      osc2.start(now + 0.12);
+      osc2.stop(now + 0.5);
+    } catch (err) {
+      console.warn("Web Audio chime synthesis failed:", err);
+    }
+  };
+
+  const triggerToast = (message: string) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setToasts(prev => [...prev, { id, message }]);
+    playSupportChime();
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  };
+
   const [replyAttachment, setReplyAttachment] = useState<{ url: string; name: string } | null>(null);
   const [replyUploading, setReplyUploading] = useState(false);
 
@@ -208,13 +257,40 @@ export default function DashboardPage() {
     setAudioPlaybackError(false);
   }, [selectedVoiceLog]);
 
-  const loadDatabaseData = async (email: string) => {
-    setIsRefreshing(true);
+  const loadDatabaseData = async (email: string, silent = false) => {
+    if (!silent) setIsRefreshing(true);
     try {
       const ticketsRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
       if (ticketsRes.ok) {
-        const data = await ticketsRes.json();
+        const data: TicketItem[] = await ticketsRes.json();
+        
+        // If silent refresh and we have previous tickets, detect updates
+        if (silent && tickets.length > 0) {
+          data.forEach(freshT => {
+            const oldT = tickets.find(o => o.id === freshT.id);
+            if (oldT) {
+              const freshRepliesCount = freshT.replies?.length || 0;
+              const oldRepliesCount = oldT.replies?.length || 0;
+              if (freshRepliesCount > oldRepliesCount) {
+                const latestReply = freshT.replies?.[freshRepliesCount - 1];
+                if (latestReply && latestReply.sender === 'agent') {
+                  triggerToast(`Support agent replied to ticket ${freshT.id}!`);
+                }
+              }
+              if (oldT.status !== freshT.status) {
+                triggerToast(`Ticket ${freshT.id} status updated to ${freshT.status}!`);
+              }
+            }
+          });
+        }
+        
         setTickets(data);
+        
+        // Update selected modal state if open
+        if (selectedTicket) {
+          const updated = data.find(t => t.id === selectedTicket.id);
+          if (updated) setSelectedTicket(updated);
+        }
       }
 
       const chatsRes = await fetch(`/api/chats?email=${encodeURIComponent(email)}`);
@@ -231,9 +307,18 @@ export default function DashboardPage() {
     } catch (err) {
       console.error('Error loading database data:', err);
     } finally {
-      setIsRefreshing(false);
+      if (!silent) setIsRefreshing(false);
     }
   };
+
+  // Polling for real-time customer updates
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => {
+      loadDatabaseData(user.email, true);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [user, tickets, selectedTicket]);
 
   // Read auth state and load data on mount
   useEffect(() => {
@@ -1566,6 +1651,20 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      {/* Toast Notification Card Container */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        {toasts.map(toast => (
+          <div key={toast.id} className="bg-slate-900 border border-slate-800 text-white rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3 max-w-sm animate-slide-in-right">
+            <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white shrink-0">
+              <AlertCircle className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-primary-400">System Notification</p>
+              <p className="text-sm font-medium mt-0.5">{toast.message}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
