@@ -20,7 +20,8 @@ import {
   FileText,
   Paperclip,
   Trash2,
-  Loader2
+  Loader2,
+  SlidersHorizontal
 } from 'lucide-react';
 import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
@@ -33,6 +34,7 @@ interface TicketItem {
   category: string;
   description: string;
   status: 'Open' | 'In Progress' | 'Resolved';
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH';
   createdAt: string;
   type?: 'Form' | 'Voice' | 'Live Chat';
   attachmentUrl?: string | null;
@@ -53,6 +55,8 @@ export default function AdminPage() {
 
   // Filters & Search
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
+  const [priorityFilter, setPriorityFilter] = useState<'All' | 'High' | 'Medium' | 'Low'>('All');
+  const [showPriorityFilters, setShowPriorityFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Pagination & Limits
@@ -63,7 +67,7 @@ export default function AdminPage() {
   // Reset page numbers on filter/search change
   useEffect(() => {
     setTicketsPage(1);
-  }, [searchQuery, ticketFilter]);
+  }, [searchQuery, ticketFilter, priorityFilter]);
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
@@ -245,6 +249,28 @@ export default function AdminPage() {
     }
   };
 
+  const handleUpdatePriority = async (ticketId: string, newPriority: 'LOW' | 'MEDIUM' | 'HIGH') => {
+    if (!user) return;
+    try {
+      const res = await fetch('/api/tickets/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId,
+          priority: newPriority
+        })
+      });
+      if (res.ok) {
+        loadDatabaseData(user.email);
+        triggerToast(`Ticket ${ticketId} priority set to ${newPriority}!`);
+      } else {
+        alert('Failed to update priority');
+      }
+    } catch (err) {
+      console.error('Failed to update priority:', err);
+    }
+  };
+
   const handleSendTicketReply = async (e: React.FormEvent, ticketId: string) => {
     e.preventDefault();
     if (!ticketReplyText.trim() || !user) return;
@@ -341,6 +367,10 @@ export default function AdminPage() {
         ? t.status === 'Open' || t.status === 'In Progress'
         : t.status === ticketFilter;
 
+    const matchesPriority = priorityFilter === 'All'
+      ? true
+      : t.priority === priorityFilter.toUpperCase();
+
     const matchesSearch =
       t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -348,7 +378,7 @@ export default function AdminPage() {
       t.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesPriority && matchesSearch;
   });
 
   const totalTickets = tickets.length;
@@ -681,10 +711,9 @@ export default function AdminPage() {
                   <h3 className="text-base font-bold text-slate-800">Support Ticket Queue</h3>
                   <p className="text-xs text-slate-400 mt-1">Review active submissions, prioritize responses, and manage ticket lifecycles.</p>
                 </div>
-
-                {/* Filter and Search Bar */}
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative">
+                 {/* Filter and Search Bar */}
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center">
                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                       <Search className="w-4 h-4" />
                     </span>
@@ -693,16 +722,17 @@ export default function AdminPage() {
                       placeholder="Search queue..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full md:w-56 bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full md:w-56 h-[38px] bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 text-xs font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
                     />
                   </div>
 
-                  <div className="flex rounded-xl border border-slate-250 bg-slate-50 p-1">
+                  {/* Status Filters */}
+                  <div className="flex items-center h-[38px] rounded-xl border border-slate-250 bg-slate-50 p-1">
                     {(['All', 'Open', 'Resolved'] as const).map(f => (
                       <button
                         key={f}
                         onClick={() => setTicketFilter(f)}
-                        className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${ticketFilter === f
+                        className={`h-full px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center ${ticketFilter === f
                           ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
                           : 'text-slate-400 hover:text-slate-700'
                           }`}
@@ -710,6 +740,56 @@ export default function AdminPage() {
                         {f === 'Open' ? 'Active' : f}
                       </button>
                     ))}
+                  </div>
+
+                  {/* Toggle Priority Filters Icon Button & Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowPriorityFilters(!showPriorityFilters)}
+                      className={`h-[38px] px-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
+                        showPriorityFilters || priorityFilter !== 'All'
+                          ? 'bg-slate-800 text-white border-slate-800 shadow-sm shadow-slate-800/10'
+                          : 'bg-white text-slate-655 border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
+                      }`}
+                      title="Filter by Priority"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      <span>Filters</span>
+                      {priorityFilter !== 'All' && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
+                      )}
+                    </button>
+
+                    {showPriorityFilters && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-20 cursor-default" 
+                          onClick={() => setShowPriorityFilters(false)}
+                        />
+                        <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl z-25 py-2 animate-fade-in">
+                          <div className="px-3 pb-1 border-b border-slate-100 mb-1">
+                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Filter Priority</span>
+                          </div>
+                          {(['All', 'High', 'Medium', 'Low'] as const).map(p => (
+                            <button
+                              key={p}
+                              onClick={() => {
+                                setPriorityFilter(p);
+                                setShowPriorityFilters(false);
+                              }}
+                              className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between transition-colors hover:bg-slate-50 cursor-pointer ${
+                                priorityFilter === p ? 'text-primary-600 bg-primary-50/30' : 'text-slate-650'
+                              }`}
+                            >
+                              <span>{p === 'All' ? 'All Priorities' : `${p} Priority`}</span>
+                              {priorityFilter === p && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary-600" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -732,6 +812,7 @@ export default function AdminPage() {
                         <th className="py-3 px-4">Submitter Info</th>
                         <th className="py-3 px-4">Inquiry Category</th>
                         <th className="py-3 px-4">Date Submitted</th>
+                        <th className="py-3 px-4">Priority</th>
                         <th className="py-3 px-4">Status</th>
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
@@ -760,6 +841,23 @@ export default function AdminPage() {
                               {ticket.createdAt}
                             </td>
                             <td className="py-4 px-4">
+                              <select
+                                value={ticket.priority || 'MEDIUM'}
+                                onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
+                                className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                                  ticket.priority === 'HIGH'
+                                    ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                    : ticket.priority === 'LOW'
+                                      ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                      : 'bg-amber-50 border-amber-200 text-amber-700'
+                                }`}
+                              >
+                                <option value="HIGH">🔴 High</option>
+                                <option value="MEDIUM">🟡 Medium</option>
+                                <option value="LOW">🔵 Low</option>
+                              </select>
+                            </td>
+                            <td className="py-4 px-4">
                               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${ticket.status === 'Resolved'
                                 ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                                 : requiresReply
@@ -771,12 +869,23 @@ export default function AdminPage() {
                               </span>
                             </td>
                             <td className="py-4 px-4 text-right">
-                              <button
-                                onClick={() => setSelectedTicket(ticket)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
-                              >
-                                Manage <ChevronRight className="w-3.5 h-3.5" />
-                              </button>
+                              <div className="flex items-center justify-end gap-2">
+                                {ticket.status !== 'Resolved' && (
+                                  <button
+                                    onClick={() => handleResolveTicket(ticket.id)}
+                                    className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                                    title="Quick Close Ticket"
+                                  >
+                                    Quick Close
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => setSelectedTicket(ticket)}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
+                                >
+                                  Manage <ChevronRight className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -895,6 +1004,26 @@ export default function AdminPage() {
                         }`}>
                         {selectedTicket.status}
                       </span>
+                    </div>
+
+                    {/* Priority Selector in Modal */}
+                    <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
+                      <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Priority</span>
+                      <select
+                        value={selectedTicket.priority || 'MEDIUM'}
+                        onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
+                        className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                          selectedTicket.priority === 'HIGH'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                            : selectedTicket.priority === 'LOW'
+                              ? 'bg-slate-50 border-slate-200 text-slate-600'
+                              : 'bg-amber-50 border-amber-200 text-amber-700'
+                        }`}
+                      >
+                        <option value="HIGH">🔴 High</option>
+                        <option value="MEDIUM">🟡 Medium</option>
+                        <option value="LOW">🔵 Low</option>
+                      </select>
                     </div>
 
                     {selectedTicket.status !== 'Resolved' && (

@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
         category: t.title,
         description: t.description,
         status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+        priority: t.priority,
         type: 'Form',
         attachmentUrl: t.attachmentUrl,
         attachmentName: t.attachmentName,
@@ -103,6 +104,7 @@ export async function GET(req: NextRequest) {
       category: t.title, // Map title as category
       description: t.description,
       status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+      priority: t.priority,
       type: 'Form',
       attachmentUrl: t.attachmentUrl,
       attachmentName: t.attachmentName,
