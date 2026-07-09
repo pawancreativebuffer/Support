@@ -148,7 +148,7 @@ function generateMagicToken(ticketId: number, email: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName } = await req.json();
+    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName, priority } = await req.json();
 
     if (!email || !description) {
       return NextResponse.json({ error: 'Email and description are required' }, { status: 400 });
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
         title: category || 'General Inquiry',
         description: description,
         status: 'OPEN',
-        priority: 'MEDIUM',
+        priority: (priority || 'MEDIUM').toUpperCase() as any,
         customerId: portalUser.id,
         attachmentUrl: attachmentUrl || null,
         attachmentName: attachmentName || null

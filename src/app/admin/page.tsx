@@ -21,7 +21,8 @@ import {
   Paperclip,
   Trash2,
   Loader2,
-  SlidersHorizontal
+  SlidersHorizontal,
+  PlusCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
@@ -71,6 +72,38 @@ export default function AdminPage() {
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
+
+  // Custom Ticket Creation Form States
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTicketEmail, setNewTicketEmail] = useState('');
+  const [newTicketFirstName, setNewTicketFirstName] = useState('');
+  const [newTicketLastName, setNewTicketLastName] = useState('');
+  const [newTicketCategory, setNewTicketCategory] = useState('API & Developer Tools');
+  const [newTicketPriority, setNewTicketPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
+  const [newTicketDescription, setNewTicketDescription] = useState('');
+  const [newTicketSubmitting, setNewTicketSubmitting] = useState(false);
+  const [newTicketAttachment, setNewTicketAttachment] = useState<{ url: string; name: string } | null>(null);
+  const [newTicketUploading, setNewTicketUploading] = useState(false);
+
+  const { startUpload: startNewTicketUpload } = useUploadThing("ticketAttachment", {
+    onClientUploadComplete: (res) => {
+      if (res && res[0]) {
+        setNewTicketAttachment({
+          url: res[0].url,
+          name: res[0].name
+        });
+      }
+      setNewTicketUploading(false);
+    },
+    onUploadError: (error: Error) => {
+      alert(`Upload failed: ${error.message}`);
+      setNewTicketUploading(false);
+    },
+    onUploadBegin: () => {
+      setNewTicketUploading(true);
+    }
+  });
+
   const [ticketReplyText, setTicketReplyText] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -225,6 +258,54 @@ export default function AdminPage() {
     }, 8000);
     return () => clearInterval(interval);
   }, [user, tickets, selectedTicket]);
+
+  const handleCreateTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!newTicketEmail || !newTicketDescription) {
+      alert('Email and Description are required.');
+      return;
+    }
+
+    setNewTicketSubmitting(true);
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: newTicketFirstName,
+          lastName: newTicketLastName,
+          email: newTicketEmail,
+          category: newTicketCategory,
+          description: newTicketDescription,
+          priority: newTicketPriority,
+          attachmentUrl: newTicketAttachment?.url || null,
+          attachmentName: newTicketAttachment?.name || null
+        })
+      });
+
+      if (res.ok) {
+        triggerToast(`Ticket logged successfully for ${newTicketEmail}`);
+        setNewTicketEmail('');
+        setNewTicketFirstName('');
+        setNewTicketLastName('');
+        setNewTicketCategory('API & Developer Tools');
+        setNewTicketPriority('MEDIUM');
+        setNewTicketDescription('');
+        setNewTicketAttachment(null);
+        setShowCreateModal(false);
+        loadDatabaseData(user.email);
+      } else {
+        const errData = await res.json();
+        alert(errData.error || 'Failed to create ticket.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error creating ticket.');
+    } finally {
+      setNewTicketSubmitting(false);
+    }
+  };
 
   const handleResolveTicket = async (ticketId: string) => {
     if (!user) return;
@@ -506,51 +587,66 @@ export default function AdminPage() {
         </section>
 
         {/* Tab Switcher */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
-              ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-          >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'overview' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
-              <History className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="block text-sm font-bold">Activity Overview</span>
-              <span className={`block text-[10px] ${activeTab === 'overview' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Audit trail of issues</span>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('tickets')}
-            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'tickets'
-              ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'tickets' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
-                <Ticket className="w-5 h-5" />
+        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full md:max-w-xl">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'overview' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
+                <History className="w-5 h-5" />
               </div>
               <div>
-                <span className="block text-sm font-bold">Tickets Queue</span>
-                <span className={`block text-[10px] ${activeTab === 'tickets' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Manage client inquiries</span>
+                <span className="block text-sm font-bold">Activity Overview</span>
+                <span className={`block text-[10px] ${activeTab === 'overview' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Audit trail of issues</span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {pendingResponseCount > 0 && (
-                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-500 text-white rounded-full animate-pulse">
-                  {pendingResponseCount} Act
+            </button>
+
+            <button
+              onClick={() => setActiveTab('tickets')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'tickets'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'tickets' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
+                  <Ticket className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Tickets Queue</span>
+                  <span className={`block text-[10px] ${activeTab === 'tickets' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Manage client inquiries</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {pendingResponseCount > 0 && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-500 text-white rounded-full animate-pulse">
+                    {pendingResponseCount} Act
+                  </span>
+                )}
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'tickets'
+                  ? 'bg-white/20 text-white border-white/10'
+                  : 'bg-slate-100 text-slate-700 border-slate-200'
+                  }`}>
+                  {totalTickets}
                 </span>
-              )}
-              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'tickets'
-                ? 'bg-white/20 text-white border-white/10'
-                : 'bg-slate-100 text-slate-700 border-slate-200'
-                }`}>
-                {totalTickets}
-              </span>
+              </div>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all text-left cursor-pointer shadow-sm md:w-auto w-full shrink-0 animate-fade-in"
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600">
+              <PlusCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="block text-sm font-bold">Create Custom Ticket</span>
+              <span className="block text-[10px] text-slate-400 font-semibold">Log call or manual issue</span>
             </div>
           </button>
         </section>
@@ -1186,6 +1282,184 @@ export default function AdminPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CREATE CUSTOM TICKET */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
+              <div className="flex items-center gap-3.5">
+                <span className="p-2.5 rounded-xl bg-indigo-50 text-indigo-650 border border-indigo-100 shadow-sm">
+                  <PlusCircle className="w-5.5 h-5.5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg">Create Custom Ticket</h3>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                    Log a direct client issue or phone request
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setNewTicketAttachment(null);
+                }}
+                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-455 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Form */}
+            <form onSubmit={handleCreateTicket} className="flex-1 p-8 space-y-6">
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTicketFirstName}
+                    onChange={(e) => setNewTicketFirstName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    placeholder="e.g. John"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Last Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTicketLastName}
+                    onChange={(e) => setNewTicketLastName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    placeholder="e.g. Doe"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Customer Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={newTicketEmail}
+                  onChange={(e) => setNewTicketEmail(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                  placeholder="e.g. client@domain.com"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Inquiry Category</label>
+                  <select
+                    value={newTicketCategory}
+                    onChange={(e) => setNewTicketCategory(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="API & Developer Tools">API & Developer Tools</option>
+                    <option value="Billing & Invoices">Billing & Invoices</option>
+                    <option value="System Status & Uptime">System Status & Uptime</option>
+                    <option value="General Support">General Support</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Urgency</label>
+                  <select
+                    value={newTicketPriority}
+                    onChange={(e) => setNewTicketPriority(e.target.value as any)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="LOW">Low Priority</option>
+                    <option value="MEDIUM">Medium Priority</option>
+                    <option value="HIGH">High Priority</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Problem Description</label>
+                <textarea
+                  required
+                  rows={5}
+                  value={newTicketDescription}
+                  onChange={(e) => setNewTicketDescription(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 resize-none leading-relaxed"
+                  placeholder="Summarize the support call or issue details here..."
+                />
+              </div>
+
+              {/* Attachments Upload */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-3">
+                <label className="block text-xs font-semibold text-slate-500">Ticket Attachments (Optional)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    id="new-ticket-file-upload"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) startNewTicketUpload([file]);
+                    }}
+                  />
+                  <label
+                    htmlFor="new-ticket-file-upload"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer shadow-sm hover:border-primary-400"
+                  >
+                    <Paperclip className="w-4 h-4 text-slate-500" />
+                    {newTicketUploading ? 'Uploading file...' : 'Upload Attachment'}
+                  </label>
+
+                  {newTicketAttachment ? (
+                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm max-w-sm">
+                      <span className="text-xs font-bold text-slate-700 truncate max-w-[200px]">
+                        {newTicketAttachment.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setNewTicketAttachment(null)}
+                        className="text-red-500 hover:text-red-750 transition-colors p-0.5 rounded animate-fade-in"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-400 font-medium">No file attached</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setNewTicketAttachment(null);
+                  }}
+                  className="px-5 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={newTicketSubmitting || newTicketUploading}
+                  className="px-6 py-2.5 bg-primary-600 hover:bg-primary-750 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-primary-600/10 cursor-pointer border border-primary-500/20"
+                >
+                  {newTicketSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Logging...
+                    </>
+                  ) : (
+                    <>
+                      Create Ticket
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
