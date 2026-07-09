@@ -115,10 +115,10 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    // Strict validation: Only allow AGENT or ADMIN roles
-    if (portalUser.role !== 'AGENT' && portalUser.role !== 'ADMIN') {
+    // Strict validation: Only allow AGENT role
+    if (portalUser.role !== 'AGENT') {
       return NextResponse.json({
-        error: 'Access denied. This login is reserved for support agents and administrators only.'
+        error: 'Access denied. This login is reserved for support agents only.'
       }, { status: 403 });
     }
 
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
       user: {
         name: portalUser.name,
         email: portalUser.email,
-        role: portalUser.role === 'ADMIN' ? 'Admin' : 'Agent'
+        role: 'Agent'
       }
     });
   } catch (error) {

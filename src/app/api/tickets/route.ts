@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
         category: t.title,
         description: t.description,
         status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+        priority: t.priority,
         type: 'Form',
         attachmentUrl: t.attachmentUrl,
         attachmentName: t.attachmentName,
@@ -103,6 +104,7 @@ export async function GET(req: NextRequest) {
       category: t.title, // Map title as category
       description: t.description,
       status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+      priority: t.priority,
       type: 'Form',
       attachmentUrl: t.attachmentUrl,
       attachmentName: t.attachmentName,
@@ -134,9 +136,19 @@ export async function GET(req: NextRequest) {
   }
 }
 
+import crypto from 'crypto';
+
+function generateMagicToken(ticketId: number, email: string) {
+  const secret = process.env.UPLOADTHING_TOKEN || 'ticket-it-secret-salt';
+  return crypto.createHmac('sha256', secret)
+               .update(`${ticketId}-${email.toLowerCase()}`)
+               .digest('hex')
+               .substring(0, 16);
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName } = await req.json();
+    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName, priority } = await req.json();
 
     if (!email || !description) {
       return NextResponse.json({ error: 'Email and description are required' }, { status: 400 });
@@ -173,7 +185,7 @@ export async function POST(req: NextRequest) {
         title: category || 'General Inquiry',
         description: description,
         status: 'OPEN',
-        priority: 'MEDIUM',
+        priority: (priority || 'MEDIUM').toUpperCase() as any,
         customerId: portalUser.id,
         attachmentUrl: attachmentUrl || null,
         attachmentName: attachmentName || null
@@ -186,7 +198,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ticketId: newTicket.id,
-      ticketCode: `TK-${newTicket.id}`
+      ticketCode: `TK-${newTicket.id}`,
+      magicToken: generateMagicToken(newTicket.id, portalEmail)
     });
   } catch (error) {
     console.error('Error creating ticket:', error);

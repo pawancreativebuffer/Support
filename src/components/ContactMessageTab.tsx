@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, Send, Shield, Clock, Lock, Activity, Paperclip, FileText, Trash2, Loader2 } from 'lucide-react';
+import { CheckCircle, Send, Shield, Clock, Lock, Activity, Paperclip, FileText, Trash2, Loader2, ArrowRight } from 'lucide-react';
 import { Topic } from '../data/topics';
 import { useUploadThing } from '../lib/uploadthing';
 
@@ -17,6 +17,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [ticketNumber, setTicketNumber] = useState<number | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [magicLink, setMagicLink] = useState<string | null>(null);
 
   const [attachment, setAttachment] = useState<{ url: string; name: string } | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -96,6 +97,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
       if (res.ok) {
         const data = await res.json();
         setTicketNumber(data.ticketId);
+        setMagicLink(`/track-ticket?id=${data.ticketCode}&token=${data.magicToken}`);
         setFormStatus('success');
 
         // Maintain localStorage copy as fallback for widget state
@@ -141,6 +143,41 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
           <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
             Thank you for contacting customer care. We have created support ticket <strong>#TK-{ticketNumber}</strong>. Our agents will respond to your registered email address within 24 hours.
           </p>
+          {magicLink && (
+            <div className="bg-primary-50/50 border border-primary-100 rounded-2xl p-5 max-w-md mx-auto text-left space-y-3 mt-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-primary-700">Track Your Support Ticket</p>
+              <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                You can track replies and discuss directly with agents without creating an account by using this secure tracking link:
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={typeof window !== 'undefined' ? `${window.location.origin}${magicLink}` : magicLink}
+                  className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-[11px] font-mono text-slate-600 focus:outline-none select-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = typeof window !== 'undefined' ? `${window.location.origin}${magicLink}` : magicLink || '';
+                    navigator.clipboard.writeText(url);
+                    alert('Magic tracking link copied to clipboard!');
+                  }}
+                  className="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer select-none"
+                >
+                  Copy
+                </button>
+              </div>
+              <div className="text-center pt-2">
+                <a
+                  href={magicLink}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-primary-600 hover:text-primary-700 hover:underline cursor-pointer"
+                >
+                  Go to Ticket Hub <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => {
@@ -151,6 +188,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
               setFormStatus('idle');
               setTicketNumber(null);
               setAttachment(null);
+              setMagicLink(null);
             }}
             className="mt-6 px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-colors cursor-pointer"
           >

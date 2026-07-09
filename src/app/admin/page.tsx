@@ -20,7 +20,9 @@ import {
   FileText,
   Paperclip,
   Trash2,
-  Loader2
+  Loader2,
+  SlidersHorizontal,
+  PlusCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
@@ -33,6 +35,7 @@ interface TicketItem {
   category: string;
   description: string;
   status: 'Open' | 'In Progress' | 'Resolved';
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH';
   createdAt: string;
   type?: 'Form' | 'Voice' | 'Live Chat';
   attachmentUrl?: string | null;
@@ -53,6 +56,8 @@ export default function AdminPage() {
 
   // Filters & Search
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
+  const [priorityFilter, setPriorityFilter] = useState<'All' | 'High' | 'Medium' | 'Low'>('All');
+  const [showPriorityFilters, setShowPriorityFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Pagination & Limits
@@ -63,10 +68,42 @@ export default function AdminPage() {
   // Reset page numbers on filter/search change
   useEffect(() => {
     setTicketsPage(1);
-  }, [searchQuery, ticketFilter]);
+  }, [searchQuery, ticketFilter, priorityFilter]);
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
+
+  // Custom Ticket Creation Form States
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTicketEmail, setNewTicketEmail] = useState('');
+  const [newTicketFirstName, setNewTicketFirstName] = useState('');
+  const [newTicketLastName, setNewTicketLastName] = useState('');
+  const [newTicketCategory, setNewTicketCategory] = useState('API & Developer Tools');
+  const [newTicketPriority, setNewTicketPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
+  const [newTicketDescription, setNewTicketDescription] = useState('');
+  const [newTicketSubmitting, setNewTicketSubmitting] = useState(false);
+  const [newTicketAttachment, setNewTicketAttachment] = useState<{ url: string; name: string } | null>(null);
+  const [newTicketUploading, setNewTicketUploading] = useState(false);
+
+  const { startUpload: startNewTicketUpload } = useUploadThing("ticketAttachment", {
+    onClientUploadComplete: (res) => {
+      if (res && res[0]) {
+        setNewTicketAttachment({
+          url: res[0].url,
+          name: res[0].name
+        });
+      }
+      setNewTicketUploading(false);
+    },
+    onUploadError: (error: Error) => {
+      alert(`Upload failed: ${error.message}`);
+      setNewTicketUploading(false);
+    },
+    onUploadBegin: () => {
+      setNewTicketUploading(true);
+    }
+  });
+
   const [ticketReplyText, setTicketReplyText] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -222,6 +259,54 @@ export default function AdminPage() {
     return () => clearInterval(interval);
   }, [user, tickets, selectedTicket]);
 
+  const handleCreateTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!newTicketEmail || !newTicketDescription) {
+      alert('Email and Description are required.');
+      return;
+    }
+
+    setNewTicketSubmitting(true);
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: newTicketFirstName,
+          lastName: newTicketLastName,
+          email: newTicketEmail,
+          category: newTicketCategory,
+          description: newTicketDescription,
+          priority: newTicketPriority,
+          attachmentUrl: newTicketAttachment?.url || null,
+          attachmentName: newTicketAttachment?.name || null
+        })
+      });
+
+      if (res.ok) {
+        triggerToast(`Ticket logged successfully for ${newTicketEmail}`);
+        setNewTicketEmail('');
+        setNewTicketFirstName('');
+        setNewTicketLastName('');
+        setNewTicketCategory('API & Developer Tools');
+        setNewTicketPriority('MEDIUM');
+        setNewTicketDescription('');
+        setNewTicketAttachment(null);
+        setShowCreateModal(false);
+        loadDatabaseData(user.email);
+      } else {
+        const errData = await res.json();
+        alert(errData.error || 'Failed to create ticket.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error creating ticket.');
+    } finally {
+      setNewTicketSubmitting(false);
+    }
+  };
+
   const handleResolveTicket = async (ticketId: string) => {
     if (!user) return;
     try {
@@ -242,6 +327,28 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error('Failed to resolve ticket:', err);
+    }
+  };
+
+  const handleUpdatePriority = async (ticketId: string, newPriority: 'LOW' | 'MEDIUM' | 'HIGH') => {
+    if (!user) return;
+    try {
+      const res = await fetch('/api/tickets/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId,
+          priority: newPriority
+        })
+      });
+      if (res.ok) {
+        loadDatabaseData(user.email);
+        triggerToast(`Ticket ${ticketId} priority set to ${newPriority}!`);
+      } else {
+        alert('Failed to update priority');
+      }
+    } catch (err) {
+      console.error('Failed to update priority:', err);
     }
   };
 
@@ -341,6 +448,10 @@ export default function AdminPage() {
         ? t.status === 'Open' || t.status === 'In Progress'
         : t.status === ticketFilter;
 
+    const matchesPriority = priorityFilter === 'All'
+      ? true
+      : t.priority === priorityFilter.toUpperCase();
+
     const matchesSearch =
       t.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -348,7 +459,7 @@ export default function AdminPage() {
       t.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesPriority && matchesSearch;
   });
 
   const totalTickets = tickets.length;
@@ -476,51 +587,66 @@ export default function AdminPage() {
         </section>
 
         {/* Tab Switcher */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
-              ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-          >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'overview' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
-              <History className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="block text-sm font-bold">Activity Overview</span>
-              <span className={`block text-[10px] ${activeTab === 'overview' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Audit trail of issues</span>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('tickets')}
-            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'tickets'
-              ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'tickets' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
-                <Ticket className="w-5 h-5" />
+        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full md:max-w-xl">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'overview' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
+                <History className="w-5 h-5" />
               </div>
               <div>
-                <span className="block text-sm font-bold">Tickets Queue</span>
-                <span className={`block text-[10px] ${activeTab === 'tickets' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Manage client inquiries</span>
+                <span className="block text-sm font-bold">Activity Overview</span>
+                <span className={`block text-[10px] ${activeTab === 'overview' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Audit trail of issues</span>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {pendingResponseCount > 0 && (
-                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-500 text-white rounded-full animate-pulse">
-                  {pendingResponseCount} Act
+            </button>
+
+            <button
+              onClick={() => setActiveTab('tickets')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'tickets'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'tickets' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
+                  <Ticket className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Tickets Queue</span>
+                  <span className={`block text-[10px] ${activeTab === 'tickets' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Manage client inquiries</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {pendingResponseCount > 0 && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-500 text-white rounded-full animate-pulse">
+                    {pendingResponseCount} Act
+                  </span>
+                )}
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'tickets'
+                  ? 'bg-white/20 text-white border-white/10'
+                  : 'bg-slate-100 text-slate-700 border-slate-200'
+                  }`}>
+                  {totalTickets}
                 </span>
-              )}
-              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'tickets'
-                ? 'bg-white/20 text-white border-white/10'
-                : 'bg-slate-100 text-slate-700 border-slate-200'
-                }`}>
-                {totalTickets}
-              </span>
+              </div>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all text-left cursor-pointer shadow-sm md:w-auto w-full shrink-0 animate-fade-in"
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary-50 text-primary-600">
+              <PlusCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="block text-sm font-bold">Create Custom Ticket</span>
+              <span className="block text-[10px] text-slate-400 font-semibold">Log call or manual issue</span>
             </div>
           </button>
         </section>
@@ -681,10 +807,9 @@ export default function AdminPage() {
                   <h3 className="text-base font-bold text-slate-800">Support Ticket Queue</h3>
                   <p className="text-xs text-slate-400 mt-1">Review active submissions, prioritize responses, and manage ticket lifecycles.</p>
                 </div>
-
-                {/* Filter and Search Bar */}
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative">
+                 {/* Filter and Search Bar */}
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center">
                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                       <Search className="w-4 h-4" />
                     </span>
@@ -693,23 +818,74 @@ export default function AdminPage() {
                       placeholder="Search queue..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full md:w-56 bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full md:w-56 h-[38px] bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 text-xs font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
                     />
                   </div>
 
-                  <div className="flex rounded-xl border border-slate-250 bg-slate-50 p-1">
+                  {/* Status Filters */}
+                  <div className="flex items-center h-[38px] rounded-xl border border-slate-200/60 bg-white p-1">
                     {(['All', 'Open', 'Resolved'] as const).map(f => (
                       <button
                         key={f}
                         onClick={() => setTicketFilter(f)}
-                        className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${ticketFilter === f
-                          ? 'bg-white text-slate-800 shadow-sm border border-slate-200/50'
-                          : 'text-slate-400 hover:text-slate-700'
+                        className={`h-full px-3.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center ${ticketFilter === f
+                          ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/20'
+                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                           }`}
                       >
                         {f === 'Open' ? 'Active' : f}
                       </button>
                     ))}
+                  </div>
+
+                  {/* Toggle Priority Filters Icon Button & Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowPriorityFilters(!showPriorityFilters)}
+                      className={`h-[38px] px-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
+                        showPriorityFilters || priorityFilter !== 'All'
+                          ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm shadow-primary-100/30'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                      title="Filter by Priority"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      <span>Filters</span>
+                      {priorityFilter !== 'All' && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary-500 shadow-sm" />
+                      )}
+                    </button>
+
+                    {showPriorityFilters && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-20 cursor-default" 
+                          onClick={() => setShowPriorityFilters(false)}
+                        />
+                        <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl z-25 py-2 animate-fade-in">
+                          <div className="px-3 pb-1 border-b border-slate-100 mb-1">
+                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Filter Priority</span>
+                          </div>
+                          {(['All', 'High', 'Medium', 'Low'] as const).map(p => (
+                            <button
+                              key={p}
+                              onClick={() => {
+                                setPriorityFilter(p);
+                                setShowPriorityFilters(false);
+                              }}
+                              className={`w-full text-left px-3.5 py-2 text-xs font-semibold flex items-center justify-between transition-colors hover:bg-slate-50 cursor-pointer ${
+                                priorityFilter === p ? 'text-primary-600 bg-primary-50/30' : 'text-slate-650'
+                              }`}
+                            >
+                              <span>{p === 'All' ? 'All Priorities' : `${p} Priority`}</span>
+                              {priorityFilter === p && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary-600" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -732,6 +908,7 @@ export default function AdminPage() {
                         <th className="py-3 px-4">Submitter Info</th>
                         <th className="py-3 px-4">Inquiry Category</th>
                         <th className="py-3 px-4">Date Submitted</th>
+                        <th className="py-3 px-4">Priority</th>
                         <th className="py-3 px-4">Status</th>
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
@@ -760,6 +937,23 @@ export default function AdminPage() {
                               {ticket.createdAt}
                             </td>
                             <td className="py-4 px-4">
+                              <select
+                                value={ticket.priority || 'MEDIUM'}
+                                onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
+                                className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                                  ticket.priority === 'HIGH'
+                                    ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                    : ticket.priority === 'LOW'
+                                      ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                      : 'bg-amber-50 border-amber-200 text-amber-700'
+                                }`}
+                              >
+                                <option value="HIGH">🔴 High</option>
+                                <option value="MEDIUM">🟡 Medium</option>
+                                <option value="LOW">🔵 Low</option>
+                              </select>
+                            </td>
+                            <td className="py-4 px-4">
                               <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${ticket.status === 'Resolved'
                                 ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                                 : requiresReply
@@ -771,12 +965,23 @@ export default function AdminPage() {
                               </span>
                             </td>
                             <td className="py-4 px-4 text-right">
-                              <button
-                                onClick={() => setSelectedTicket(ticket)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
-                              >
-                                Manage <ChevronRight className="w-3.5 h-3.5" />
-                              </button>
+                              <div className="flex items-center justify-end gap-2">
+                                {ticket.status !== 'Resolved' && (
+                                  <button
+                                    onClick={() => handleResolveTicket(ticket.id)}
+                                    className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                                    title="Quick Close Ticket"
+                                  >
+                                    Quick Close
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => setSelectedTicket(ticket)}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
+                                >
+                                  Manage <ChevronRight className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -895,6 +1100,26 @@ export default function AdminPage() {
                         }`}>
                         {selectedTicket.status}
                       </span>
+                    </div>
+
+                    {/* Priority Selector in Modal */}
+                    <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
+                      <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Priority</span>
+                      <select
+                        value={selectedTicket.priority || 'MEDIUM'}
+                        onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
+                        className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                          selectedTicket.priority === 'HIGH'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                            : selectedTicket.priority === 'LOW'
+                              ? 'bg-slate-50 border-slate-200 text-slate-600'
+                              : 'bg-amber-50 border-amber-200 text-amber-700'
+                        }`}
+                      >
+                        <option value="HIGH">🔴 High</option>
+                        <option value="MEDIUM">🟡 Medium</option>
+                        <option value="LOW">🔵 Low</option>
+                      </select>
                     </div>
 
                     {selectedTicket.status !== 'Resolved' && (
@@ -1057,6 +1282,184 @@ export default function AdminPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CREATE CUSTOM TICKET */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
+              <div className="flex items-center gap-3.5">
+                <span className="p-2.5 rounded-xl bg-indigo-50 text-indigo-650 border border-indigo-100 shadow-sm">
+                  <PlusCircle className="w-5.5 h-5.5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg">Create Custom Ticket</h3>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                    Log a direct client issue or phone request
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setNewTicketAttachment(null);
+                }}
+                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-455 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Form */}
+            <form onSubmit={handleCreateTicket} className="flex-1 p-8 space-y-6">
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTicketFirstName}
+                    onChange={(e) => setNewTicketFirstName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    placeholder="e.g. John"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Last Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTicketLastName}
+                    onChange={(e) => setNewTicketLastName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    placeholder="e.g. Doe"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Customer Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={newTicketEmail}
+                  onChange={(e) => setNewTicketEmail(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                  placeholder="e.g. client@domain.com"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Inquiry Category</label>
+                  <select
+                    value={newTicketCategory}
+                    onChange={(e) => setNewTicketCategory(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="API & Developer Tools">API & Developer Tools</option>
+                    <option value="Billing & Invoices">Billing & Invoices</option>
+                    <option value="System Status & Uptime">System Status & Uptime</option>
+                    <option value="General Support">General Support</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Urgency</label>
+                  <select
+                    value={newTicketPriority}
+                    onChange={(e) => setNewTicketPriority(e.target.value as any)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="LOW">Low Priority</option>
+                    <option value="MEDIUM">Medium Priority</option>
+                    <option value="HIGH">High Priority</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Problem Description</label>
+                <textarea
+                  required
+                  rows={5}
+                  value={newTicketDescription}
+                  onChange={(e) => setNewTicketDescription(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 resize-none leading-relaxed"
+                  placeholder="Summarize the support call or issue details here..."
+                />
+              </div>
+
+              {/* Attachments Upload */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-3">
+                <label className="block text-xs font-semibold text-slate-500">Ticket Attachments (Optional)</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    id="new-ticket-file-upload"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) startNewTicketUpload([file]);
+                    }}
+                  />
+                  <label
+                    htmlFor="new-ticket-file-upload"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs transition-all cursor-pointer shadow-sm hover:border-primary-400"
+                  >
+                    <Paperclip className="w-4 h-4 text-slate-500" />
+                    {newTicketUploading ? 'Uploading file...' : 'Upload Attachment'}
+                  </label>
+
+                  {newTicketAttachment ? (
+                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm max-w-sm">
+                      <span className="text-xs font-bold text-slate-700 truncate max-w-[200px]">
+                        {newTicketAttachment.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setNewTicketAttachment(null)}
+                        className="text-red-500 hover:text-red-750 transition-colors p-0.5 rounded animate-fade-in"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-400 font-medium">No file attached</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setNewTicketAttachment(null);
+                  }}
+                  className="px-5 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={newTicketSubmitting || newTicketUploading}
+                  className="px-6 py-2.5 bg-primary-600 hover:bg-primary-750 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-primary-600/10 cursor-pointer border border-primary-500/20"
+                >
+                  {newTicketSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Logging...
+                    </>
+                  ) : (
+                    <>
+                      Create Ticket
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
