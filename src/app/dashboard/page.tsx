@@ -283,19 +283,11 @@ export default function DashboardPage() {
         if (freshRes.ok) {
           const freshData = await freshRes.json();
           setTickets(freshData);
-        }
-
-        setTimeout(async () => {
-          const latestRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
-          if (latestRes.ok) {
-            const latestData = await latestRes.json();
-            setTickets(latestData);
-            const currentTicket = latestData.find((t: any) => t.id === ticketId);
-            if (currentTicket) {
-              setSelectedTicket(currentTicket);
-            }
+          const currentTicket = freshData.find((t: any) => t.id === ticketId);
+          if (currentTicket) {
+            setSelectedTicket(currentTicket);
           }
-        }, 2000);
+        }
       }
     } catch (err) {
       console.error('Failed to send reply:', err);

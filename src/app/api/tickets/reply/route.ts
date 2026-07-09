@@ -81,43 +81,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // If sender is CUSTOMER, simulate an agent response in PostgreSQL immediately so it persists
-    if (sender.role === 'CUSTOMER') {
-      // Find or create a mock Agent user in the database
-      let agent = await postgresPrisma.portalUser.findFirst({
-        where: { role: 'AGENT' }
-      });
-
-      if (!agent) {
-        agent = await postgresPrisma.portalUser.create({
-          data: {
-            email: 'agent@ticket-it.com',
-            name: 'Sarah (Support Agent)',
-            passwordHash: '',
-            role: 'AGENT',
-            isActive: true
-          }
-        });
-      }
-
-      // Add agent reply in PostgreSQL (simulated delay is handled on frontend, but we persist it immediately in DB)
-      // This ensures that when the client queries the ticket history, the response is stored!
-      await postgresPrisma.ticketMessage.create({
-        data: {
-          ticketId: parsedId,
-          senderId: agent.id,
-          text: 'Thank you for the update. We have logged this description in our active diagnostics console. Our accounts administrator will inspect the transactions manually.',
-          isSystem: false
-        }
-      });
-
-      // Set ticket status to IN_PROGRESS
-      await postgresPrisma.supportTicket.update({
-        where: { id: parsedId },
-        data: { status: 'IN_PROGRESS' }
-      });
-    }
-
     return NextResponse.json({ success: true, message: userMessage });
   } catch (error) {
     console.error('Error replying to ticket:', error);
