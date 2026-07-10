@@ -65,6 +65,9 @@ export default function RootLayout({
               <Link href="/agent-login" className="hover:text-primary-400 transition-colors cursor-pointer">
                 Agent Login
               </Link>
+              <Link href="/admin-login" className="hover:text-primary-400 transition-colors cursor-pointer">
+                Admin Login
+              </Link>
             </div>
           </div>
         </footer>

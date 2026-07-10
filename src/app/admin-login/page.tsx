@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, Mic } from 'lucide-react';
+import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
-export default function AgentLoginPage() {
+export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +23,7 @@ export default function AgentLoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/agent-login', {
+      const response = await fetch('/api/admin-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -45,8 +45,8 @@ export default function AgentLoginPage() {
         // Trigger header update
         window.dispatchEvent(new CustomEvent('auth-change'));
 
-        // Redirect to agent dashboard
-        window.location.href = '/agent';
+        // Redirect to admin dashboard
+        window.location.href = '/admin';
       } catch {
         setError('Storage security policy blocked session initiation.');
       }
@@ -66,7 +66,7 @@ export default function AgentLoginPage() {
       {/* Main Container Card: Split 12-Column Layout */}
       <div className="relative w-full max-w-5xl bg-white rounded-[32px] border border-slate-200/80 shadow-[0_20px_50px_rgba(99,102,241,0.06)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10">
 
-        {/* Left Side: Ticket Support System Panel (5 Columns) */}
+        {/* Left Side: Admin Support System Panel (5 Columns) */}
         <div className="lg:col-span-5 bg-gradient-to-br from-primary-900 via-primary-850 to-primary-800 p-8 lg:p-10 flex flex-col justify-start space-y-6 text-white relative overflow-hidden">
           {/* Subtle decoration lines inside the left panel */}
           <div className="absolute inset-0 pointer-events-none opacity-10">
@@ -79,12 +79,12 @@ export default function AgentLoginPage() {
               <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white text-primary-600 shadow-md">
                 <LayoutDashboard className="w-4.5 h-4.5" />
               </span>
-              <span className="text-sm font-bold uppercase tracking-wider">Agent Console</span>
+              <span className="text-sm font-bold uppercase tracking-wider">Admin Console</span>
             </Link>
             <div className="space-y-2 pt-4">
-              <h2 className="text-2xl lg:text-3xl font-bold tracking-tight">Agent Dashboard</h2>
+              <h2 className="text-2xl lg:text-3xl font-bold tracking-tight">Admin Dashboard</h2>
               <p className="text-xs lg:text-sm text-primary-200/90 font-medium leading-relaxed">
-                Log in to view customer inquiries, reply to support tickets, and manage resolutions.
+                Log in to view customer metrics, monitor support tickets status, and oversee system resolutions.
               </p>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function AgentLoginPage() {
           {/* Channel Integration Infographic */}
           <div className="relative z-10 w-full bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6 space-y-6 shadow-xl">
             <div className="text-center">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider">Agent Workspace</h4>
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider">Admin Workspace</h4>
             </div>
 
             <div className="relative flex flex-col items-center py-2">
@@ -100,13 +100,12 @@ export default function AgentLoginPage() {
                 <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white text-primary-600 shadow-lg border border-primary-100">
                   <LayoutDashboard className="w-5.5 h-5.5" />
                 </div>
-                <span className="absolute -bottom-2 text-[10px] font-bold bg-primary-600 text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap shadow-md">Agent Panel</span>
+                <span className="absolute -bottom-2 text-[10px] font-bold bg-primary-600 text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap shadow-md">Admin Panel</span>
               </div>
 
               {/* Connecting Vector Lines SVG */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <svg className="w-full h-[120px]" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Connection from Hub to bottom middle (Form Query) */}
                   <path d="M 100 45 L 100 100" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.5" strokeDasharray="3 3" />
                 </svg>
               </div>
@@ -116,11 +115,11 @@ export default function AgentLoginPage() {
                 {/* Node: Form Query */}
                 <div className="flex flex-col items-center space-y-2 w-1/2">
                   <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-sky-300 shadow-md">
-                    <FileText className="w-4.5 h-4.5" />
+                    <ShieldAlert className="w-4.5 h-4.5" />
                   </div>
                   <div className="text-center">
-                    <div className="text-xs font-bold text-white leading-tight">Ticket Queue</div>
-                    <div className="text-[11px] text-primary-200/70">Solve customer cases</div>
+                    <div className="text-xs font-bold text-white leading-tight">System KPIs</div>
+                    <div className="text-[11px] text-primary-200/70">Oversee support status</div>
                   </div>
                 </div>
               </div>
@@ -142,8 +141,8 @@ export default function AgentLoginPage() {
           <div className="max-w-sm mx-auto w-full space-y-6 relative z-10">
             {/* Header Greeting */}
             <div className="space-y-1">
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Hello, Support Agent</h3>
-              <p className="text-sm text-slate-500 font-medium">Enter your registered agent credentials to proceed.</p>
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Hello, Administrator</h3>
+              <p className="text-sm text-slate-500 font-medium">Enter your registered admin credentials to proceed.</p>
             </div>
 
             {/* Error Alert */}

@@ -38,7 +38,7 @@ interface TicketDetail {
   email: string;
   category: string;
   description: string;
-  status: 'Open' | 'In Progress' | 'Resolved';
+  status: 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed' | 'Resolved';
   createdAt: string;
   attachmentUrl?: string | null;
   attachmentName?: string | null;
@@ -128,7 +128,7 @@ function TicketTrackerContent() {
       });
 
       if (res.ok) {
-        setTicket(prev => prev ? { ...prev, status: 'Resolved' } : null);
+        setTicket(prev => prev ? { ...prev, status: 'Closed' } : null);
       } else {
         alert('Failed to update ticket status.');
       }
@@ -162,7 +162,7 @@ function TicketTrackerContent() {
       if (!prev) return null;
       return {
         ...prev,
-        status: prev.status === 'Resolved' ? 'Open' : prev.status,
+        status: (prev.status === 'Closed' || prev.status === 'Resolved') ? 'Open' : prev.status,
         replies: [...(prev.replies || []), localReply]
       };
     });
@@ -297,15 +297,19 @@ function TicketTrackerContent() {
                 <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
                 <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
                   ticket.status === 'Open'
-                    ? 'bg-blue-50 text-blue-600 border-blue-100'
-                    : ticket.status === 'In Progress'
-                      ? 'bg-amber-50 text-amber-600 border-amber-100'
-                      : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                    ? 'bg-slate-50 text-slate-700 border-slate-200'
+                    : ticket.status === 'With Client' || ticket.status === 'On Hold'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : ticket.status === 'Escalated'
+                        ? 'bg-slate-50 text-slate-800 border-slate-250'
+                        : ticket.status === 'Closed' || ticket.status === 'Resolved'
+                          ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                          : 'bg-slate-50 text-slate-650 border-slate-100'
                 }`}>
                   {ticket.status}
                 </span>
               </div>
-              {ticket.status !== 'Resolved' ? (
+              {ticket.status !== 'Closed' && ticket.status !== 'Resolved' ? (
                 <button
                   type="button"
                   onClick={handleResolveTicket}

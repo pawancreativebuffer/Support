@@ -44,17 +44,17 @@ interface TicketItem {
   email: string;
   category: string;
   description: string;
-  status: 'Open' | 'In Progress' | 'Resolved';
+  status: 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed' | 'Resolved';
   createdAt: string;
   type?: 'Form' | 'Voice' | 'Live Chat';
   attachmentUrl?: string | null;
   attachmentName?: string | null;
-  replies?: { 
-    sender: 'customer' | 'agent'; 
-    text: string; 
-    time: string; 
-    attachmentUrl?: string | null; 
-    attachmentName?: string | null; 
+  replies?: {
+    sender: 'customer' | 'agent';
+    text: string;
+    time: string;
+    attachmentUrl?: string | null;
+    attachmentName?: string | null;
   }[];
 }
 
@@ -158,7 +158,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'tickets' | 'chats' | 'voice'>('overview');
 
   // Filters & Search
-  const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
+  const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed'>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Pagination & Limits
@@ -263,7 +263,7 @@ export default function DashboardPage() {
       const ticketsRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
       if (ticketsRes.ok) {
         const data: TicketItem[] = await ticketsRes.json();
-        
+
         // If silent refresh and we have previous tickets, detect updates
         if (silent && tickets.length > 0) {
           data.forEach(freshT => {
@@ -283,9 +283,9 @@ export default function DashboardPage() {
             }
           });
         }
-        
+
         setTickets(data);
-        
+
         // Update selected modal state if open
         if (selectedTicket) {
           const updated = data.find(t => t.id === selectedTicket.id);
@@ -331,6 +331,10 @@ export default function DashboardPage() {
             window.location.href = '/admin';
             return;
           }
+          if (parsed.role === 'Agent') {
+            window.location.href = '/agent';
+            return;
+          }
           setUser(parsed);
           loadDatabaseData(parsed.email);
         } catch {
@@ -362,7 +366,7 @@ export default function DashboardPage() {
       if (res.ok) {
         loadDatabaseData(user.email);
         if (selectedTicket && selectedTicket.id === ticketId) {
-          setSelectedTicket(prev => prev ? { ...prev, status: 'Resolved' as const } : null);
+          setSelectedTicket(prev => prev ? { ...prev, status: 'Closed' as const } : null);
         }
       }
     } catch (err) {
@@ -513,8 +517,8 @@ export default function DashboardPage() {
   });
 
   const totalTickets = tickets.length;
-  const openTickets = tickets.filter(t => t.status === 'Open' || t.status === 'In Progress').length;
-  const resolvedTickets = tickets.filter(t => t.status === 'Resolved').length;
+  const openTickets = tickets.filter(t => t.status !== 'Closed' && t.status !== 'Resolved').length;
+  const resolvedTickets = tickets.filter(t => t.status === 'Closed' || t.status === 'Resolved').length;
   const chatSessionsCount = chats.length;
   const voiceSessionsCount = voiceLogs.length;
 
@@ -536,7 +540,7 @@ export default function DashboardPage() {
 
       {/* Header / Top Navigation Bar */}
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
               <User className="w-5 h-5" />
@@ -557,7 +561,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Welcome Banner */}
-      <div className="max-w-7xl mx-auto px-6 pt-10">
+      <div className="max-w-[1600px] mx-auto px-6 pt-10">
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 md:p-10 shadow-sm">
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary-50/40 rounded-full blur-[80px] pointer-events-none" />
 
@@ -596,7 +600,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="max-w-7xl mx-auto px-6 mt-10 space-y-10">
+      <div className="max-w-[1600px] mx-auto px-6 mt-10 space-y-10">
 
         <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
@@ -916,19 +920,20 @@ export default function DashboardPage() {
                     />
                   </div>
 
-                  <div className="flex bg-slate-50 border border-slate-200 p-1 rounded-xl">
-                    {(['All', 'Open', 'In Progress', 'Resolved'] as const).map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => setTicketFilter(status)}
-                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${ticketFilter === status
-                          ? 'bg-primary-600 text-white shadow'
-                          : 'text-slate-400 hover:text-slate-600'
-                          }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
+                  {/* Status Filters Dropdown */}
+                  <div className="relative">
+                    <select
+                      value={ticketFilter}
+                      onChange={(e) => setTicketFilter(e.target.value as any)}
+                      className="h-[38px] px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-slate-650 hover:border-slate-350 focus:border-primary-500 focus:outline-none transition-all text-[10px] font-bold uppercase tracking-wider cursor-pointer shadow-sm"
+                    >
+                      <option value="All">All Statuses</option>
+                      <option value="Open">Open</option>
+                      <option value="With Client">With Client</option>
+                      <option value="On Hold">On Hold</option>
+                      <option value="Escalated">Escalated</option>
+                      <option value="Closed">Closed</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -980,13 +985,26 @@ export default function DashboardPage() {
                       </div>
 
                       <div className="flex items-center gap-4 justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-100/60">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${ticket.status === 'Open'
-                          ? 'bg-blue-50 text-blue-650 border-blue-100'
-                          : ticket.status === 'In Progress'
-                            ? 'bg-amber-50 text-amber-650 border-amber-100'
-                            : 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${ticket.status === 'Open'
+                          ? 'bg-slate-50 text-slate-700 border-slate-200'
+                          : ticket.status === 'With Client' || ticket.status === 'On Hold'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : ticket.status === 'Escalated'
+                              ? 'bg-slate-50 text-slate-800 border-slate-200'
+                              : ticket.status === 'Closed' || ticket.status === 'Resolved'
+                                ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                                : 'bg-slate-50 text-slate-600 border-slate-100'
                           }`}>
-                          {ticket.status}
+                          <span className="text-[8px] leading-none">
+                            {ticket.status === 'Open'
+                              ? '⚫'
+                              : ticket.status === 'With Client' || ticket.status === 'On Hold'
+                                ? '🟠'
+                                : ticket.status === 'Escalated'
+                                  ? '⚫'
+                                  : '🟢'}
+                          </span>
+                          <span className="ml-1">{ticket.status}</span>
                         </span>
                         <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all hidden md:block" />
                       </div>
@@ -1263,15 +1281,19 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${selectedTicket.status === 'Open'
-                        ? 'bg-blue-50 text-blue-650 border-blue-100'
-                        : selectedTicket.status === 'In Progress'
-                          ? 'bg-amber-50 text-amber-650 border-amber-100'
-                          : 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                        ? 'bg-slate-50 text-slate-700 border-slate-200'
+                        : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200'
+                          : selectedTicket.status === 'Escalated'
+                            ? 'bg-slate-50 text-slate-800 border-slate-200'
+                            : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
+                              ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                              : 'bg-slate-50 text-slate-600 border-slate-100'
                         }`}>
                         {selectedTicket.status}
                       </span>
                     </div>
-                    {selectedTicket.status !== 'Resolved' && (
+                    {selectedTicket.status !== 'Resolved' && selectedTicket.status !== 'Closed' && (
                       <button
                         type="button"
                         onClick={() => handleResolveTicket(selectedTicket.id)}
@@ -1324,18 +1346,17 @@ export default function DashboardPage() {
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
                                 <p className="select-text">{reply.text}</p>
-                                
+
                                 {reply.attachmentUrl && (
                                   <div className={`mt-2 pt-2 border-t ${isUser ? 'border-white/20' : 'border-slate-200'} flex`}>
                                     <a
                                       href={reply.attachmentUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all truncate max-w-full ${
-                                        isUser
-                                          ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
-                                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-250'
-                                      }`}
+                                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all truncate max-w-full ${isUser
+                                        ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
+                                        : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-250'
+                                        }`}
                                     >
                                       <FileText className="w-3.5 h-3.5 shrink-0" />
                                       <span className="truncate">{reply.attachmentName || 'View Attachment'}</span>
@@ -1372,7 +1393,7 @@ export default function DashboardPage() {
                           </button>
                         </div>
                       )}
-                      
+
                       {replyUploading && (
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
                           <Loader2 className="w-3.5 h-3.5 text-primary-600 animate-spin" />

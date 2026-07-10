@@ -24,46 +24,46 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 1. Seed John Doe in SQL Server if he doesn't exist
-    let sqlAgentUser = await prisma.users.findFirst({
-      where: { Login: 'john.doe' }
+    // 1. Seed admin.doe in SQL Server if he doesn't exist
+    let sqlAdminUser = await prisma.users.findFirst({
+      where: { Login: 'admin.doe' }
     });
 
-    if (!sqlAgentUser) {
-      console.log('Seeding default agent john.doe into SQL Server database...');
+    if (!sqlAdminUser) {
+      console.log('Seeding default admin admin.doe into SQL Server database...');
       try {
-        sqlAgentUser = await prisma.users.create({
+        sqlAdminUser = await prisma.users.create({
           data: {
-            Login: 'john.doe',
-            Email: 'john.doe@ticket-it.com',
-            FirstName: 'John',
+            Login: 'admin.doe',
+            Email: 'admin.doe@ticket-it.com',
+            FirstName: 'Admin',
             LastName: 'Doe',
-            AddressLine1: '123 Support Lane',
-            Phone: '123-456-7890',
-            Client: 'Support Agent Client',
+            AddressLine1: '123 Admin Headquarter',
+            Phone: '123-456-7899',
+            Client: 'Admin client',
             RegionName: 'Global',
             IsActive: true,
             UserPassword: '' // Will fallback to dev password
           }
         });
       } catch (err) {
-        console.error("Failed to seed john.doe in SQL Server:", err);
+        console.error("Failed to seed admin.doe in SQL Server:", err);
       }
     }
 
-    // 2. Seed John Doe in PostgreSQL if he doesn't exist
-    let pgAgentUser = await postgresPrisma.portalUser.findUnique({
-      where: { email: 'john.doe@ticket-it.com' }
+    // 2. Seed admin.doe in PostgreSQL if he doesn't exist
+    let pgAdminUser = await postgresPrisma.portalUser.findUnique({
+      where: { email: 'admin.doe@ticket-it.com' }
     });
 
-    if (!pgAgentUser) {
-      console.log('Seeding default agent john.doe into PostgreSQL database...');
-      pgAgentUser = await postgresPrisma.portalUser.create({
+    if (!pgAdminUser) {
+      console.log('Seeding default admin admin.doe into PostgreSQL database...');
+      pgAdminUser = await postgresPrisma.portalUser.create({
         data: {
-          email: 'john.doe@ticket-it.com',
-          name: 'John Doe',
+          email: 'admin.doe@ticket-it.com',
+          name: 'Admin Doe',
           passwordHash: '',
-          role: 'AGENT',
+          role: 'ADMIN',
           isActive: true
         }
       });
@@ -120,16 +120,16 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    // Strict validation: Only allow AGENT role
-    if (portalUser.role !== 'AGENT') {
+    // Strict validation: Only allow ADMIN role
+    if (portalUser.role !== 'ADMIN') {
       return NextResponse.json({
-        error: 'Access denied. This login is reserved for support agents only.'
+        error: 'Access denied. This login is reserved for administrators only.'
       }, { status: 403 });
     }
 
     if (portalUser.isActive === false) {
       return NextResponse.json({
-        error: 'This agent account is currently deactivated.'
+        error: 'This administrator account is currently deactivated.'
       }, { status: 403 });
     }
 
@@ -137,11 +137,11 @@ export async function POST(req: NextRequest) {
       user: {
         name: portalUser.name,
         email: portalUser.email,
-        role: 'Agent'
+        role: 'Admin'
       }
     });
   } catch (error) {
-    console.error("Agent Login API error:", error);
-    return NextResponse.json({ error: "Failed to authenticate agent" }, { status: 500 });
+    console.error("Admin Login API error:", error);
+    return NextResponse.json({ error: "Failed to authenticate administrator" }, { status: 500 });
   }
 }

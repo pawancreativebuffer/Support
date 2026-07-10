@@ -52,7 +52,7 @@ interface TicketItem {
   }[];
 }
 
-export default function AdminPage() {
+export default function AgentPage() {
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [selectedTicketIds, setSelectedTicketIds] = useState<string[]>([]);
@@ -86,6 +86,7 @@ export default function AdminPage() {
   const [newTicketCategory, setNewTicketCategory] = useState('API & Developer Tools');
   const [newTicketPriority, setNewTicketPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM');
   const [newTicketDescription, setNewTicketDescription] = useState('');
+  const [newTicketStatus, setNewTicketStatus] = useState<'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed'>('Open');
   const [newTicketSubmitting, setNewTicketSubmitting] = useState(false);
   const [newTicketAttachment, setNewTicketAttachment] = useState<{ url: string; name: string } | null>(null);
   const [newTicketUploading, setNewTicketUploading] = useState(false);
@@ -304,18 +305,18 @@ export default function AdminPage() {
       if (storedUser) {
         try {
           const parsed = JSON.parse(storedUser);
-          if (parsed.role !== 'Admin') {
-            window.location.href = '/admin-login';
+          if (parsed.role !== 'Agent') {
+            window.location.href = '/agent-login';
             return;
           }
           setUser(parsed);
           loadDatabaseData(parsed.email);
           loadAgents();
         } catch {
-          window.location.href = '/admin-login';
+          window.location.href = '/agent-login';
         }
       } else {
-        window.location.href = '/admin-login';
+        window.location.href = '/agent-login';
       }
     };
     checkUser();
@@ -350,6 +351,7 @@ export default function AdminPage() {
           category: newTicketCategory,
           description: newTicketDescription,
           priority: newTicketPriority,
+          status: newTicketStatus,
           attachmentUrl: newTicketAttachment?.url || null,
           attachmentName: newTicketAttachment?.name || null
         })
@@ -362,6 +364,7 @@ export default function AdminPage() {
         setNewTicketLastName('');
         setNewTicketCategory('API & Developer Tools');
         setNewTicketPriority('MEDIUM');
+        setNewTicketStatus('Open');
         setNewTicketDescription('');
         setNewTicketAttachment(null);
         setShowCreateModal(false);
@@ -420,6 +423,31 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error('Failed to update priority:', err);
+    }
+  };
+
+  const handleUpdateStatus = async (ticketId: string, newStatus: string) => {
+    if (!user) return;
+    try {
+      const res = await fetch('/api/tickets/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId,
+          status: newStatus
+        })
+      });
+      if (res.ok) {
+        loadDatabaseData(user.email);
+        triggerToast(`Ticket ${ticketId} status updated to ${newStatus}!`);
+        if (selectedTicket && selectedTicket.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, status: newStatus as any } : null);
+        }
+      } else {
+        alert('Failed to update status');
+      }
+    } catch (err) {
+      console.error('Failed to update status:', err);
     }
   };
 
@@ -628,6 +656,14 @@ export default function AdminPage() {
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh records'}
               </button>
+              {user?.role === 'Agent' && (
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-6 py-3.5 rounded-xl bg-primary-600 hover:bg-primary-750 text-white font-bold text-xs transition-all shadow-md shadow-primary-600/10 flex items-center gap-2 border border-primary-500/20 cursor-pointer"
+                >
+                  <PlusCircle className="w-4.5 h-4.5" /> Create Custom Ticket
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1155,7 +1191,8 @@ export default function AdminPage() {
                               )}
                             </td>
                             <td className="py-4 px-4">
-                              <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border ${
+                              {user?.role === 'Admin' ? (
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border ${
                                   ticket.status === 'Open'
                                     ? 'bg-slate-50 border-slate-200 text-slate-750'
                                     : ticket.status === 'With Client' || ticket.status === 'On Hold'
@@ -1175,9 +1212,39 @@ export default function AdminPage() {
                                    </span>
                                    <span className="ml-1">{ticket.status}</span>
                                  </span>
+                              ) : (
+                                <select
+                                  value={ticket.status}
+                                  onChange={(e) => handleUpdateStatus(ticket.id, e.target.value as any)}
+                                  className={`text-[10px] font-black uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                                    ticket.status === 'Open'
+                                      ? 'bg-slate-50 border-slate-200 text-slate-750'
+                                      : ticket.status === 'With Client' || ticket.status === 'On Hold'
+                                        ? 'bg-amber-50 border-amber-200 text-amber-700 font-bold'
+                                        : ticket.status === 'Escalated'
+                                          ? 'bg-slate-50 border-slate-250 text-slate-800 font-bold'
+                                          : 'bg-emerald-50 border-emerald-250 text-emerald-750 font-bold'
+                                  }`}
+                                >
+                                  <option value="Open">⚫ Open</option>
+                                  <option value="With Client">🟠 With Client</option>
+                                  <option value="On Hold">🟠 On Hold</option>
+                                  <option value="Escalated">⚫ Escalated</option>
+                                  <option value="Closed">🟢 Closed</option>
+                                </select>
+                              )}
                             </td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end gap-2">
+                                {ticket.status !== 'Closed' && ticket.status !== 'Resolved' && user?.role !== 'Admin' && (
+                                  <button
+                                    onClick={() => handleUpdateStatus(ticket.id, 'Closed')}
+                                    className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                                    title="Quick Close Ticket"
+                                  >
+                                    Quick Close
+                                  </button>
+                                )}
                                 <button
                                   onClick={() => setSelectedTicket(ticket)}
                                   className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
@@ -1295,19 +1362,45 @@ export default function AdminPage() {
                   <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
-                        selectedTicket.status === 'Open'
-                          ? 'bg-slate-50 text-slate-700 border-slate-200'
-                          : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : selectedTicket.status === 'Escalated'
-                              ? 'bg-slate-50 text-slate-800 border-slate-250'
-                              : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
-                                ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
-                                : 'bg-slate-50 text-slate-600 border-slate-100'
-                      }`}>
-                        {selectedTicket.status}
-                      </span>
+                      {user?.role === 'Admin' ? (
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
+                            selectedTicket.status === 'Open'
+                              ? 'bg-slate-50 text-slate-700 border-slate-200'
+                              : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
+                                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : selectedTicket.status === 'Escalated'
+                                  ? 'bg-slate-50 text-slate-800 border-slate-250'
+                                  : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
+                                    ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                                    : 'bg-slate-50 text-slate-600 border-slate-100'
+                          }`}
+                        >
+                          {selectedTicket.status}
+                        </span>
+                      ) : (
+                        <select
+                          value={selectedTicket.status}
+                          onChange={(e) => handleUpdateStatus(selectedTicket.id, e.target.value)}
+                          className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                            selectedTicket.status === 'Open'
+                              ? 'bg-slate-50 border-slate-200 text-slate-700 font-black'
+                              : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
+                                ? 'bg-amber-50 border-amber-250 text-amber-700 font-black'
+                                : selectedTicket.status === 'Escalated'
+                                  ? 'bg-slate-50 border-slate-250 text-slate-800 font-black'
+                                  : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
+                                    ? 'bg-emerald-50 border-emerald-250 text-emerald-750 font-black'
+                                    : 'bg-slate-50 border-slate-200 text-slate-700 font-black'
+                          }`}
+                        >
+                          <option value="Open">⚫ Open</option>
+                          <option value="With Client">🟠 With Client</option>
+                          <option value="On Hold">🟠 On Hold</option>
+                          <option value="Escalated">⚫ Escalated</option>
+                          <option value="Closed">🟢 Closed</option>
+                        </select>
+                      )}
                     </div>
 
                     {/* Priority Selector in Modal */}
@@ -1344,7 +1437,15 @@ export default function AdminPage() {
                       )}
                     </div>
 
-
+                    {selectedTicket.status !== 'Closed' && selectedTicket.status !== 'Resolved' && user?.role !== 'Admin' && (
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateStatus(selectedTicket.id, 'Closed')}
+                        className="w-full justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-2 border border-emerald-500/20 shadow-md shadow-emerald-500/10"
+                      >
+                        <CheckSquare className="w-4 h-4" /> Quick Close Ticket
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -1510,7 +1611,7 @@ export default function AdminPage() {
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
               <div className="flex items-center gap-3.5">
@@ -1535,8 +1636,10 @@ export default function AdminPage() {
               </button>
             </div>
             {/* Form */}
-            <form onSubmit={handleCreateTicket} className="flex-1 p-8 space-y-6">
-              <div className="grid grid-cols-2 gap-5">
+            <form onSubmit={handleCreateTicket} className="flex-1 flex flex-col overflow-hidden">
+              {/* Scrollable Modal Body */}
+              <div className="flex-1 p-8 space-y-6 overflow-y-auto">
+                <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label>
                   <input
@@ -1573,20 +1676,21 @@ export default function AdminPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Inquiry Category</label>
-                  <select
-                    value={newTicketCategory}
-                    onChange={(e) => setNewTicketCategory(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
-                  >
-                    <option value="API & Developer Tools">API & Developer Tools</option>
-                    <option value="Billing & Invoices">Billing & Invoices</option>
-                    <option value="System Status & Uptime">System Status & Uptime</option>
-                    <option value="General Support">General Support</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Inquiry Category</label>
+                <select
+                  value={newTicketCategory}
+                  onChange={(e) => setNewTicketCategory(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                >
+                  <option value="API & Developer Tools">API & Developer Tools</option>
+                  <option value="Billing & Invoices">Billing & Invoices</option>
+                  <option value="System Status & Uptime">System Status & Uptime</option>
+                  <option value="General Support">General Support</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Urgency</label>
                   <select
@@ -1597,6 +1701,20 @@ export default function AdminPage() {
                     <option value="LOW">Low Priority</option>
                     <option value="MEDIUM">Medium Priority</option>
                     <option value="HIGH">High Priority</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Status</label>
+                  <select
+                    value={newTicketStatus}
+                    onChange={(e) => setNewTicketStatus(e.target.value as any)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="Open">Open</option>
+                    <option value="With Client">With Client</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Escalated">Escalated</option>
+                    <option value="Closed">Closed</option>
                   </select>
                 </div>
               </div>
@@ -1652,8 +1770,11 @@ export default function AdminPage() {
                   )}
                 </div>
               </div>
+              {/* Scrollable Modal Body Ends */}
+              </div>
 
-              <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+              {/* Fixed Modal Footer */}
+              <div className="p-6 border-t border-slate-100 bg-white flex justify-end gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={() => {

@@ -203,7 +203,9 @@ exports.PortalRole = exports.$Enums.PortalRole = {
 
 exports.TicketStatus = exports.$Enums.TicketStatus = {
   OPEN: 'OPEN',
-  IN_PROGRESS: 'IN_PROGRESS',
+  WITH_CLIENT: 'WITH_CLIENT',
+  ON_HOLD: 'ON_HOLD',
+  ESCALATED: 'ESCALATED',
   RESOLVED: 'RESOLVED',
   CLOSED: 'CLOSED'
 };

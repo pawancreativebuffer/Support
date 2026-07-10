@@ -33,7 +33,9 @@ model PortalUser {
 
 enum TicketStatus {
   OPEN
-  IN_PROGRESS
+  WITH_CLIENT
+  ON_HOLD
+  ESCALATED
   RESOLVED
   CLOSED
 }

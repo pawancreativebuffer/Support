@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       email: ticket.customer.email,
       category: ticket.title,
       description: ticket.description,
-      status: ticket.status === 'IN_PROGRESS' ? 'In Progress' : ticket.status === 'RESOLVED' ? 'Resolved' : 'Open',
+      status: ticket.status === 'WITH_CLIENT' ? 'With Client' : ticket.status === 'ON_HOLD' ? 'On Hold' : ticket.status === 'ESCALATED' ? 'Escalated' : ticket.status === 'CLOSED' ? 'Closed' : ticket.status === 'RESOLVED' ? 'Resolved' : 'Open',
       type: 'Form',
       attachmentUrl: ticket.attachmentUrl,
       attachmentName: ticket.attachmentName,
