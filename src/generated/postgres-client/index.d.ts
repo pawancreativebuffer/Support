@@ -63,7 +63,8 @@ export const TicketStatus: {
   ON_HOLD: 'ON_HOLD',
   ESCALATED: 'ESCALATED',
   RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED'
+  CLOSED: 'CLOSED',
+  MERGED: 'MERGED'
 };
 
 export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
@@ -1452,10 +1453,12 @@ export namespace Prisma {
 
   export type SupportTicketCountOutputType = {
     messages: number
+    mergedTickets: number
   }
 
   export type SupportTicketCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     messages?: boolean | SupportTicketCountOutputTypeCountMessagesArgs
+    mergedTickets?: boolean | SupportTicketCountOutputTypeCountMergedTicketsArgs
   }
 
   // Custom InputTypes
@@ -1474,6 +1477,13 @@ export namespace Prisma {
    */
   export type SupportTicketCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TicketMessageWhereInput
+  }
+
+  /**
+   * SupportTicketCountOutputType without action
+   */
+  export type SupportTicketCountOutputTypeCountMergedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportTicketWhereInput
   }
 
 
@@ -2741,12 +2751,14 @@ export namespace Prisma {
 
   export type SupportTicketAvgAggregateOutputType = {
     id: number | null
+    mergedIntoId: number | null
     customerId: number | null
     agentId: number | null
   }
 
   export type SupportTicketSumAggregateOutputType = {
     id: number | null
+    mergedIntoId: number | null
     customerId: number | null
     agentId: number | null
   }
@@ -2759,6 +2771,7 @@ export namespace Prisma {
     priority: $Enums.TicketPriority | null
     attachmentUrl: string | null
     attachmentName: string | null
+    mergedIntoId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     customerId: number | null
@@ -2773,6 +2786,7 @@ export namespace Prisma {
     priority: $Enums.TicketPriority | null
     attachmentUrl: string | null
     attachmentName: string | null
+    mergedIntoId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     customerId: number | null
@@ -2787,6 +2801,7 @@ export namespace Prisma {
     priority: number
     attachmentUrl: number
     attachmentName: number
+    mergedIntoId: number
     createdAt: number
     updatedAt: number
     customerId: number
@@ -2797,12 +2812,14 @@ export namespace Prisma {
 
   export type SupportTicketAvgAggregateInputType = {
     id?: true
+    mergedIntoId?: true
     customerId?: true
     agentId?: true
   }
 
   export type SupportTicketSumAggregateInputType = {
     id?: true
+    mergedIntoId?: true
     customerId?: true
     agentId?: true
   }
@@ -2815,6 +2832,7 @@ export namespace Prisma {
     priority?: true
     attachmentUrl?: true
     attachmentName?: true
+    mergedIntoId?: true
     createdAt?: true
     updatedAt?: true
     customerId?: true
@@ -2829,6 +2847,7 @@ export namespace Prisma {
     priority?: true
     attachmentUrl?: true
     attachmentName?: true
+    mergedIntoId?: true
     createdAt?: true
     updatedAt?: true
     customerId?: true
@@ -2843,6 +2862,7 @@ export namespace Prisma {
     priority?: true
     attachmentUrl?: true
     attachmentName?: true
+    mergedIntoId?: true
     createdAt?: true
     updatedAt?: true
     customerId?: true
@@ -2944,6 +2964,7 @@ export namespace Prisma {
     priority: $Enums.TicketPriority
     attachmentUrl: string | null
     attachmentName: string | null
+    mergedIntoId: number | null
     createdAt: Date
     updatedAt: Date
     customerId: number
@@ -2977,6 +2998,7 @@ export namespace Prisma {
     priority?: boolean
     attachmentUrl?: boolean
     attachmentName?: boolean
+    mergedIntoId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
@@ -2984,6 +3006,8 @@ export namespace Prisma {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
     messages?: boolean | SupportTicket$messagesArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
+    mergedTickets?: boolean | SupportTicket$mergedTicketsArgs<ExtArgs>
     _count?: boolean | SupportTicketCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["supportTicket"]>
 
@@ -2995,12 +3019,14 @@ export namespace Prisma {
     priority?: boolean
     attachmentUrl?: boolean
     attachmentName?: boolean
+    mergedIntoId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }, ExtArgs["result"]["supportTicket"]>
 
   export type SupportTicketSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3011,12 +3037,14 @@ export namespace Prisma {
     priority?: boolean
     attachmentUrl?: boolean
     attachmentName?: boolean
+    mergedIntoId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }, ExtArgs["result"]["supportTicket"]>
 
   export type SupportTicketSelectScalar = {
@@ -3027,26 +3055,31 @@ export namespace Prisma {
     priority?: boolean
     attachmentUrl?: boolean
     attachmentName?: boolean
+    mergedIntoId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
   }
 
-  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "attachmentUrl" | "attachmentName" | "createdAt" | "updatedAt" | "customerId" | "agentId", ExtArgs["result"]["supportTicket"]>
+  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "attachmentUrl" | "attachmentName" | "mergedIntoId" | "createdAt" | "updatedAt" | "customerId" | "agentId", ExtArgs["result"]["supportTicket"]>
   export type SupportTicketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
     messages?: boolean | SupportTicket$messagesArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
+    mergedTickets?: boolean | SupportTicket$mergedTicketsArgs<ExtArgs>
     _count?: boolean | SupportTicketCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SupportTicketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }
   export type SupportTicketIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }
 
   export type $SupportTicketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3055,6 +3088,8 @@ export namespace Prisma {
       customer: Prisma.$PortalUserPayload<ExtArgs>
       agent: Prisma.$PortalUserPayload<ExtArgs> | null
       messages: Prisma.$TicketMessagePayload<ExtArgs>[]
+      mergedInto: Prisma.$SupportTicketPayload<ExtArgs> | null
+      mergedTickets: Prisma.$SupportTicketPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3064,6 +3099,7 @@ export namespace Prisma {
       priority: $Enums.TicketPriority
       attachmentUrl: string | null
       attachmentName: string | null
+      mergedIntoId: number | null
       createdAt: Date
       updatedAt: Date
       customerId: number
@@ -3465,6 +3501,8 @@ export namespace Prisma {
     customer<T extends PortalUserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortalUserDefaultArgs<ExtArgs>>): Prisma__PortalUserClient<$Result.GetResult<Prisma.$PortalUserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     agent<T extends SupportTicket$agentArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$agentArgs<ExtArgs>>): Prisma__PortalUserClient<$Result.GetResult<Prisma.$PortalUserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     messages<T extends SupportTicket$messagesArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    mergedInto<T extends SupportTicket$mergedIntoArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$mergedIntoArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    mergedTickets<T extends SupportTicket$mergedTicketsArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$mergedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3501,6 +3539,7 @@ export namespace Prisma {
     readonly priority: FieldRef<"SupportTicket", 'TicketPriority'>
     readonly attachmentUrl: FieldRef<"SupportTicket", 'String'>
     readonly attachmentName: FieldRef<"SupportTicket", 'String'>
+    readonly mergedIntoId: FieldRef<"SupportTicket", 'Int'>
     readonly createdAt: FieldRef<"SupportTicket", 'DateTime'>
     readonly updatedAt: FieldRef<"SupportTicket", 'DateTime'>
     readonly customerId: FieldRef<"SupportTicket", 'Int'>
@@ -3929,6 +3968,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TicketMessageScalarFieldEnum | TicketMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SupportTicket.mergedInto
+   */
+  export type SupportTicket$mergedIntoArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    where?: SupportTicketWhereInput
+  }
+
+  /**
+   * SupportTicket.mergedTickets
+   */
+  export type SupportTicket$mergedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    where?: SupportTicketWhereInput
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    cursor?: SupportTicketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
   }
 
   /**
@@ -8456,6 +8538,7 @@ export namespace Prisma {
     priority: 'priority',
     attachmentUrl: 'attachmentUrl',
     attachmentName: 'attachmentName',
+    mergedIntoId: 'mergedIntoId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     customerId: 'customerId',
@@ -8773,6 +8856,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
     attachmentUrl?: StringNullableFilter<"SupportTicket"> | string | null
     attachmentName?: StringNullableFilter<"SupportTicket"> | string | null
+    mergedIntoId?: IntNullableFilter<"SupportTicket"> | number | null
     createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
@@ -8780,6 +8864,8 @@ export namespace Prisma {
     customer?: XOR<PortalUserScalarRelationFilter, PortalUserWhereInput>
     agent?: XOR<PortalUserNullableScalarRelationFilter, PortalUserWhereInput> | null
     messages?: TicketMessageListRelationFilter
+    mergedInto?: XOR<SupportTicketNullableScalarRelationFilter, SupportTicketWhereInput> | null
+    mergedTickets?: SupportTicketListRelationFilter
   }
 
   export type SupportTicketOrderByWithRelationInput = {
@@ -8790,6 +8876,7 @@ export namespace Prisma {
     priority?: SortOrder
     attachmentUrl?: SortOrderInput | SortOrder
     attachmentName?: SortOrderInput | SortOrder
+    mergedIntoId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -8797,6 +8884,8 @@ export namespace Prisma {
     customer?: PortalUserOrderByWithRelationInput
     agent?: PortalUserOrderByWithRelationInput
     messages?: TicketMessageOrderByRelationAggregateInput
+    mergedInto?: SupportTicketOrderByWithRelationInput
+    mergedTickets?: SupportTicketOrderByRelationAggregateInput
   }
 
   export type SupportTicketWhereUniqueInput = Prisma.AtLeast<{
@@ -8810,6 +8899,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
     attachmentUrl?: StringNullableFilter<"SupportTicket"> | string | null
     attachmentName?: StringNullableFilter<"SupportTicket"> | string | null
+    mergedIntoId?: IntNullableFilter<"SupportTicket"> | number | null
     createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
@@ -8817,6 +8907,8 @@ export namespace Prisma {
     customer?: XOR<PortalUserScalarRelationFilter, PortalUserWhereInput>
     agent?: XOR<PortalUserNullableScalarRelationFilter, PortalUserWhereInput> | null
     messages?: TicketMessageListRelationFilter
+    mergedInto?: XOR<SupportTicketNullableScalarRelationFilter, SupportTicketWhereInput> | null
+    mergedTickets?: SupportTicketListRelationFilter
   }, "id">
 
   export type SupportTicketOrderByWithAggregationInput = {
@@ -8827,6 +8919,7 @@ export namespace Prisma {
     priority?: SortOrder
     attachmentUrl?: SortOrderInput | SortOrder
     attachmentName?: SortOrderInput | SortOrder
+    mergedIntoId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -8849,6 +8942,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityWithAggregatesFilter<"SupportTicket"> | $Enums.TicketPriority
     attachmentUrl?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
     attachmentName?: StringNullableWithAggregatesFilter<"SupportTicket"> | string | null
+    mergedIntoId?: IntNullableWithAggregatesFilter<"SupportTicket"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
     customerId?: IntWithAggregatesFilter<"SupportTicket"> | number
@@ -9223,6 +9317,8 @@ export namespace Prisma {
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateInput = {
@@ -9233,11 +9329,13 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
     agentId?: number | null
     messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUpdateInput = {
@@ -9252,6 +9350,8 @@ export namespace Prisma {
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateInput = {
@@ -9262,11 +9362,13 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketCreateManyInput = {
@@ -9277,6 +9379,7 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -9302,6 +9405,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -9805,6 +9909,11 @@ export namespace Prisma {
     isNot?: PortalUserWhereInput | null
   }
 
+  export type SupportTicketNullableScalarRelationFilter = {
+    is?: SupportTicketWhereInput | null
+    isNot?: SupportTicketWhereInput | null
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -9818,6 +9927,7 @@ export namespace Prisma {
     priority?: SortOrder
     attachmentUrl?: SortOrder
     attachmentName?: SortOrder
+    mergedIntoId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -9826,6 +9936,7 @@ export namespace Prisma {
 
   export type SupportTicketAvgOrderByAggregateInput = {
     id?: SortOrder
+    mergedIntoId?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
   }
@@ -9838,6 +9949,7 @@ export namespace Prisma {
     priority?: SortOrder
     attachmentUrl?: SortOrder
     attachmentName?: SortOrder
+    mergedIntoId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -9852,6 +9964,7 @@ export namespace Prisma {
     priority?: SortOrder
     attachmentUrl?: SortOrder
     attachmentName?: SortOrder
+    mergedIntoId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customerId?: SortOrder
@@ -9860,6 +9973,7 @@ export namespace Prisma {
 
   export type SupportTicketSumOrderByAggregateInput = {
     id?: SortOrder
+    mergedIntoId?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
   }
@@ -10342,11 +10456,31 @@ export namespace Prisma {
     connect?: TicketMessageWhereUniqueInput | TicketMessageWhereUniqueInput[]
   }
 
+  export type SupportTicketCreateNestedOneWithoutMergedTicketsInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedTicketsInput
+    connect?: SupportTicketWhereUniqueInput
+  }
+
+  export type SupportTicketCreateNestedManyWithoutMergedIntoInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+  }
+
   export type TicketMessageUncheckedCreateNestedManyWithoutTicketInput = {
     create?: XOR<TicketMessageCreateWithoutTicketInput, TicketMessageUncheckedCreateWithoutTicketInput> | TicketMessageCreateWithoutTicketInput[] | TicketMessageUncheckedCreateWithoutTicketInput[]
     connectOrCreate?: TicketMessageCreateOrConnectWithoutTicketInput | TicketMessageCreateOrConnectWithoutTicketInput[]
     createMany?: TicketMessageCreateManyTicketInputEnvelope
     connect?: TicketMessageWhereUniqueInput | TicketMessageWhereUniqueInput[]
+  }
+
+  export type SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
   }
 
   export type EnumTicketStatusFieldUpdateOperationsInput = {
@@ -10393,6 +10527,30 @@ export namespace Prisma {
     deleteMany?: TicketMessageScalarWhereInput | TicketMessageScalarWhereInput[]
   }
 
+  export type SupportTicketUpdateOneWithoutMergedTicketsNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedTicketsInput
+    upsert?: SupportTicketUpsertWithoutMergedTicketsInput
+    disconnect?: SupportTicketWhereInput | boolean
+    delete?: SupportTicketWhereInput | boolean
+    connect?: SupportTicketWhereUniqueInput
+    update?: XOR<XOR<SupportTicketUpdateToOneWithWhereWithoutMergedTicketsInput, SupportTicketUpdateWithoutMergedTicketsInput>, SupportTicketUncheckedUpdateWithoutMergedTicketsInput>
+  }
+
+  export type SupportTicketUpdateManyWithoutMergedIntoNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutMergedIntoInput | SupportTicketUpdateManyWithWhereWithoutMergedIntoInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -10413,6 +10571,20 @@ export namespace Prisma {
     update?: TicketMessageUpdateWithWhereUniqueWithoutTicketInput | TicketMessageUpdateWithWhereUniqueWithoutTicketInput[]
     updateMany?: TicketMessageUpdateManyWithWhereWithoutTicketInput | TicketMessageUpdateManyWithWhereWithoutTicketInput[]
     deleteMany?: TicketMessageScalarWhereInput | TicketMessageScalarWhereInput[]
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutMergedIntoInput | SupportTicketUpdateManyWithWhereWithoutMergedIntoInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
   }
 
   export type SupportTicketCreateNestedOneWithoutMessagesInput = {
@@ -10795,6 +10967,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateWithoutCustomerInput = {
@@ -10805,10 +10979,12 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     agentId?: number | null
     messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketCreateOrConnectWithoutCustomerInput = {
@@ -10832,6 +11008,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateWithoutAgentInput = {
@@ -10842,10 +11020,12 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
     messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketCreateOrConnectWithoutAgentInput = {
@@ -10941,6 +11121,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFilter<"SupportTicket"> | $Enums.TicketPriority
     attachmentUrl?: StringNullableFilter<"SupportTicket"> | string | null
     attachmentName?: StringNullableFilter<"SupportTicket"> | string | null
+    mergedIntoId?: IntNullableFilter<"SupportTicket"> | number | null
     createdAt?: DateTimeFilter<"SupportTicket"> | Date | string
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
@@ -11115,6 +11296,83 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SupportTicketCreateWithoutMergedTicketsInput = {
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
+    agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
+    messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutMergedTicketsInput = {
+    id?: number
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    mergedIntoId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerId: number
+    agentId?: number | null
+    messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketCreateOrConnectWithoutMergedTicketsInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+  }
+
+  export type SupportTicketCreateWithoutMergedIntoInput = {
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
+    agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
+    messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutMergedIntoInput = {
+    id?: number
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerId: number
+    agentId?: number | null
+    messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
+  }
+
+  export type SupportTicketCreateOrConnectWithoutMergedIntoInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput>
+  }
+
+  export type SupportTicketCreateManyMergedIntoInputEnvelope = {
+    data: SupportTicketCreateManyMergedIntoInput | SupportTicketCreateManyMergedIntoInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PortalUserUpsertWithoutRaisedTicketsInput = {
     update: XOR<PortalUserUpdateWithoutRaisedTicketsInput, PortalUserUncheckedUpdateWithoutRaisedTicketsInput>
     create: XOR<PortalUserCreateWithoutRaisedTicketsInput, PortalUserUncheckedCreateWithoutRaisedTicketsInput>
@@ -11207,6 +11465,64 @@ export namespace Prisma {
     data: XOR<TicketMessageUpdateManyMutationInput, TicketMessageUncheckedUpdateManyWithoutTicketInput>
   }
 
+  export type SupportTicketUpsertWithoutMergedTicketsInput = {
+    update: XOR<SupportTicketUpdateWithoutMergedTicketsInput, SupportTicketUncheckedUpdateWithoutMergedTicketsInput>
+    create: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+    where?: SupportTicketWhereInput
+  }
+
+  export type SupportTicketUpdateToOneWithWhereWithoutMergedTicketsInput = {
+    where?: SupportTicketWhereInput
+    data: XOR<SupportTicketUpdateWithoutMergedTicketsInput, SupportTicketUncheckedUpdateWithoutMergedTicketsInput>
+  }
+
+  export type SupportTicketUpdateWithoutMergedTicketsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
+    agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
+    messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutMergedTicketsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput = {
+    where: SupportTicketWhereUniqueInput
+    update: XOR<SupportTicketUpdateWithoutMergedIntoInput, SupportTicketUncheckedUpdateWithoutMergedIntoInput>
+    create: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput>
+  }
+
+  export type SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput = {
+    where: SupportTicketWhereUniqueInput
+    data: XOR<SupportTicketUpdateWithoutMergedIntoInput, SupportTicketUncheckedUpdateWithoutMergedIntoInput>
+  }
+
+  export type SupportTicketUpdateManyWithWhereWithoutMergedIntoInput = {
+    where: SupportTicketScalarWhereInput
+    data: XOR<SupportTicketUpdateManyMutationInput, SupportTicketUncheckedUpdateManyWithoutMergedIntoInput>
+  }
+
   export type SupportTicketCreateWithoutMessagesInput = {
     title: string
     description: string
@@ -11218,6 +11534,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateWithoutMessagesInput = {
@@ -11228,10 +11546,12 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
     agentId?: number | null
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketCreateOrConnectWithoutMessagesInput = {
@@ -11293,6 +11613,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateWithoutMessagesInput = {
@@ -11303,10 +11625,12 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type PortalUserUpsertWithoutSentMessagesInput = {
@@ -11529,6 +11853,7 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     agentId?: number | null
@@ -11542,6 +11867,7 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     attachmentUrl?: string | null
     attachmentName?: string | null
+    mergedIntoId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
@@ -11577,6 +11903,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateWithoutCustomerInput = {
@@ -11587,10 +11915,12 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateManyWithoutCustomerInput = {
@@ -11601,6 +11931,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11617,6 +11948,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateWithoutAgentInput = {
@@ -11627,10 +11960,12 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
     messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateManyWithoutAgentInput = {
@@ -11641,6 +11976,7 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
@@ -11711,6 +12047,20 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type SupportTicketCreateManyMergedIntoInput = {
+    id?: number
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerId: number
+    agentId?: number | null
+  }
+
   export type TicketMessageUpdateWithoutTicketInput = {
     text?: StringFieldUpdateOperationsInput | string
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11738,6 +12088,51 @@ export namespace Prisma {
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportTicketUpdateWithoutMergedIntoInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
+    agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
+    messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutMergedIntoInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutMergedIntoInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    agentId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ChatWidgetMessageCreateManySessionInput = {

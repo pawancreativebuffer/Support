@@ -136,6 +136,7 @@ exports.Prisma.SupportTicketScalarFieldEnum = {
   priority: 'priority',
   attachmentUrl: 'attachmentUrl',
   attachmentName: 'attachmentName',
+  mergedIntoId: 'mergedIntoId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   customerId: 'customerId',
@@ -207,7 +208,8 @@ exports.TicketStatus = exports.$Enums.TicketStatus = {
   ON_HOLD: 'ON_HOLD',
   ESCALATED: 'ESCALATED',
   RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED'
+  CLOSED: 'CLOSED',
+  MERGED: 'MERGED'
 };
 
 exports.TicketPriority = exports.$Enums.TicketPriority = {

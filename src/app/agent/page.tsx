@@ -256,6 +256,7 @@ export default function AgentPage() {
     }
   };
 
+
   const loadDatabaseData = async (email: string, silent = false) => {
     if (!silent) setIsRefreshing(true);
     try {
@@ -1063,6 +1064,54 @@ export default function AgentPage() {
                 </div>
               ) : (
                 <>
+                  {/* Inline Bulk Actions Bar */}
+                  {selectedTicketIds.length > 0 && (
+                    <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/80 border border-slate-200/80 rounded-xl mb-4 animate-fade-in">
+                      <div className="flex items-center gap-2 pr-4 border-r border-slate-200">
+                        <span className="w-5 h-5 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-[10px] font-black">
+                          {selectedTicketIds.length}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                          Selected
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => handleBulkUpdate({ status: 'Closed' })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                      >
+                        <CheckCircle className="w-3 h-3" /> Close
+                      </button>
+
+                      <div className="flex items-center gap-1.5">
+                        <select
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              handleBulkUpdate({ agentId: e.target.value });
+                              e.target.value = '';
+                            }
+                          }}
+                          className="text-[10px] font-bold uppercase tracking-wider rounded-lg px-2.5 py-1.5 border bg-white border-slate-200 text-slate-600 cursor-pointer focus:outline-none transition-all"
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Assign Agent</option>
+                          <option value="unassigned">Unassigned</option>
+                          {agents.map(a => (
+                            <option key={a.id} value={a.id}>{a.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+
+                      <button
+                        onClick={() => setSelectedTicketIds([])}
+                        className="ml-auto px-2.5 py-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-lg text-[10px] font-bold transition-all cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+
                   <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -1802,56 +1851,6 @@ export default function AgentPage() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Floating Bulk Action Bar */}
-      {selectedTicketIds.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl px-6 py-4 flex items-center gap-6 animate-scale-up">
-          <div className="flex items-center gap-2 border-r border-slate-200 pr-6">
-            <span className="w-5 h-5 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-black">
-              {selectedTicketIds.length}
-            </span>
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-              Tickets Selected
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Bulk Close Button */}
-            <button
-              onClick={() => handleBulkUpdate({ status: 'Closed' })}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-500/10 cursor-pointer border border-emerald-500/20"
-            >
-              🟢 Bulk Close
-            </button>
-
-            {/* Bulk Assign Select */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Assign To:</span>
-              <select
-                onChange={(e) => handleBulkUpdate({ agentId: e.target.value })}
-                className="text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-2 border bg-slate-50 border-slate-200 text-slate-700 cursor-pointer focus:outline-none transition-all"
-                defaultValue=""
-              >
-                <option value="" disabled>Select Agent</option>
-                <option value="unassigned">👤 Unassigned</option>
-                {agents.map(a => (
-                  <option key={a.id} value={a.id}>
-                    👤 {a.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Cancel selection */}
-            <button
-              onClick={() => setSelectedTicketIds([])}
-              className="px-3 py-2 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-            >
-              Clear
-            </button>
           </div>
         </div>
       )}
