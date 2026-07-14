@@ -230,6 +230,10 @@ export async function POST(req: NextRequest) {
     // 3. Create the initial system/customer ticket message if needed
     // In this case, we don't need a separate reply yet, the description is the initial query.
 
+    import('@/lib/eventEmitter').then(({ ticketEventEmitter }) => {
+      ticketEventEmitter.emit('ticketUpdate', { type: 'new_ticket', ticketId: `TK-${newTicket.id}` });
+    });
+
     return NextResponse.json({
       success: true,
       ticketId: newTicket.id,

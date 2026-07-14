@@ -446,13 +446,22 @@ export default function AdminPage() {
     checkUser();
   }, []);
 
-  // Polling for real-time notifications
+  // Real-time notifications via SSE
   useEffect(() => {
     if (!user) return;
-    const interval = setInterval(() => {
-      loadDatabaseData(user.email, true);
-    }, 8000);
-    return () => clearInterval(interval);
+    
+    const eventSource = new EventSource('/api/ticket-events?all=true');
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_reply' || data.type === 'new_ticket' || data.type === 'status_update') {
+          loadDatabaseData(user.email, true);
+        }
+      } catch (err) {}
+    };
+
+    return () => eventSource.close();
   }, [user, tickets, selectedTicket]);
 
   const handleCreateTicket = async (e: React.FormEvent) => {

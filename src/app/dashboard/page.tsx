@@ -50,7 +50,7 @@ interface TicketItem {
   attachmentUrl?: string | null;
   attachmentName?: string | null;
   replies?: {
-    sender: 'customer' | 'agent';
+    sender: 'customer' | 'agent' | 'system';
     text: string;
     time: string;
     attachmentUrl?: string | null;
@@ -311,13 +311,22 @@ export default function DashboardPage() {
     }
   };
 
-  // Polling for real-time customer updates
+  // Real-time notifications via SSE
   useEffect(() => {
     if (!user) return;
-    const interval = setInterval(() => {
-      loadDatabaseData(user.email, true);
-    }, 8000);
-    return () => clearInterval(interval);
+    
+    const eventSource = new EventSource('/api/ticket-events?all=true');
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_reply' || data.type === 'new_ticket' || data.type === 'status_update') {
+          loadDatabaseData(user.email, true);
+        }
+      } catch (err) {}
+    };
+
+    return () => eventSource.close();
   }, [user, tickets, selectedTicket]);
 
   // Read auth state and load data on mount
@@ -1338,6 +1347,15 @@ export default function DashboardPage() {
                     ) : (
                       <div className="space-y-4">
                         {selectedTicket.replies.map((reply, idx) => {
+                          if (reply.sender === 'system') {
+                            return (
+                              <div key={idx} className="text-center my-2">
+                                <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                                  {reply.text}
+                                </span>
+                              </div>
+                            );
+                          }
                           const isUser = reply.sender === 'customer';
                           return (
                             <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>

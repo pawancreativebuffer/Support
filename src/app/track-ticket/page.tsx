@@ -24,7 +24,7 @@ import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
 
 interface ReplyItem {
-  sender: 'customer' | 'agent';
+  sender: 'customer' | 'agent' | 'system';
   text: string;
   time: string;
   attachmentUrl?: string | null;
@@ -102,15 +102,26 @@ function TicketTrackerContent() {
     }
   };
 
-  // Poll for agent updates every 5 seconds
+  // Listen for real-time updates via SSE
   useEffect(() => {
     fetchTicketDetails(true);
 
-    const interval = setInterval(() => {
-      fetchTicketDetails(false);
-    }, 5000);
+    if (!ticketId) return;
 
-    return () => clearInterval(interval);
+    const eventSource = new EventSource(`/api/ticket-events?ticketId=${ticketId}`);
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_reply' || data.type === 'status_update') {
+          fetchTicketDetails(false);
+        }
+      } catch (err) {}
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, [ticketId, token]);
 
   const handleResolveTicket = async () => {
@@ -359,6 +370,15 @@ function TicketTrackerContent() {
               ) : (
                 <div className="space-y-4">
                   {ticket.replies.map((reply, idx) => {
+                    if (reply.sender === 'system') {
+                      return (
+                        <div key={idx} className="text-center my-2">
+                          <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                            {reply.text}
+                          </span>
+                        </div>
+                      );
+                    }
                     const isUser = reply.sender === 'customer';
                     return (
                       <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>

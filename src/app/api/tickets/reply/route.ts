@@ -56,6 +56,10 @@ export async function POST(req: NextRequest) {
         }
       });
 
+      import('@/lib/eventEmitter').then(({ ticketEventEmitter }) => {
+        ticketEventEmitter.emit('ticketUpdate', { type: 'status_update', ticketId: ticketId });
+      });
+
       return NextResponse.json({ success: true, status: 'RESOLVED' });
     }
 
@@ -115,6 +119,10 @@ export async function POST(req: NextRequest) {
         });
       }
     }
+
+    import('@/lib/eventEmitter').then(({ ticketEventEmitter }) => {
+      ticketEventEmitter.emit('ticketUpdate', { type: 'new_reply', ticketId: ticketId });
+    });
 
     return NextResponse.json({ success: true, message: userMessage });
   } catch (error) {
