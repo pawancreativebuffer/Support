@@ -1553,11 +1553,11 @@ export default function AdminPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 p-6 overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch h-full p-6 min-h-0">
 
                 {/* Left Column: Inquiry Metadata & Status */}
-                <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
+                <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Original Inquiry Description */}
                   <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner">
@@ -1662,21 +1662,23 @@ export default function AdminPage() {
                 </div>
 
                 {/* Right Column: Thread & Reply Form */}
-                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
+                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8 min-h-0">
+
+                  {/* Fixed Header for Conversation Thread */}
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-4 shrink-0">
+                    <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
+                      <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100">
+                        <MessageSquare className="w-4 h-4" />
+                      </span>
+                      Conversation Thread
+                    </h4>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                      Live responses
+                    </span>
+                  </div>
 
                   {/* Discussion Thread container */}
-                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 min-h-[380px] flex flex-col">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                      <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
-                        <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100">
-                          <MessageSquare className="w-4 h-4" />
-                        </span>
-                        Conversation Thread
-                      </h4>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
-                        Live responses
-                      </span>
-                    </div>
+                  <div className="flex-1 overflow-y-auto pr-2 space-y-4 flex flex-col min-h-0 scrollbar-thin">
 
                     {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
                       <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
@@ -1923,11 +1925,11 @@ export default function AdminPage() {
             </div>
 
             {/* Body */}
-            <div className="flex-1 p-6 bg-slate-50/20 overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            <div className="flex-1 overflow-hidden flex flex-col bg-slate-50/20 min-h-0">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch h-full p-6 min-h-0">
 
                 {/* Left Column (5 cols): Call Stats & Live Audio Player */}
-                <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
+                <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Status Indicator */}
                   <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center justify-between">
@@ -1991,21 +1993,23 @@ export default function AdminPage() {
                 </div>
 
                 {/* Right Column (7 cols): Transcript Chat Thread */}
-                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
+                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8 min-h-0">
+
+                  {/* Fixed Header for Chat messages thread */}
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-4 shrink-0">
+                    <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
+                      <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+                        <MessageSquare className="w-4 h-4" />
+                      </span>
+                      Call Transcript Thread
+                    </h4>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                      Speech-To-Text Log
+                    </span>
+                  </div>
 
                   {/* Chat messages thread container */}
-                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[410px] scrollbar-thin">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                      <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
-                        <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                          <MessageSquare className="w-4 h-4" />
-                        </span>
-                        Call Transcript Thread
-                      </h4>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
-                        Speech-To-Text Log
-                      </span>
-                    </div>
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 flex flex-col min-h-0 scrollbar-thin">
 
                     <div className="space-y-4 pt-2">
                       {parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).length === 0 ? (
