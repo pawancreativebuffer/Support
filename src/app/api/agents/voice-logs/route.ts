@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
 
     // Fetch all voice logs
     const voiceLogs = await postgresPrisma.voiceSessionLog.findMany({
+      take: 100,
       include: {
         customer: true
       },

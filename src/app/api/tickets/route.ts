@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
       where: { email: email.trim().toLowerCase() },
       include: {
         raisedTickets: {
+          take: 50,
           where: { status: { not: 'MERGED' } },
           include: {
             agent: true,
@@ -45,6 +46,7 @@ export async function GET(req: NextRequest) {
     // If agent or admin, return all tickets
     if (portalUser.role === 'AGENT' || portalUser.role === 'ADMIN') {
       const allTickets = await postgresPrisma.supportTicket.findMany({
+        take: 100,
         where: { status: { not: 'MERGED' } },
         include: {
           customer: true,

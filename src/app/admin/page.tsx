@@ -1524,7 +1524,7 @@ export default function AdminPage() {
 
       {/* DISCUSSION MODAL THREAD */}
       {selectedTicket && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
@@ -1832,7 +1832,7 @@ export default function AdminPage() {
 
       {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
             <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
@@ -1900,7 +1900,7 @@ export default function AdminPage() {
 
       {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
@@ -2057,7 +2057,7 @@ export default function AdminPage() {
 
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">

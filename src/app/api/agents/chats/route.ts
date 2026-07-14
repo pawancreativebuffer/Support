@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
 
     // Find all chat sessions
     const sessions = await postgresPrisma.chatWidgetSession.findMany({
+      take: 100,
       include: {
         messages: {
           orderBy: {
