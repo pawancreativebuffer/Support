@@ -141,9 +141,9 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
           <h2 className="text-2xl font-bold text-slate-900">Message Submitted!</h2>
           <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-            Thank you for contacting customer care. We have created support ticket <strong>#TK-{ticketNumber}</strong>. Our agents will respond to your registered email address within 24 hours.
+            Thank you for contacting customer care. We have created support ticket <strong>#TK-{ticketNumber}</strong>. Our agents will respond to your ticket exclusively on this portal within 24 hours.
           </p>
-          {magicLink && (
+          {!isLoggedIn && magicLink && (
             <div className="bg-primary-50/50 border border-primary-100 rounded-2xl p-5 max-w-md mx-auto text-left space-y-3 mt-4">
               <p className="text-xs font-bold uppercase tracking-wider text-primary-700">Track Your Support Ticket</p>
               <p className="text-xs text-slate-500 font-semibold leading-relaxed">
