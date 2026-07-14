@@ -385,7 +385,8 @@ export default function AgentPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           primaryTicketId: primaryIdNum,
-          secondaryTicketIds: secondaryIdsNum
+          secondaryTicketIds: secondaryIdsNum,
+          agentName: user?.name || 'an Agent'
         })
       });
 

@@ -3,7 +3,8 @@ import { postgresPrisma } from '@/lib/postgresDb';
 
 export async function POST(request: Request) {
   try {
-    const { primaryTicketId, secondaryTicketIds } = await request.json();
+    const { primaryTicketId, secondaryTicketIds, agentName } = await request.json();
+    const actor = agentName || 'an Agent';
 
     if (!primaryTicketId || !secondaryTicketIds || !Array.isArray(secondaryTicketIds) || secondaryTicketIds.length === 0) {
       return NextResponse.json({ error: 'Primary ticket ID and secondary ticket IDs are required.' }, { status: 400 });
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
           data: {
             ticketId: Number(primaryTicketId),
             senderId: fallbackSenderId,
-            text: `[SYSTEM]: Ticket #${secId} has been merged into this ticket.`,
+            text: `[SYSTEM]: Ticket #${secId} has been merged into this ticket by ${actor}.`,
             isSystem: true
           }
         });

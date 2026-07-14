@@ -138,8 +138,9 @@ interface TicketItem {
   type?: 'Form' | 'Voice' | 'Live Chat';
   attachmentUrl?: string | null;
   attachmentName?: string | null;
+  mergedTickets?: any[];
   replies?: {
-    sender: 'customer' | 'agent';
+    sender: 'customer' | 'agent' | 'system';
     text: string;
     time: string;
     attachmentUrl?: string | null;
@@ -185,6 +186,8 @@ export default function AdminPage() {
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
+  const [showMergedTicketsModal, setShowMergedTicketsModal] = useState(false);
+  const [mergedTicketsList, setMergedTicketsList] = useState<any[]>([]);
 
   // Custom Ticket Creation Form States
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -1580,6 +1583,21 @@ export default function AdminPage() {
                     </div>
                   )}
 
+                  {selectedTicket.mergedTickets && selectedTicket.mergedTickets.length > 0 && (
+                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <span className="text-xs font-black uppercase tracking-widest text-slate-400">Merged Tickets</span>
+                      <button
+                        onClick={() => {
+                          setMergedTicketsList(selectedTicket.mergedTickets || []);
+                          setShowMergedTicketsModal(true);
+                        }}
+                        className="w-full text-center px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-250 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                      >
+                        <Paperclip className="w-3.5 h-3.5" /> View {selectedTicket.mergedTickets.length} Merged Ticket(s)
+                      </button>
+                    </div>
+                  )}
+
                   {/* Status Indicator & Resolve Action */}
                   <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
@@ -1666,6 +1684,15 @@ export default function AdminPage() {
                     ) : (
                       <div className="space-y-4">
                         {selectedTicket.replies.map((reply, idx) => {
+                          if (reply.sender === 'system') {
+                            return (
+                              <div key={idx} className="text-center my-2">
+                                <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                                  {reply.text}
+                                </span>
+                              </div>
+                            );
+                          }
                           // For agent view, agent replies go on the right (primary), customer replies on the left (gray)
                           const isAgent = reply.sender === 'agent';
                           return (
@@ -2193,6 +2220,64 @@ export default function AdminPage() {
         </div>
       )}
 
+      {/* MODAL: VIEW MERGED TICKETS */}
+      {showMergedTicketsModal && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
+                  <History className="w-5.5 h-5.5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg">Merged Tickets History</h3>
+                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowMergedTicketsModal(false)} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 p-6 overflow-y-auto space-y-6 bg-slate-50/50">
+              {mergedTicketsList.map((mt, idx) => (
+                <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-start border-b border-slate-100 pb-3">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-primary-700">{mt.id}</span>
+                      <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
+                      <p className="text-[10px] text-slate-400 font-mono mt-1">{mt.createdAt}</p>
+                    </div>
+                    <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                      Merged
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Original Inquiry</p>
+                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      {mt.description}
+                    </p>
+                  </div>
+                  {mt.messages && mt.messages.length > 0 && (
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Prior Thread</p>
+                      <div className="space-y-3">
+                        {mt.messages.filter((m: any) => !m.text.startsWith('[SYSTEM]')).map((msg: any, mIdx: number) => (
+                          <div key={mIdx} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                            <span className="text-[10px] font-bold text-slate-500 mb-1 block">
+                              {msg.sender === 'customer' ? mt.customerName : 'Agent'} • {msg.time}
+                            </span>
+                            <p className="text-sm text-slate-700">{msg.text.replace(/\[MERGED FROM TICKET #\d+\]: /, '')}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
