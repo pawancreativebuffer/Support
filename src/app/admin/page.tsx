@@ -78,24 +78,48 @@ const parseVoiceTranscript = (text: string, createdAtStr: string) => {
     return `${hoursStr}:${minutesStr} ${ampm}`;
   };
 
-  lines.forEach(line => {
-    const isAgent = line.toLowerCase().startsWith('agent:');
-    const isUser = line.toLowerCase().startsWith('user:');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
 
-    if (isAgent || isUser) {
-      const content = line.substring(line.indexOf(':') + 1).trim();
+    let sender: 'user' | 'agent' = 'agent';
+    let content = trimmed;
 
-      const timeForMsg = new Date(baseTime.getTime() + (elapsedSeconds * 1000));
-      elapsedSeconds += 3 + Math.floor(Math.random() * 5);
-
-      parsed.push({
-        sender: isAgent ? 'agent' : 'user',
-        text: content,
-        time: formatTimeStr(timeForMsg)
-      });
+    if (trimmed.startsWith('Customer:')) {
+      sender = 'user';
+      content = trimmed.slice('Customer:'.length).trim();
+    } else if (trimmed.startsWith('Agent:')) {
+      sender = 'agent';
+      content = trimmed.slice('Agent:'.length).trim();
+    } else if (trimmed.startsWith('User:')) {
+      sender = 'user';
+      content = trimmed.slice('User:'.length).trim();
+    } else if (trimmed.startsWith('Assistant:')) {
+      sender = 'agent';
+      content = trimmed.slice('Assistant:'.length).trim();
+    } else {
+      if (parsed.length > 0) {
+        parsed[parsed.length - 1].text += ' ' + trimmed;
+        const wordCount = trimmed.split(/\s+/).length;
+        elapsedSeconds += Math.ceil(wordCount * 0.4);
+        const msgTime = new Date(baseTime.getTime() + elapsedSeconds * 1000);
+        parsed[parsed.length - 1].time = formatTimeStr(msgTime);
+        continue;
+      }
     }
-  });
 
+    const wordCount = content.split(/\s+/).length;
+    const duration = Math.max(3, Math.ceil(wordCount * 0.4));
+
+    const msgTime = new Date(baseTime.getTime() + elapsedSeconds * 1000);
+    parsed.push({
+      sender,
+      text: content,
+      time: formatTimeStr(msgTime)
+    });
+
+    elapsedSeconds += duration + 2;
+  }
   return parsed;
 };
 
@@ -1416,7 +1440,7 @@ export default function AdminPage() {
                     {voiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map((log) => (
                       <div
                         key={log.id}
-                        onClick={() => setSelectedVoiceLog(log)}
+                        onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
                         className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
                       >
                         <div className="space-y-3.5">
@@ -1989,226 +2013,6 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
-      {selectedChat && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
-            {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
-              <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
-                  <MessageCircle className="w-5 h-5" />
-                </span>
-                <div>
-                  <h3 className="font-extrabold text-slate-800 text-[15px] select-text">
-                    {selectedChat.customerName ? `Chat with ${selectedChat.customerName}` : selectedChat.customerEmail ? `Chat with ${selectedChat.customerEmail}` : 'Chat with Guest User'}
-                  </h3>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${selectedChat.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                      {selectedChat.status} Session Transcript
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => setSelectedChat(null)}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
-              >
-                <X className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
-            {/* Transcript Messages Body */}
-            <div className="flex-1 p-6 overflow-y-auto max-h-[400px] bg-slate-50/20 space-y-4">
-              {selectedChat.messages.map((msg, idx) => {
-                if (msg.sender === 'system') {
-                  return (
-                    <div key={idx} className="text-center my-2">
-                      <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                        {msg.text}
-                      </span>
-                    </div>
-                  );
-                }
-                const isUser = msg.sender === 'user';
-                return (
-                  <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm leading-relaxed shadow-sm ${isUser
-                      ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
-                      : 'bg-white border border-slate-200 text-slate-850 rounded-tl-none'
-                      }`}>
-                      <p className="select-text">{msg.text}</p>
-                      <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isUser ? 'text-white/80' : 'text-slate-500'}`}>
-                        {msg.time}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-              Live chat session logged and encrypted.
-            </div>
-          </div>
-        </div>
-      )}
-
-
-      {/* MODAL 3: VOICE LOG TRANSCRIPT */}
-      {selectedVoiceLog && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
-
-            {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
-              <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
-                  <Mic className="w-5 h-5" />
-                </span>
-                <div>
-                  <h3 className="font-extrabold text-slate-800 text-base select-text">AI Voice Session Details</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                    {selectedVoiceLog.customerName ? `Customer: ${selectedVoiceLog.customerName}` : selectedVoiceLog.customerEmail ? `Customer: ${selectedVoiceLog.customerEmail}` : 'Guest User'} • ID: {selectedVoiceLog.id.slice(0, 8)} • Called: {selectedVoiceLog.createdAt}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setSelectedVoiceLog(null)}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
-              >
-                <X className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
-            {/* Body */}
-            <div className="flex-1 p-6 bg-slate-50/20 overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-
-                {/* Left Column (5 cols): Call Stats & Live Audio Player */}
-                <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
-
-                  {/* Status Indicator */}
-                  <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
-                      ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                      : 'bg-slate-105 text-slate-455 border-slate-200/60'
-                      }`}>
-                      {selectedVoiceLog.status}
-                    </span>
-                  </div>
-
-                  {/* Call Stats Grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
-                      <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
-                    </div>
-                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
-                      <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
-                    </div>
-                  </div>
-
-                  {/* Audio Recording Player */}
-                  <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-3.5 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
-                      {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
-                    </div>
-
-                    {!audioPlaybackError ? (
-                      <div className="space-y-2">
-                        <audio
-                          controls
-                          src={`/api/voice-audio?conversation_id=${selectedVoiceLog.id}`}
-                          className="w-full h-9 rounded-lg"
-                          onError={() => setAudioPlaybackError(true)}
-                        />
-                        <span className="block text-[9px] text-slate-400 font-semibold text-center leading-normal">
-                          Recorded audio retrieved dynamically from ElevenLabs
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center p-5 border border-dashed border-slate-250 bg-slate-50/70 rounded-xl text-center space-y-3.5">
-                        <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex items-center justify-center shadow-sm">
-                          <VolumeX className="w-4.5 h-4.5" />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-extrabold text-slate-750">
-                            Audio recording not available
-                          </p>
-                          <p className="text-[11px] font-semibold text-slate-500 leading-relaxed max-w-[240px] mx-auto">
-                            Please verify if ELEVENLABS_API_KEY is configured in your server env, or wait if the call just ended.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-
-                {/* Right Column (7 cols): Transcript Chat Thread */}
-                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
-
-                  {/* Chat messages thread container */}
-                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[410px] scrollbar-thin">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                      <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
-                        <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                          <MessageSquare className="w-4 h-4" />
-                        </span>
-                        Call Transcript Thread
-                      </h4>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
-                        Speech-To-Text Log
-                      </span>
-                    </div>
-
-                    <div className="space-y-4 pt-2">
-                      {parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).length === 0 ? (
-                        <p className="text-xs text-slate-400 italic text-center py-8">No transcript entries recorded.</p>
-                      ) : (
-                        parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).map((msg, idx) => {
-                          const isUser = msg.sender === 'user';
-                          return (
-                            <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
-                                ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
-                                : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
-                                }`}>
-                                <span className={`block text-[9px] font-black uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
-                                  }`}>
-                                  {isUser ? 'Customer' : 'AI Assistant'}
-                                </span>
-                                <p className="select-text">{msg.text}</p>
-                                <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isUser ? 'text-white/80' : 'text-slate-500'}`}>
-                                  {msg.time}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-              Voice transcription logs synced.
-            </div>
-          </div>
-        </div>
-      )}
 
 
       {/* MODAL: CREATE CUSTOM TICKET */}
