@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
     try {
       matchedUser = await prisma.users.findFirst({
         where: {
-          Login: trimmedLogin
+          OR: [
+            { Login: trimmedLogin },
+            { Email: trimmedLogin }
+          ]
         }
       });
     } catch (err) {
@@ -44,15 +47,11 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    // Verify password matching (with development fallback)
+    // Verify password matching
     let isPasswordValid = false;
     if (matchedUser.UserPassword) {
+      // Assuming passwords in SQL Server are bcrypt hashed. If they use a different legacy hash, this logic might need adjustment.
       isPasswordValid = await bcrypt.compare(password, matchedUser.UserPassword);
-    }
-    
-    // Dev fallback: allow login with "root", "admin", or "password"
-    if (password === 'root' || password === 'admin' || password === 'password') {
-      isPasswordValid = true;
     }
 
     if (!isPasswordValid) {
