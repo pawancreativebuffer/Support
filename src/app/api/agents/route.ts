@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const agents = await postgresPrisma.portalUser.findMany({
       where: {
         role: {
-          in: ['AGENT', 'ADMIN']
+          in: ['AGENT']
         },
         isActive: true
       },
