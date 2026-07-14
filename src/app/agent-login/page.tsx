@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, Mic } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,6 +10,22 @@ export default function AgentLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('nexus_user');
+    if (userStr) {
+      try {
+        const parsed = JSON.parse(userStr);
+        if (parsed.role === 'Admin') {
+          window.location.href = '/admin';
+        } else if (parsed.role === 'Agent') {
+          window.location.href = '/agent';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      } catch (err) {}
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
