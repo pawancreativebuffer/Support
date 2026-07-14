@@ -847,59 +847,60 @@ export default function AdminPage() {
                 </span>
               </div>
             </button>
-          </div>
 
-          <button
-            onClick={() => setActiveTab('chats')}
-            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'chats'
-              ? 'bg-blue-600 border-blue-700 text-white shadow-md shadow-blue-200'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'chats' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'}`}>
-                <MessageCircle className="w-5 h-5" />
+            {/* TAB 3: Live Chats */}
+            <button
+              onClick={() => setActiveTab('chats')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'chats'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'chats' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+                  }`}>
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Live Chats</span>
+                  <span className={`block text-[10px] ${activeTab === 'chats' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Chat log sessions</span>
+                </div>
               </div>
-              <div>
-                <span className="block text-sm font-bold">Live Chats</span>
-                <span className={`block text-[10px] ${activeTab === 'chats' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Chat log sessions</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
               <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'chats'
                 ? 'bg-white/20 text-white border-white/10'
                 : 'bg-slate-100 text-slate-700 border-slate-200'
                 }`}>
                 {chats.length}
               </span>
-            </div>
-          </button>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('voice')}
-            className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'voice'
-              ? 'bg-slate-800 border-slate-900 text-white shadow-md shadow-slate-300'
-              : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'voice' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                <Mic className="w-5 h-5" />
+            {/* TAB 4: Voice Calls */}
+            <button
+              onClick={() => setActiveTab('voice')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'voice'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'voice' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+                  }`}>
+                  <Mic className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Voice AI</span>
+                  <span className={`block text-[10px] ${activeTab === 'voice' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Voice transcript logs</span>
+                </div>
               </div>
-              <div>
-                <span className="block text-sm font-bold">Voice AI</span>
-                <span className={`block text-[10px] ${activeTab === 'voice' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Voice transcript logs</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
               <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'voice'
                 ? 'bg-white/20 text-white border-white/10'
                 : 'bg-slate-100 text-slate-700 border-slate-200'
                 }`}>
                 {voiceLogs.length}
               </span>
-            </div>
-          </button>
+            </button>
+
+          </div>
 
 
         </section>
