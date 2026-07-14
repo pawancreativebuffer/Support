@@ -52,12 +52,111 @@ interface TicketItem {
   }[];
 }
 
+
+import { MessageCircle, Mic, Play, Volume2, VolumeX, Calendar } from 'lucide-react';
+
+interface ChatItem {
+  id: string;
+  title: string;
+  status: 'Active' | 'Connecting' | 'Closed';
+  customerName?: string | null;
+  customerEmail?: string | null;
+  updatedAt: string;
+  messages: { sender: 'user' | 'agent' | 'system'; text: string; time: string }[];
+}
+
+interface VoiceLogItem {
+  id: string;
+  title: string;
+  status: 'Completed' | 'Failed';
+  customerName?: string | null;
+  customerEmail?: string | null;
+  createdAt: string;
+  duration: string;
+  transcript: string;
+  confidence: string;
+  audioUrl?: string | null;
+}
+
+const parseVoiceTranscript = (text: string, createdAtStr: string) => {
+  if (!text) return [];
+  const lines = text.split('\n');
+  const parsed: { sender: 'user' | 'agent'; text: string; time: string }[] = [];
+
+  let baseTime = new Date();
+  if (createdAtStr) {
+    const parsedDate = Date.parse(createdAtStr);
+    if (!isNaN(parsedDate)) {
+      baseTime = new Date(parsedDate);
+    }
+  }
+
+  let elapsedSeconds = 0;
+
+  const formatTimeStr = (date: Date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+    const hoursStr = hours < 10 ? '0' + hours : hours;
+    return `${hoursStr}:${minutesStr} ${ampm}`;
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    let sender: 'user' | 'agent' = 'agent';
+    let content = trimmed;
+
+    if (trimmed.startsWith('Customer:')) {
+      sender = 'user';
+      content = trimmed.slice('Customer:'.length).trim();
+    } else if (trimmed.startsWith('Agent:')) {
+      sender = 'agent';
+      content = trimmed.slice('Agent:'.length).trim();
+    } else if (trimmed.startsWith('User:')) {
+      sender = 'user';
+      content = trimmed.slice('User:'.length).trim();
+    } else if (trimmed.startsWith('Assistant:')) {
+      sender = 'agent';
+      content = trimmed.slice('Assistant:'.length).trim();
+    } else {
+      if (parsed.length > 0) {
+        parsed[parsed.length - 1].text += ' ' + trimmed;
+        const wordCount = trimmed.split(/\s+/).length;
+        elapsedSeconds += Math.ceil(wordCount * 0.4);
+        const msgTime = new Date(baseTime.getTime() + elapsedSeconds * 1000);
+        parsed[parsed.length - 1].time = formatTimeStr(msgTime);
+        continue;
+      }
+    }
+
+    const wordCount = content.split(/\s+/).length;
+    const duration = Math.max(3, Math.ceil(wordCount * 0.4));
+
+    const msgTime = new Date(baseTime.getTime() + elapsedSeconds * 1000);
+    parsed.push({
+      sender,
+      text: content,
+      time: formatTimeStr(msgTime)
+    });
+
+    elapsedSeconds += duration + 2;
+  }
+  return parsed;
+};
+
 export default function AgentPage() {
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [selectedTicketIds, setSelectedTicketIds] = useState<string[]>([]);
   const [agents, setAgents] = useState<{ id: number; name: string; email: string; role: string }[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'tickets'>('overview');
+  const [chats, setChats] = useState<ChatItem[]>([]);
+  const [voiceLogs, setVoiceLogs] = useState<VoiceLogItem[]>([]);
+  const [activeTab, setActiveTab] = useState<'overview' | 'tickets' | 'chats' | 'voice'>('overview');
 
   // Filters & Search
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed'>('All');
@@ -69,6 +168,10 @@ export default function AgentPage() {
   const [visibleActivities, setVisibleActivities] = useState(5);
   const [ticketsPage, setTicketsPage] = useState(1);
   const ticketsPerPage = 5;
+  const [chatsPage, setChatsPage] = useState(1);
+  const chatsPerPage = 6;
+  const [voicePage, setVoicePage] = useState(1);
+  const voicePerPage = 6;
 
   // Reset page numbers on filter/search change
   useEffect(() => {
@@ -77,6 +180,9 @@ export default function AgentPage() {
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
+  const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
+  const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
+  const [audioPlaybackError, setAudioPlaybackError] = useState(false);
 
   // Custom Ticket Creation Form States
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -285,6 +391,18 @@ export default function AgentPage() {
         }
         
         setTickets(freshTickets);
+
+        const chatsRes = await fetch('/api/agents/chats');
+        if (chatsRes.ok) {
+          const data = await chatsRes.json();
+          setChats(data);
+        }
+
+        const voiceRes = await fetch('/api/agents/voice-logs');
+        if (voiceRes.ok) {
+          const data = await voiceRes.json();
+          setVoiceLogs(data);
+        }
 
         // Update selected modal state if open
         if (selectedTicket) {
@@ -739,7 +857,7 @@ export default function AgentPage() {
 
         {/* Tab Switcher */}
         <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full md:max-w-xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
             <button
               onClick={() => setActiveTab('overview')}
               className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
@@ -786,6 +904,59 @@ export default function AgentPage() {
                 </span>
               </div>
             </button>
+
+            {/* TAB 3: Live Chats */}
+            <button
+              onClick={() => setActiveTab('chats')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'chats'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'chats' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+                  }`}>
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Live Chats</span>
+                  <span className={`block text-[10px] ${activeTab === 'chats' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Chat log sessions</span>
+                </div>
+              </div>
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'chats'
+                ? 'bg-white/20 text-white border-white/10'
+                : 'bg-slate-100 text-slate-700 border-slate-200'
+                }`}>
+                {chats.length}
+              </span>
+            </button>
+
+            {/* TAB 4: Voice Calls */}
+            <button
+              onClick={() => setActiveTab('voice')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'voice'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'voice' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+                  }`}>
+                  <Mic className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Voice AI</span>
+                  <span className={`block text-[10px] ${activeTab === 'voice' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Voice transcript logs</span>
+                </div>
+              </div>
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'voice'
+                ? 'bg-white/20 text-white border-white/10'
+                : 'bg-slate-100 text-slate-700 border-slate-200'
+                }`}>
+                {voiceLogs.length}
+              </span>
+            </button>
+
           </div>
 
         </section>
@@ -1334,6 +1505,174 @@ export default function AgentPage() {
               </>)}
             </div>
           )}
+        {/* TAB 3: LIVE CHATS */}
+          {activeTab === 'chats' && (
+            <div className="space-y-6 animate-fade-in w-full">
+              {chats.length === 0 ? (
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
+                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
+                  <div>
+                    <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
+                    <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {chats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map((chat) => (
+                      <div
+                        key={chat.id}
+                        onClick={() => setSelectedChat(chat)}
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                      >
+                        <div className="space-y-3.5">
+                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100 flex-shrink-0">
+                                <MessageCircle className="w-3.5 h-3.5" />
+                              </span>
+                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
+                                {chat.customerName && chat.customerEmail ? `${chat.customerName} (${chat.customerEmail})` : chat.customerName ? chat.customerName : chat.customerEmail ? chat.customerEmail : 'Guest User'}
+                              </span>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
+                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
+                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
+                              }`}>
+                              {chat.status}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                            &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
+                          </p>
+                        </div>
+
+                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
+                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
+                            {chat.messages.length} messages
+                          </span>
+                          <span className="text-slate-450 flex items-center gap-1">
+                            <Calendar className="w-3 h-3 text-slate-400" />
+                            {chat.updatedAt}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Chats Pagination */}
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                    <span className="text-xs text-slate-500 font-bold">
+                      Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={chatsPage === 1}
+                        onClick={() => setChatsPage(prev => prev - 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        disabled={chatsPage * chatsPerPage >= chats.length}
+                        onClick={() => setChatsPage(prev => prev + 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          
+{/* TAB 4: VOICE LOGS */}
+          {activeTab === 'voice' && (
+            <div className="space-y-6 animate-fade-in w-full">
+              {voiceLogs.length === 0 ? (
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
+                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
+                  <div>
+                    <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
+                    <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {voiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map((log) => (
+                      <div
+                        key={log.id}
+                        onClick={() => setSelectedVoiceLog(log)}
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                      >
+                        <div className="space-y-3.5">
+                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
+                                <Mic className="w-3.5 h-3.5" />
+                              </span>
+                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
+                                {log.customerName && log.customerEmail ? `${log.customerName} (${log.customerEmail})` : log.customerName ? log.customerName : log.customerEmail ? log.customerEmail : 'Guest User'}
+                              </span>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
+                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
+                              }`}>
+                              {log.status}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                            &quot;{log.transcript}&quot;
+                          </p>
+                        </div>
+
+                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
+                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
+                            Duration: {log.duration}
+                          </span>
+                          <span className="text-slate-450 flex items-center gap-1">
+                            <Calendar className="w-3 h-3 text-slate-400" />
+                            {log.createdAt}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Voice Pagination */}
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                    <span className="text-xs text-slate-500 font-bold">
+                      Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        disabled={voicePage === 1}
+                        onClick={() => setVoicePage(prev => prev - 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        disabled={voicePage * voicePerPage >= voiceLogs.length}
+                        onClick={() => setVoicePage(prev => prev + 1)}
+                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+        
         </section>
       </div>
 
@@ -1656,6 +1995,228 @@ export default function AgentPage() {
           </div>
         </div>
       )}
+
+      {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
+      {selectedChat && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+            {/* Header */}
+            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+              <div className="flex items-center gap-3">
+                <span className="p-2 rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
+                  <MessageCircle className="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-[15px] select-text">
+                    {selectedChat.customerName ? `Chat with ${selectedChat.customerName}` : selectedChat.customerEmail ? `Chat with ${selectedChat.customerEmail}` : 'Chat with Guest User'}
+                  </h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${selectedChat.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {selectedChat.status} Session Transcript
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedChat(null)}
+                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+              >
+                <X className="w-4.5 h-4.5" />
+              </button>
+            </div>
+
+            {/* Transcript Messages Body */}
+            <div className="flex-1 p-6 overflow-y-auto max-h-[400px] bg-slate-50/20 space-y-4">
+              {selectedChat.messages.map((msg, idx) => {
+                if (msg.sender === 'system') {
+                  return (
+                    <div key={idx} className="text-center my-2">
+                      <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                        {msg.text}
+                      </span>
+                    </div>
+                  );
+                }
+                const isUser = msg.sender === 'user';
+                return (
+                  <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm leading-relaxed shadow-sm ${isUser
+                      ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
+                      : 'bg-white border border-slate-200 text-slate-850 rounded-tl-none'
+                      }`}>
+                      <p className="select-text">{msg.text}</p>
+                      <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isUser ? 'text-white/80' : 'text-slate-500'}`}>
+                        {msg.time}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+              Live chat session logged and encrypted.
+            </div>
+          </div>
+        </div>
+      )}
+
+      
+{/* MODAL 3: VOICE LOG TRANSCRIPT */}
+      {selectedVoiceLog && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+
+            {/* Header */}
+            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+              <div className="flex items-center gap-3">
+                <span className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
+                  <Mic className="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-base select-text">AI Voice Session Details</h3>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                    {selectedVoiceLog.customerName ? `Customer: ${selectedVoiceLog.customerName}` : selectedVoiceLog.customerEmail ? `Customer: ${selectedVoiceLog.customerEmail}` : 'Guest User'} • ID: {selectedVoiceLog.id.slice(0, 8)} • Called: {selectedVoiceLog.createdAt}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedVoiceLog(null)}
+                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+              >
+                <X className="w-4.5 h-4.5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 p-6 bg-slate-50/20 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+
+                {/* Left Column (5 cols): Call Stats & Live Audio Player */}
+                <div className="md:col-span-5 space-y-6 flex flex-col justify-start">
+
+                  {/* Status Indicator */}
+                  <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
+                      ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                      : 'bg-slate-105 text-slate-455 border-slate-200/60'
+                      }`}>
+                      {selectedVoiceLog.status}
+                    </span>
+                  </div>
+
+                  {/* Call Stats Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
+                      <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
+                    </div>
+                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
+                      <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
+                    </div>
+                  </div>
+
+                  {/* Audio Recording Player */}
+                  <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-3.5 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
+                      {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
+                    </div>
+
+                    {!audioPlaybackError ? (
+                      <div className="space-y-2">
+                        <audio
+                          controls
+                          src={`/api/voice-audio?conversation_id=${selectedVoiceLog.id}`}
+                          className="w-full h-9 rounded-lg"
+                          onError={() => setAudioPlaybackError(true)}
+                        />
+                        <span className="block text-[9px] text-slate-400 font-semibold text-center leading-normal">
+                          Recorded audio retrieved dynamically from ElevenLabs
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center p-5 border border-dashed border-slate-250 bg-slate-50/70 rounded-xl text-center space-y-3.5">
+                        <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex items-center justify-center shadow-sm">
+                          <VolumeX className="w-4.5 h-4.5" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm font-extrabold text-slate-750">
+                            Audio recording not available
+                          </p>
+                          <p className="text-[11px] font-semibold text-slate-500 leading-relaxed max-w-[240px] mx-auto">
+                            Please verify if ELEVENLABS_API_KEY is configured in your server env, or wait if the call just ended.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Right Column (7 cols): Transcript Chat Thread */}
+                <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
+
+                  {/* Chat messages thread container */}
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-4 max-h-[410px] scrollbar-thin">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                      <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
+                        <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+                          <MessageSquare className="w-4 h-4" />
+                        </span>
+                        Call Transcript Thread
+                      </h4>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                        Speech-To-Text Log
+                      </span>
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      {parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).length === 0 ? (
+                        <p className="text-xs text-slate-400 italic text-center py-8">No transcript entries recorded.</p>
+                      ) : (
+                        parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).map((msg, idx) => {
+                          const isUser = msg.sender === 'user';
+                          return (
+                            <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
+                                ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
+                                : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
+                                }`}>
+                                <span className={`block text-[9px] font-black uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
+                                  }`}>
+                                  {isUser ? 'Customer' : 'AI Assistant'}
+                                </span>
+                                <p className="select-text">{msg.text}</p>
+                                <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isUser ? 'text-white/80' : 'text-slate-500'}`}>
+                                  {msg.time}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+              Voice transcription logs synced.
+            </div>
+          </div>
+        </div>
+      )}
+      
 
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
