@@ -38,6 +38,7 @@ enum TicketStatus {
   ESCALATED
   RESOLVED
   CLOSED
+  MERGED
 }
 
 enum TicketPriority {
@@ -60,11 +61,15 @@ model SupportTicket {
   // Foreign keys
   customerId  Int
   agentId     Int?
+  mergedIntoId Int?
 
   // Relations
   customer    PortalUser     @relation("CustomerTickets", fields: [customerId], references: [id], onDelete: Cascade)
   agent       PortalUser?    @relation("AgentTickets", fields: [agentId], references: [id], onDelete: SetNull)
   messages    TicketMessage[]
+
+  mergedInto  SupportTicket?  @relation("MergedTickets", fields: [mergedIntoId], references: [id])
+  mergedTickets SupportTicket[] @relation("MergedTickets")
 }
 
 model TicketMessage {

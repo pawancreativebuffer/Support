@@ -136,11 +136,11 @@ exports.Prisma.SupportTicketScalarFieldEnum = {
   priority: 'priority',
   attachmentUrl: 'attachmentUrl',
   attachmentName: 'attachmentName',
-  mergedIntoId: 'mergedIntoId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   customerId: 'customerId',
-  agentId: 'agentId'
+  agentId: 'agentId',
+  mergedIntoId: 'mergedIntoId'
 };
 
 exports.Prisma.TicketMessageScalarFieldEnum = {

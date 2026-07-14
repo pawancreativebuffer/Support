@@ -1146,8 +1146,8 @@ export default function AdminPage() {
                     <button
                       onClick={() => setShowPriorityFilters(!showPriorityFilters)}
                       className={`h-[38px] px-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${showPriorityFilters || priorityFilter !== 'All'
-                          ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm shadow-primary-100/30'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm shadow-primary-100/30'
+                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                         }`}
                       title="Filter by Priority"
                     >
@@ -1250,10 +1250,10 @@ export default function AdminPage() {
                                 {user?.role === 'Admin' ? (
                                   <span
                                     className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${ticket.priority === 'HIGH'
-                                        ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
-                                        : ticket.priority === 'LOW'
-                                          ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                          : 'bg-amber-50 border-amber-200 text-amber-700'
+                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                      : ticket.priority === 'LOW'
+                                        ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                        : 'bg-amber-50 border-amber-200 text-amber-700'
                                       }`}
                                   >
                                     {ticket.priority === 'HIGH' ? '🔴 High' : ticket.priority === 'LOW' ? '🔵 Low' : '🟡 Medium'}
@@ -1263,10 +1263,10 @@ export default function AdminPage() {
                                     value={ticket.priority || 'MEDIUM'}
                                     onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
                                     className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${ticket.priority === 'HIGH'
-                                        ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
-                                        : ticket.priority === 'LOW'
-                                          ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                          : 'bg-amber-50 border-amber-200 text-amber-700'
+                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                      : ticket.priority === 'LOW'
+                                        ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                        : 'bg-amber-50 border-amber-200 text-amber-700'
                                       }`}
                                   >
                                     <option value="HIGH">🔴 High</option>
@@ -1277,12 +1277,12 @@ export default function AdminPage() {
                               </td>
                               <td className="py-4 px-4">
                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border ${ticket.status === 'Open'
-                                    ? 'bg-slate-50 border-slate-200 text-slate-750'
-                                    : ticket.status === 'With Client' || ticket.status === 'On Hold'
-                                      ? 'bg-amber-50 border-amber-200 text-amber-700'
-                                      : ticket.status === 'Escalated'
-                                        ? 'bg-slate-50 border-slate-250 text-slate-800'
-                                        : 'bg-emerald-50 border-emerald-250 text-emerald-750'
+                                  ? 'bg-slate-50 border-slate-200 text-slate-750'
+                                  : ticket.status === 'With Client' || ticket.status === 'On Hold'
+                                    ? 'bg-amber-50 border-amber-200 text-amber-700'
+                                    : ticket.status === 'Escalated'
+                                      ? 'bg-slate-50 border-slate-250 text-slate-800'
+                                      : 'bg-emerald-50 border-emerald-250 text-emerald-750'
                                   }`}>
                                   <span className="text-[8px] leading-none">
                                     {ticket.status === 'Open'
@@ -1585,14 +1585,14 @@ export default function AdminPage() {
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${selectedTicket.status === 'Open'
-                          ? 'bg-slate-50 text-slate-700 border-slate-200'
-                          : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : selectedTicket.status === 'Escalated'
-                              ? 'bg-slate-50 text-slate-800 border-slate-250'
-                              : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
-                                ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
-                                : 'bg-slate-50 text-slate-600 border-slate-100'
+                        ? 'bg-slate-50 text-slate-700 border-slate-200'
+                        : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
+                          ? 'bg-amber-50 text-amber-700 border-amber-200'
+                          : selectedTicket.status === 'Escalated'
+                            ? 'bg-slate-50 text-slate-800 border-slate-250'
+                            : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
+                              ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                              : 'bg-slate-50 text-slate-600 border-slate-100'
                         }`}>
                         {selectedTicket.status}
                       </span>
@@ -1604,10 +1604,10 @@ export default function AdminPage() {
                       {user?.role === 'Admin' ? (
                         <span
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${selectedTicket.priority === 'HIGH'
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
-                              : selectedTicket.priority === 'LOW'
-                                ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                : 'bg-amber-50 border-amber-200 text-amber-700'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                            : selectedTicket.priority === 'LOW'
+                              ? 'bg-slate-50 border-slate-200 text-slate-600'
+                              : 'bg-amber-50 border-amber-200 text-amber-700'
                             }`}
                         >
                           {selectedTicket.priority === 'HIGH' ? '🔴 High' : selectedTicket.priority === 'LOW' ? '🔵 Low' : '🟡 Medium'}
@@ -1617,10 +1617,10 @@ export default function AdminPage() {
                           value={selectedTicket.priority || 'MEDIUM'}
                           onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${selectedTicket.priority === 'HIGH'
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
-                              : selectedTicket.priority === 'LOW'
-                                ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                : 'bg-amber-50 border-amber-200 text-amber-700'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                            : selectedTicket.priority === 'LOW'
+                              ? 'bg-slate-50 border-slate-200 text-slate-600'
+                              : 'bg-amber-50 border-amber-200 text-amber-700'
                             }`}
                         >
                           <option value="HIGH">🔴 High</option>
@@ -1686,8 +1686,8 @@ export default function AdminPage() {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all truncate max-w-full ${isAgent
-                                          ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
-                                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-250'
+                                        ? 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
+                                        : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-250'
                                         }`}
                                     >
                                       <FileText className="w-3.5 h-3.5 shrink-0" />

@@ -44,12 +44,13 @@ interface TicketItem {
   attachmentUrl?: string | null;
   attachmentName?: string | null;
   replies?: { 
-    sender: 'customer' | 'agent'; 
+    sender: 'customer' | 'agent' | 'system'; 
     text: string; 
     time: string; 
     attachmentUrl?: string | null; 
     attachmentName?: string | null; 
   }[];
+  mergedTickets?: any[];
 }
 
 
@@ -244,6 +245,14 @@ export default function AgentPage() {
   // Toast System
   const [toasts, setToasts] = useState<{ id: string; message: string }[]>([]);
 
+  // Merge Ticket System
+  const [showMergeModal, setShowMergeModal] = useState(false);
+  const [mergePrimaryId, setMergePrimaryId] = useState<string | null>(null);
+  const [mergeSubmitting, setMergeSubmitting] = useState(false);
+  
+  const [showMergedTicketsModal, setShowMergedTicketsModal] = useState(false);
+  const [mergedTicketsList, setMergedTicketsList] = useState<any[]>([]);
+
   // Sound Synthesizer (Web Audio API)
   const playSupportChime = () => {
     try {
@@ -359,6 +368,41 @@ export default function AgentPage() {
       }
     } catch (err) {
       console.error('Failed bulk update:', err);
+    }
+  };
+
+  const handleMergeSubmit = async () => {
+    if (!mergePrimaryId || selectedTicketIds.length < 2) return;
+    setMergeSubmitting(true);
+    try {
+      const primaryIdNum = parseInt(mergePrimaryId.replace('TK-', ''));
+      const secondaryIdsNum = selectedTicketIds
+        .filter(id => id !== mergePrimaryId)
+        .map(id => parseInt(id.replace('TK-', '')));
+
+      const res = await fetch('/api/tickets/merge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          primaryTicketId: primaryIdNum,
+          secondaryTicketIds: secondaryIdsNum
+        })
+      });
+
+      if (res.ok) {
+        triggerToast(`Successfully merged ${secondaryIdsNum.length} ticket(s) into ${mergePrimaryId}!`);
+        setShowMergeModal(false);
+        setMergePrimaryId(null);
+        setSelectedTicketIds([]);
+        if (user) loadDatabaseData(user.email);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Failed to merge tickets');
+      }
+    } catch (err) {
+      console.error('Error merging tickets:', err);
+    } finally {
+      setMergeSubmitting(false);
     }
   };
 
@@ -1254,6 +1298,19 @@ export default function AgentPage() {
                         <CheckCircle className="w-3 h-3" /> Close
                       </button>
 
+                      {selectedTicketIds.length >= 2 && (
+                        <button
+                          onClick={() => {
+                            setMergePrimaryId(selectedTicketIds[0]);
+                            setShowMergeModal(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                          title="Merge selected tickets"
+                        >
+                          <Paperclip className="w-3 h-3" /> Merge
+                        </button>
+                      )}
+
                       <div className="flex items-center gap-1.5">
                         <select
                           onChange={(e) => {
@@ -1740,7 +1797,7 @@ export default function AgentPage() {
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm max-w-full"
                         >
                           <FileText className="w-3.5 h-3.5 text-primary-600 shrink-0" />
-                          <span className="truncate text-slate-850">{selectedTicket.attachmentName || 'View Attachment'}</span>
+                          <span className="truncate">{selectedTicket.attachmentName || 'View Attachment'}</span>
                         </a>
                       </div>
                     </div>
@@ -1790,6 +1847,21 @@ export default function AgentPage() {
                         </select>
                       )}
                     </div>
+
+                    {selectedTicket.mergedTickets && selectedTicket.mergedTickets.length > 0 && (
+                      <div className="flex flex-col gap-2 border-b border-slate-200/40 pb-3">
+                        <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Merged Tickets</span>
+                        <button
+                          onClick={() => {
+                            setMergedTicketsList(selectedTicket.mergedTickets || []);
+                            setShowMergedTicketsModal(true);
+                          }}
+                          className="w-full text-center px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-250 flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Paperclip className="w-3.5 h-3.5" /> View {selectedTicket.mergedTickets.length} Merged Ticket(s)
+                        </button>
+                      </div>
+                    )}
 
                     {/* Priority Selector in Modal */}
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
@@ -1869,6 +1941,15 @@ export default function AgentPage() {
                     ) : (
                       <div className="space-y-4">
                         {selectedTicket.replies.map((reply, idx) => {
+                          if (reply.sender === 'system') {
+                            return (
+                              <div key={idx} className="text-center my-2">
+                                <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                                  {reply.text}
+                                </span>
+                              </div>
+                            );
+                          }
                           // For agent view, agent replies go on the right (primary), customer replies on the left (gray)
                           const isAgent = reply.sender === 'agent';
                           return (
@@ -2412,6 +2493,127 @@ export default function AgentPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: MERGE TICKETS CONFIRMATION */}
+      {showMergeModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-scale-up">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+                  <Paperclip className="w-5.5 h-5.5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg">Merge Tickets</h3>
+                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Select the PRIMARY ticket</p>
+                </div>
+              </div>
+              <button onClick={() => setShowMergeModal(false)} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4">
+              <p className="text-sm text-slate-600 leading-relaxed">
+                You are about to merge <strong>{selectedTicketIds.length}</strong> tickets. The ticket you select below will be the <strong>Primary</strong> ticket, and all other tickets will be merged into it and hidden from the table.
+              </p>
+              
+              <div className="space-y-3">
+                {selectedTicketIds.map(id => {
+                  const t = tickets.find(ticket => ticket.id === id);
+                  if (!t) return null;
+                  return (
+                    <label key={id} className={`flex items-start gap-4 p-4 border rounded-2xl cursor-pointer transition-all ${mergePrimaryId === id ? 'border-primary-500 bg-primary-50 shadow-sm' : 'border-slate-200 hover:border-primary-300'}`}>
+                      <input 
+                        type="radio" 
+                        name="primaryTicket" 
+                        value={id} 
+                        checked={mergePrimaryId === id}
+                        onChange={() => setMergePrimaryId(id)}
+                        className="mt-1 w-4 h-4 text-primary-600"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono text-xs font-bold text-primary-700">{t.id}</span>
+                          <span className="text-xs text-slate-500 truncate">{t.firstName} {t.lastName}</span>
+                        </div>
+                        <p className="text-sm font-semibold text-slate-800 line-clamp-2">{t.description}</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+              <button onClick={() => setShowMergeModal(false)} className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 cursor-pointer">
+                Cancel
+              </button>
+              <button onClick={handleMergeSubmit} disabled={mergeSubmitting} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl disabled:bg-slate-300 flex items-center gap-2 cursor-pointer shadow-sm shadow-blue-500/20">
+                {mergeSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
+                Confirm Merge
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: VIEW MERGED TICKETS */}
+      {showMergedTicketsModal && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
+                  <History className="w-5.5 h-5.5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg">Merged Tickets History</h3>
+                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowMergedTicketsModal(false)} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 p-6 overflow-y-auto space-y-6 bg-slate-50/50">
+              {mergedTicketsList.map((mt, idx) => (
+                <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-start border-b border-slate-100 pb-3">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-primary-700">{mt.id}</span>
+                      <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
+                      <p className="text-[10px] text-slate-400 font-mono mt-1">{mt.createdAt}</p>
+                    </div>
+                    <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                      Merged
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Original Inquiry</p>
+                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      {mt.description}
+                    </p>
+                  </div>
+                  {mt.messages && mt.messages.length > 0 && (
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Prior Thread</p>
+                      <div className="space-y-3">
+                        {mt.messages.filter((m: any) => !m.text.startsWith('[SYSTEM]')).map((msg: any, mIdx: number) => (
+                          <div key={mIdx} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                            <span className="text-[10px] font-bold text-slate-500 mb-1 block">
+                              {msg.sender === 'customer' ? mt.customerName : 'Agent'} • {msg.time}
+                            </span>
+                            <p className="text-sm text-slate-700">{msg.text.replace(/\[MERGED FROM TICKET #\d+\]: /, '')}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

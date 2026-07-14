@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
       where: { email: email.trim().toLowerCase() },
       include: {
         raisedTickets: {
+          where: { status: { not: 'MERGED' } },
           include: {
             agent: true,
             messages: {
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
     // If agent or admin, return all tickets
     if (portalUser.role === 'AGENT' || portalUser.role === 'ADMIN') {
       const allTickets = await postgresPrisma.supportTicket.findMany({
+        where: { status: { not: 'MERGED' } },
         include: {
           customer: true,
           agent: true,
@@ -53,6 +55,14 @@ export async function GET(req: NextRequest) {
             },
             orderBy: {
               createdAt: 'asc'
+            }
+          },
+          mergedTickets: {
+            include: {
+              messages: {
+                include: { sender: true }
+              },
+              customer: true
             }
           }
         },
@@ -83,7 +93,7 @@ export async function GET(req: NextRequest) {
           minute: '2-digit'
         }),
         replies: t.messages.map(m => ({
-          sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+          sender: m.isSystem ? 'system' : (m.sender.role === 'CUSTOMER' ? 'customer' : 'agent'),
           text: m.text,
           attachmentUrl: m.attachmentUrl,
           attachmentName: m.attachmentName,
@@ -93,7 +103,18 @@ export async function GET(req: NextRequest) {
             hour: '2-digit',
             minute: '2-digit'
           })
-        }))
+        })),
+        mergedTickets: t.mergedTickets ? t.mergedTickets.map(mt => ({
+          id: `TK-${mt.id}`,
+          description: mt.description,
+          createdAt: mt.createdAt.toLocaleString('en-US'),
+          customerName: mt.customer ? mt.customer.name : 'Unknown',
+          messages: mt.messages.map(m => ({
+            sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+            text: m.text,
+            time: m.createdAt.toLocaleString('en-US')
+          }))
+        })) : []
       }));
 
       return NextResponse.json(formattedTickets);
@@ -122,7 +143,7 @@ export async function GET(req: NextRequest) {
         minute: '2-digit'
       }),
       replies: t.messages.map(m => ({
-        sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+        sender: m.isSystem ? 'system' : (m.sender.role === 'CUSTOMER' ? 'customer' : 'agent'),
         text: m.text,
         attachmentUrl: m.attachmentUrl,
         attachmentName: m.attachmentName,
