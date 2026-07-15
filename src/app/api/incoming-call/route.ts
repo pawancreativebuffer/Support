@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { postgresPrisma } from '@/lib/postgresDb';
+import { prisma as sqlServerPrisma } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     console.log(`Incoming call from: ${fromNumber}, CallSid: ${callSid}`);
 
-    // Log the call in our database
+    // Log the call in our Postgres database
     try {
       // @ts-ignore
       if (postgresPrisma.callLog) {
@@ -17,7 +18,6 @@ export async function POST(req: NextRequest) {
         await postgresPrisma.callLog.create({
           data: {
             callerNumber: fromNumber,
-            // Twilio doesn't give duration immediately, we can update it later or just store 0
             duration: 0,
             transcript: "Call in progress with ElevenLabs AI...",
           }
@@ -27,13 +27,47 @@ export async function POST(req: NextRequest) {
       console.warn("Failed to create CallLog in DB:", dbErr);
     }
 
+    // Try to find the user in SQL Server (Read-only database)
+    let customerName = "Guest";
+    let customerEmail = "guest@example.com";
+
+    if (fromNumber !== 'Unknown') {
+      try {
+        // We will try an exact match or match the last 10 digits
+        const last10 = fromNumber.length > 10 ? fromNumber.slice(-10) : fromNumber;
+
+        // Find user by phone number
+        const user = await sqlServerPrisma.users.findFirst({
+          where: {
+            Phone: {
+              contains: last10
+            },
+            IsActive: true
+          }
+        });
+
+        if (user) {
+          customerName = user.FirstName || user.Login || "Customer";
+          customerEmail = user.Email || "guest@example.com";
+          console.log(`Caller identified: ${customerName} (${customerEmail})`);
+        } else {
+          console.log("Caller not found in SQL Server database, treating as Guest.");
+        }
+      } catch (lookupErr) {
+        console.error("Error looking up caller in SQL Server:", lookupErr);
+      }
+    }
+
     const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
 
     // Return TwiML to connect the call to ElevenLabs WebSocket
+    // Adding <Parameter> passes dynamic context variables to ElevenLabs!
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Connect>
     <Stream url="wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${agentId}">
+      <Parameter name="customerName" value="${customerName}" />
+      <Parameter name="customerEmail" value="${customerEmail}" />
     </Stream>
   </Connect>
 </Response>`;
