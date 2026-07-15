@@ -54,7 +54,8 @@ interface TicketItem {
 }
 
 
-import { MessageCircle, Mic, Play, Volume2, VolumeX, Calendar } from 'lucide-react';
+import { MessageCircle, Mic, Play, Volume2, VolumeX, Calendar, FileDown } from 'lucide-react';
+import ReportModal from '@/components/ReportModal';
 
 interface ChatItem {
   id: string;
@@ -184,6 +185,7 @@ export default function AgentPage() {
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
   const [audioPlaybackError, setAudioPlaybackError] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Custom Ticket Creation Form States
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -828,6 +830,13 @@ export default function AgentPage() {
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh records'}
+              </button>
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+              >
+                <FileDown className="w-4 h-4 text-primary-600" />
+                Generate Report
               </button>
               {user?.role === 'Agent' && (
                 <button
@@ -2630,6 +2639,12 @@ export default function AgentPage() {
         </div>
       )}
 
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        tickets={tickets}
+        agents={agents}
+      />
     </div>
   );
 }
