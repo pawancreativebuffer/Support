@@ -170,6 +170,7 @@ export default function AdminPage() {
 
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
+  const [selectedCallLog, setSelectedCallLog] = useState<any | null>(null);
   const [audioPlaybackError, setAudioPlaybackError] = useState(false);
 
   const [agents, setAgents] = useState<{ id: number; name: string; email: string; role: string }[]>([]);
@@ -1588,30 +1589,44 @@ export default function AdminPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {callLogs.slice((callLogsPage - 1) * callLogsPerPage, callLogsPage * callLogsPerPage).map((log, index) => (
-                    <div key={index} className="p-4 border border-slate-100 rounded-2xl bg-slate-50 flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-bold text-slate-800">{log.callerNumber}</p>
-                          <p className="text-xs text-slate-500">
-                            {new Date(log.createdAt).toLocaleString()} • Duration: {log.duration}s
-                          </p>
-                          {log.customer && (
-                            <p className="text-xs text-primary-600 font-semibold mt-1">Identified User: {log.customer.name} ({log.customer.email})</p>
-                          )}
-                        </div>
-                        {log.audioUrl && (
-                          <audio controls src={log.audioUrl} className="h-10" />
-                        )}
-                      </div>
-                      {log.transcript && (
-                        <div className="bg-white p-3 rounded-xl border border-slate-200 text-sm text-slate-700 whitespace-pre-wrap">
-                          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-2 tracking-wider">Transcript</span>
-                          {log.transcript}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
+                    <table className="w-full text-left text-sm whitespace-nowrap">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500">
+                        <tr>
+                          <th className="px-6 py-4 font-bold uppercase text-[10px] tracking-wider">Caller</th>
+                          <th className="px-6 py-4 font-bold uppercase text-[10px] tracking-wider">Date & Time</th>
+                          <th className="px-6 py-4 font-bold uppercase text-[10px] tracking-wider">Duration</th>
+                          <th className="px-6 py-4 font-bold uppercase text-[10px] tracking-wider text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {callLogs.slice((callLogsPage - 1) * callLogsPerPage, callLogsPage * callLogsPerPage).map((log, index) => (
+                          <tr key={index} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="font-bold text-slate-800">{log.callerNumber}</div>
+                              {log.customer && (
+                                <div className="text-xs text-primary-600 font-semibold mt-0.5">{log.customer.name} ({log.customer.email})</div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-slate-600 font-medium">
+                              {new Date(log.createdAt).toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 text-slate-600 font-medium">
+                              {log.duration}s
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <button
+                                onClick={() => setSelectedCallLog(log)}
+                                className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold border border-slate-200 rounded-xl transition-all shadow-sm"
+                              >
+                                View Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
                   {callLogs.length > callLogsPerPage && (
                     <div className="flex items-center justify-between border-t border-slate-100 pt-4 mt-6">
@@ -2166,6 +2181,65 @@ export default function AdminPage() {
             {/* Footer */}
             <div className="p-4 border-t border-slate-100 bg-slate-50/50 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
               Voice transcription logs synced.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CALL LOG TRANSCRIPT */}
+      {selectedCallLog && (
+        <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+              <div className="flex items-center gap-3">
+                <span className="p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
+                  <PhoneCall className="w-5.5 h-5.5" />
+                </span>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg select-text">Call Log Details</h3>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                    {selectedCallLog.callerNumber} • {new Date(selectedCallLog.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedCallLog(null)}
+                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-455 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
+              
+              {/* Audio Player */}
+              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-3">
+                <div className="flex items-center gap-2">
+                  <Volume2 className="w-4 h-4 text-primary-500" />
+                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Call Recording</span>
+                </div>
+                {selectedCallLog.audioUrl ? (
+                  <audio controls src={selectedCallLog.audioUrl} className="w-full h-10 rounded-lg outline-none" />
+                ) : (
+                  <div className="flex items-center justify-center h-16 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
+                    <span className="text-sm font-semibold text-slate-400">Audio not available</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Transcript */}
+              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex flex-col min-h-0">
+                <div className="flex items-center gap-2 mb-4">
+                  <MessageSquare className="w-4 h-4 text-slate-400" />
+                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Full Transcript</span>
+                </div>
+                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin">
+                  {selectedCallLog.transcript || <span className="italic text-slate-400">No transcript available.</span>}
+                </div>
+              </div>
+              
             </div>
           </div>
         </div>
