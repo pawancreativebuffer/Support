@@ -4,11 +4,26 @@ import { prisma as sqlServerPrisma } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const fromNumber = formData.get('From')?.toString() || 'Unknown';
-    const callSid = formData.get('CallSid')?.toString() || '';
+    const contentType = req.headers.get('content-type') || '';
+    let fromNumber = 'Unknown';
+    let callSid = '';
+    let isElevenLabsWebhook = false;
 
-    console.log(`Incoming call from: ${fromNumber}, CallSid: ${callSid}`);
+    // Handle ElevenLabs Client Data Webhook (JSON)
+    if (contentType.includes('application/json')) {
+      isElevenLabsWebhook = true;
+      const body = await req.json();
+      fromNumber = body.caller_id || 'Unknown';
+      callSid = body.call_sid || '';
+    }
+    // Handle Twilio Native TwiML Webhook (FormData)
+    else {
+      const formData = await req.formData();
+      fromNumber = formData.get('From')?.toString() || 'Unknown';
+      callSid = formData.get('CallSid')?.toString() || '';
+    }
+
+    console.log(`Incoming call from: ${fromNumber}, CallSid: ${callSid} (IsElevenLabs: ${isElevenLabsWebhook})`);
 
     // Log the call in our Postgres database
     try {
@@ -33,17 +48,9 @@ export async function POST(req: NextRequest) {
 
     if (fromNumber !== 'Unknown') {
       try {
-        // We will try an exact match or match the last 10 digits
         const last10 = fromNumber.length > 10 ? fromNumber.slice(-10) : fromNumber;
-
-        // Find user by phone number
         const user = await sqlServerPrisma.users.findFirst({
-          where: {
-            Phone: {
-              contains: last10
-            },
-            IsActive: true
-          }
+          where: { Phone: { contains: last10 }, IsActive: true }
         });
 
         if (user) {
@@ -58,10 +65,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+    // If request came from ElevenLabs Telephony Webhook, return JSON
+    if (isElevenLabsWebhook) {
+      return NextResponse.json({
+        dynamic_variables: {
+          customerName: customerName,
+          customerEmail: customerEmail
+        }
+      });
+    }
 
-    // Return TwiML to connect the call to ElevenLabs WebSocket
-    // Adding <Parameter> passes dynamic context variables to ElevenLabs!
+    // Otherwise, return TwiML for Twilio
+    const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Connect>
@@ -73,9 +88,7 @@ export async function POST(req: NextRequest) {
 </Response>`;
 
     return new NextResponse(twiml, {
-      headers: {
-        'Content-Type': 'text/xml',
-      },
+      headers: { 'Content-Type': 'text/xml' },
     });
 
   } catch (error) {
