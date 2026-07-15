@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
+  PhoneCall,
   Ticket,
   CheckCircle,
   Clock,
@@ -153,7 +154,7 @@ export default function AdminPage() {
   const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [selectedTicketIds, setSelectedTicketIds] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'tickets' | 'chats' | 'voice'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'tickets' | 'chats' | 'voice' | 'call-logs'>('overview');
 
   const [chats, setChats] = useState<ChatItem[]>([]);
   const [chatsPage, setChatsPage] = useState(1);
@@ -162,6 +163,10 @@ export default function AdminPage() {
   const [voiceLogs, setVoiceLogs] = useState<VoiceLogItem[]>([]);
   const [voicePage, setVoicePage] = useState(1);
   const voicePerPage = 6;
+
+  const [callLogs, setCallLogs] = useState<any[]>([]);
+  const [callLogsPage, setCallLogsPage] = useState(1);
+  const callLogsPerPage = 6;
 
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
@@ -407,6 +412,12 @@ export default function AdminPage() {
         if (voiceRes.ok) {
           const data = await voiceRes.json();
           setVoiceLogs(data);
+        }
+
+        const callLogsRes = await fetch('/api/call-logs');
+        if (callLogsRes.ok) {
+          const data = await callLogsRes.json();
+          setCallLogs(data);
         }
 
 
@@ -845,7 +856,7 @@ export default function AdminPage() {
 
         {/* Tab Switcher */}
         <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 w-full">
             <button
               onClick={() => setActiveTab('overview')}
               className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
@@ -942,6 +953,32 @@ export default function AdminPage() {
                 : 'bg-slate-100 text-slate-700 border-slate-200'
                 }`}>
                 {voiceLogs.length}
+              </span>
+            </button>
+
+            {/* TAB 5: Call Logs */}
+            <button
+              onClick={() => setActiveTab('call-logs')}
+              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'call-logs'
+                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'call-logs' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
+                  }`}>
+                  <PhoneCall className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="block text-sm font-bold">Call Logs</span>
+                  <span className={`block text-[10px] ${activeTab === 'call-logs' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>AI inbound calls</span>
+                </div>
+              </div>
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'call-logs'
+                ? 'bg-white/20 text-white border-white/10'
+                : 'bg-slate-100 text-slate-700 border-slate-200'
+                }`}>
+                {callLogs.length}
               </span>
             </button>
 
@@ -1527,6 +1564,78 @@ export default function AdminPage() {
             </div>
           )}
 
+          {/* TAB 5: CALL LOGS */}
+          {activeTab === 'call-logs' && (
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm animate-fade-in w-full">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                <div>
+                  <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <PhoneCall className="w-5 h-5 text-primary-600" /> AI Inbound Phone Call Logs
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">Review phone calls answered by the ElevenLabs Virtual Agent.</p>
+                </div>
+              </div>
+
+              {callLogs.length === 0 ? (
+                <div className="p-16 text-center space-y-4">
+                  <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                    <PhoneCall className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-slate-600 font-bold">No call logs found</p>
+                    <p className="text-sm text-slate-400">Waiting for inbound calls to be processed.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {callLogs.slice((callLogsPage - 1) * callLogsPerPage, callLogsPage * callLogsPerPage).map((log, index) => (
+                    <div key={index} className="p-4 border border-slate-100 rounded-2xl bg-slate-50 flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">{log.callerNumber}</p>
+                          <p className="text-xs text-slate-500">
+                            {new Date(log.createdAt).toLocaleString()} • Duration: {log.duration}s
+                          </p>
+                          {log.customer && (
+                            <p className="text-xs text-primary-600 font-semibold mt-1">Identified User: {log.customer.name} ({log.customer.email})</p>
+                          )}
+                        </div>
+                        {log.audioUrl && (
+                          <audio controls src={log.audioUrl} className="h-10" />
+                        )}
+                      </div>
+                      {log.transcript && (
+                        <div className="bg-white p-3 rounded-xl border border-slate-200 text-sm text-slate-700 whitespace-pre-wrap">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block mb-2 tracking-wider">Transcript</span>
+                          {log.transcript}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {callLogs.length > callLogsPerPage && (
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-4 mt-6">
+                      <button
+                        onClick={() => setCallLogsPage(p => Math.max(1, p - 1))}
+                        disabled={callLogsPage === 1}
+                        className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-sm text-slate-500 font-semibold">Page {callLogsPage} of {Math.ceil(callLogs.length / callLogsPerPage)}</span>
+                      <button
+                        onClick={() => setCallLogsPage(p => Math.min(Math.ceil(callLogs.length / callLogsPerPage), p + 1))}
+                        disabled={callLogsPage >= Math.ceil(callLogs.length / callLogsPerPage)}
+                        className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
         </section>
       </div>
@@ -2061,8 +2170,6 @@ export default function AdminPage() {
           </div>
         </div>
       )}
-
-
 
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (

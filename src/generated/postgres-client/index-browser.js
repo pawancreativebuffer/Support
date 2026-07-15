@@ -182,6 +182,16 @@ exports.Prisma.VoiceSessionLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CallLogScalarFieldEnum = {
+  id: 'id',
+  callerNumber: 'callerNumber',
+  transcript: 'transcript',
+  audioUrl: 'audioUrl',
+  duration: 'duration',
+  createdAt: 'createdAt',
+  customerId: 'customerId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -235,7 +245,8 @@ exports.Prisma.ModelName = {
   TicketMessage: 'TicketMessage',
   ChatWidgetSession: 'ChatWidgetSession',
   ChatWidgetMessage: 'ChatWidgetMessage',
-  VoiceSessionLog: 'VoiceSessionLog'
+  VoiceSessionLog: 'VoiceSessionLog',
+  CallLog: 'CallLog'
 };
 
 /**

@@ -29,6 +29,7 @@ model PortalUser {
   assignedTickets SupportTicket[] @relation("AgentTickets")
   sentMessages    TicketMessage[]
   voiceLogs       VoiceSessionLog[]
+  callLogs        CallLog[]
 }
 
 enum TicketStatus {
@@ -131,5 +132,18 @@ model VoiceSessionLog {
   createdAt      DateTime    @default(now())
 
   // Relations
+  customer       PortalUser? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+}
+
+model CallLog {
+  id             Int         @id @default(autoincrement())
+  callerNumber   String
+  transcript     String?
+  audioUrl       String?
+  duration       Int?        // in seconds
+  createdAt      DateTime    @default(now())
+
+  // Relations
+  customerId     Int?
   customer       PortalUser? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 }
