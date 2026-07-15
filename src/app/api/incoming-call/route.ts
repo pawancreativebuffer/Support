@@ -92,7 +92,6 @@ export async function POST(req: NextRequest) {
 <Response>
   <Connect>
     <Stream url="wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${agentId}">
-      <Parameter name="customerId_db" value="${customerId}" />
       <Parameter name="customerName" value="${customerName}" />
     </Stream>
   </Connect>
