@@ -43,8 +43,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Try to find the user in SQL Server (Read-only database)
+    let customerId = "0";
     let customerName = "Guest";
     let customerEmail = "guest@example.com";
+    let batchCount = 0;
 
     if (fromNumber !== 'Unknown') {
       try {
@@ -54,9 +56,16 @@ export async function POST(req: NextRequest) {
         });
 
         if (user) {
+          customerId = user.Id.toString();
           customerName = user.FirstName || user.Login || "Customer";
           customerEmail = user.Email || "guest@example.com";
-          console.log(`Caller identified: ${customerName} (${customerEmail})`);
+          
+          // Fetch the number of batches for this user
+          batchCount = await sqlServerPrisma.batches.count({
+            where: { UserId: user.Id }
+          });
+          
+          console.log(`Caller identified: ${customerName} (ID: ${customerId}), Batches: ${batchCount}`);
         } else {
           console.log("Caller not found in SQL Server database, treating as Guest.");
         }
@@ -69,8 +78,10 @@ export async function POST(req: NextRequest) {
     if (isElevenLabsWebhook) {
       return NextResponse.json({
         dynamic_variables: {
+          userId: customerId,
           customerName: customerName,
-          customerEmail: customerEmail
+          customerEmail: customerEmail,
+          batchCount: batchCount.toString()
         }
       });
     }
@@ -81,8 +92,8 @@ export async function POST(req: NextRequest) {
 <Response>
   <Connect>
     <Stream url="wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${agentId}">
+      <Parameter name="customerId_db" value="${customerId}" />
       <Parameter name="customerName" value="${customerName}" />
-      <Parameter name="customerEmail" value="${customerEmail}" />
     </Stream>
   </Connect>
 </Response>`;
