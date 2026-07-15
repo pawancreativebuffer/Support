@@ -24,10 +24,11 @@ import {
   SlidersHorizontal,
   PlusCircle,
   Lock,
-  MessageCircle, Mic, Play, Volume2, VolumeX, Calendar
+  MessageCircle, Mic, Play, Volume2, VolumeX, Calendar, FileDown
 } from 'lucide-react';
 import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
+import ReportModal from '@/components/ReportModal';
 
 interface ChatItem {
   id: string;
@@ -188,6 +189,7 @@ export default function AdminPage() {
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
   const [showMergedTicketsModal, setShowMergedTicketsModal] = useState(false);
   const [mergedTicketsList, setMergedTicketsList] = useState<any[]>([]);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Custom Ticket Creation Form States
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -449,16 +451,16 @@ export default function AdminPage() {
   // Real-time notifications via SSE
   useEffect(() => {
     if (!user) return;
-    
+
     const eventSource = new EventSource('/api/ticket-events?all=true');
-    
+
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'new_reply' || data.type === 'new_ticket' || data.type === 'status_update') {
           loadDatabaseData(user.email, true);
         }
-      } catch (err) {}
+      } catch (err) { }
     };
 
     return () => eventSource.close();
@@ -761,6 +763,13 @@ export default function AdminPage() {
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
                 {isRefreshing ? 'Refreshing...' : 'Refresh records'}
+              </button>
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+              >
+                <FileDown className="w-4 h-4 text-primary-600" />
+                Generate Report
               </button>
             </div>
           </div>
@@ -2292,6 +2301,12 @@ export default function AdminPage() {
         </div>
       )}
 
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        tickets={tickets}
+        agents={agents}
+      />
     </div>
   );
 }
