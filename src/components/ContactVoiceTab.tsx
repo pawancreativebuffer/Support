@@ -203,26 +203,27 @@ export const ContactVoiceTab: React.FC = () => {
           });
           if (res.ok) {
             const dbData = await res.json();
-            
+
             // COMPRESS CONTEXT TO AVOID WEBSOCKET PAYLOAD SIZE LIMITS!
-            const miniTickets = (dbData.tickets || []).slice(0, 3).map((t: any) => 
+            const miniTickets = (dbData.tickets || []).slice(0, 3).map((t: any) =>
               `[Ticket ${t.ticketNumber}: ${t.status}]`
             ).join(', ');
 
-            const miniBatches = (dbData.batches || []).slice(0, 3).map((b: any) => 
+            const miniBatches = (dbData.batches || []).slice(0, 3).map((b: any) =>
               `[Batch ${b.id}: ${b.status}]`
             ).join(', ');
 
             conversationOverrides = {
               agent: {
                 prompt: {
-                  prompt: `You are Sarah, a highly helpful customer support voice agent for Ticket-it. 
+                  prompt: `You are Max, a highly helpful customer support voice agent for Ticket-it. 
 You are speaking in real-time with: ${dbData.profile?.name} (${dbData.profile?.email}).
 Phone: ${dbData.profile?.phone || 'N/A'}. Org: ${dbData.profile?.client || 'N/A'}.
 Recent Tickets: ${miniTickets || 'None'}
 Recent Batches: ${miniBatches || 'None'}
 Keep your answers brief, conversational, and friendly.`
-                }
+                },
+                firstMessage: `Hello ${dbData.profile?.name?.split(' ')[0] || 'there'}! I'm Max, your AI Support Specialist. How can I assist you with your account today?`
               }
             };
           }
@@ -233,11 +234,12 @@ Keep your answers brief, conversational, and friendly.`
         conversationOverrides = {
           agent: {
             prompt: {
-              prompt: `You are Sarah, a helpful customer support voice assistant for Ticket-it.
+              prompt: `You are Max, a helpful customer support voice assistant for Ticket-it.
 The user is NOT logged in. You are speaking with an anonymous visitor.
 Our website (Ticket-it) provides a robust ticketing and batch management system.
 RULE: You MUST NOT disclose any personal details. Tell them to sign in if they need account support.`
-            }
+            },
+            firstMessage: `Hello! I'm Max, your AI Support Specialist for Ticket-IT. How can I assist you today?`
           }
         };
       }
@@ -245,25 +247,6 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
       // Dynamically import @elevenlabs/client
       const elevenlabsClient = await import('@elevenlabs/client');
       const { Conversation } = elevenlabsClient;
-
-      // Fetch signed URL via backend (securely encodes overrides into the token)
-      let signedUrl: string | null = null;
-      try {
-        const tokenRes = await fetch('/api/voice-token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            agent_id: agentId,
-            overrides: conversationOverrides
-          })
-        });
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          signedUrl = tokenData.signedUrl;
-        }
-      } catch (e) {
-        console.warn("Failed to fetch signed URL, falling back to standard connection.");
-      }
 
       const connectionConfig: any = {
         onConnect: ({ conversationId }: { conversationId: string }) => {
@@ -309,15 +292,12 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
         }
       };
 
-      if (signedUrl) {
-        connectionConfig.signedUrl = signedUrl;
-        console.log("Using Authenticated ElevenLabs session with baked-in overrides.");
+      connectionConfig.agentId = agentId;
+      if (conversationOverrides) {
+        connectionConfig.overrides = conversationOverrides;
+        console.log("Using ElevenLabs agentId session WITH client-side prompt overrides.");
       } else {
-        connectionConfig.agentId = agentId;
-        if (conversationOverrides) {
-          connectionConfig.overrides = conversationOverrides;
-        }
-        console.log("Using Agent ID fallback:", agentId);
+        console.log("Using BARE MINIMUM ElevenLabs Agent ID:", agentId);
       }
 
       const conversation = await Conversation.startSession(connectionConfig);
