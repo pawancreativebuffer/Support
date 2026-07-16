@@ -2241,9 +2241,37 @@ export default function AdminPage() {
                   <MessageSquare className="w-4 h-4 text-slate-400" />
                   <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Full Transcript</span>
                 </div>
-                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin">
-                  {selectedCallLog.transcript || <span className="italic text-slate-400">No transcript available.</span>}
-                </div>
+                
+                {(!selectedCallLog.transcript || selectedCallLog.transcript.startsWith("Call in") || selectedCallLog.transcript === "Call completed.") ? (
+                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin">
+                    {selectedCallLog.transcript || <span className="italic text-slate-400">No transcript available.</span>}
+                  </div>
+                ) : (
+                  <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin space-y-4">
+                    {selectedCallLog.transcript.split('\n').filter(l => l.trim().length > 0).map((line, i) => {
+                      const isCustomer = line.startsWith('Customer:');
+                      const isAgent = line.startsWith('Agent:');
+                      const content = line.replace(/^(Customer|Agent):\s*/, '');
+                      
+                      if (!isCustomer && !isAgent) {
+                        return <p key={i} className="text-sm text-slate-600 whitespace-pre-wrap">{line}</p>;
+                      }
+                      
+                      return (
+                        <div key={i} className={`flex w-full ${isCustomer ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
+                            <div className={`text-[10px] font-black uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
+                              {isCustomer ? 'Customer' : 'AI Agent'}
+                            </div>
+                            <div className="leading-relaxed whitespace-pre-wrap">
+                              {content}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               
             </div>
