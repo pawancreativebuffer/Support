@@ -53,6 +53,7 @@ export default function ChatWidget() {
   const [chatInput, setChatInput] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionKey, setSessionKey] = useState<string>('CH-882910'); // Default will be overridden on start
 
   // Load user session on mounting/expanded state changes
   useEffect(() => {
@@ -83,9 +84,9 @@ export default function ChatWidget() {
       try {
         const existing = localStorage.getItem('nexus_chats');
         const chats: SavedChat[] = existing ? JSON.parse(existing) : [];
-        const chatIndex = chats.findIndex((c) => c.id === 'CH-882910');
+        const chatIndex = chats.findIndex((c) => c.id === sessionKey);
         const activeChat: SavedChat = {
-          id: "CH-882910",
+          id: sessionKey,
           title: "Sarah (Live Support Chat)",
           status: chatStatus === 'active' ? 'Active' : 'Connecting',
           messages: chatMessages,
@@ -229,6 +230,10 @@ export default function ChatWidget() {
 
   // Start support chat session
   const startChat = () => {
+    // Generate a unique session key for this conversation
+    const newSessionKey = 'CH-' + Math.floor(100000 + Math.random() * 900000).toString();
+    setSessionKey(newSessionKey);
+
     setChatStatus('connecting');
     setChatMessages([
       { sender: 'system', text: 'Initializing secure support connection...', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
@@ -289,7 +294,8 @@ export default function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userText,
-          user: activeUser
+          user: activeUser,
+          sessionKey: sessionKey
         })
       });
 
@@ -364,7 +370,7 @@ export default function ChatWidget() {
                       try {
                         const existing = localStorage.getItem('nexus_chats');
                         const chats: SavedChat[] = existing ? JSON.parse(existing) : [];
-                        const chatIndex = chats.findIndex((c) => c.id === 'CH-882910');
+                        const chatIndex = chats.findIndex((c) => c.id === sessionKey);
                         if (chatIndex >= 0) {
                           chats[chatIndex].status = 'Closed';
                           localStorage.setItem('nexus_chats', JSON.stringify(chats));
@@ -375,7 +381,7 @@ export default function ChatWidget() {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({
-                            sessionKey: 'CH-882910',
+                            sessionKey: sessionKey,
                             status: 'Closed'
                           })
                         }).catch(err => console.error('Failed to close session in postgres:', err));

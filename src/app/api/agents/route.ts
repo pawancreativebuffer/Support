@@ -16,16 +16,22 @@ export async function GET(req: NextRequest) {
       },
       select: {
         id: true,
-        name: true,
+        firstName: true,
+        lastName: true,
         email: true,
         role: true
       },
       orderBy: {
-        name: 'asc'
+        firstName: 'asc'
       }
     });
 
-    return NextResponse.json(agents);
+    const mappedAgents = agents.map(a => ({
+      ...a,
+      name: [a.firstName, a.lastName].filter(Boolean).join(' ') || 'Agent'
+    }));
+
+    return NextResponse.json(mappedAgents);
   } catch (error) {
     console.error('Error fetching agents:', error);
     return NextResponse.json({ error: 'Failed to fetch agents' }, { status: 500 });

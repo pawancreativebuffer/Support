@@ -27,7 +27,7 @@ export const ContactVoiceTab: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_WEB_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
 
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -188,100 +188,17 @@ export const ContactVoiceTab: React.FC = () => {
       setStatus('processing');
       setErrorMessage('');
 
-      // Fetch dynamic voice prompt overrides if user is logged in
-      let conversationOverrides: any = undefined;
 
-      if (currentUser && currentUser.email) {
-        try {
-          const res = await fetch('/api/voice-context', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: currentUser.email })
-          });
-          if (res.ok) {
-            const dbData = await res.json();
-            conversationOverrides = {
-              agent: {
-                prompt: {
-                  prompt: `You are Sarah, a highly helpful, professional customer support agent representing the Ticket-it platform. 
-You are speaking in real-time with the logged-in customer: ${dbData.profile.name} (${dbData.profile.email}).
-Under no circumstances should you talk about any other customer's details or accounts.
-Here is the customer's authenticated real-time data from our SQL Server database:
-- Profile: Name is ${dbData.profile.name}, email is ${dbData.profile.email}, phone is ${dbData.profile.phone}, address is ${dbData.profile.address}, and client organization is ${dbData.profile.client}.
-- Tickets: ${JSON.stringify(dbData.tickets)}
-- Batches: ${JSON.stringify(dbData.batches)}
-- File Notes: ${JSON.stringify(dbData.fileNotes)}
-- FTP Details: ${JSON.stringify(dbData.ftpDetails)}
-- Saved Templates: ${JSON.stringify(dbData.savedTemplates)}
-- Store Groups: ${JSON.stringify(dbData.storeGroups)}
-- Active API Integrations: ${JSON.stringify(dbData.userIntegrations)}
-- Outlets Count: ${dbData.outletsCount}
-
-Rule: Since the user is logged in and authenticated, you are authorized to verify, summarize, and tell them details from their tickets, batches, FTP settings, integrations, templates, or profile history when they ask. Keep answers conversational, natural, and friendly.`
-                }
-              }
-            };
-          }
-        } catch (dbErr) {
-          console.warn("Could not fetch database voice context, falling back to basic session:", dbErr);
-        }
-      } else {
-        // User is anonymous / NOT logged in
-        conversationOverrides = {
-          agent: {
-            prompt: {
-              prompt: `You are Sarah, a helpful customer support voice assistant for Ticket-it.
-The user is NOT logged in. You are speaking with an anonymous visitor.
-RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group, or system configurations under any circumstances. If they ask about their account, tickets, batches, or any personal details, politely inform them that they must close this voice session, sign in to their account on the portal first, and then return to use the voice assistant.`
-            }
-          }
-        };
-      }
-
-      // Request microphone access
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      await startAudioAnalysis();
-
-      // Dynamically import @elevenlabs/client to avoid SSR build issues
+      // Dynamically import @elevenlabs/client
       const elevenlabsClient = await import('@elevenlabs/client');
       const { Conversation } = elevenlabsClient;
-      const VoiceConversationClass = (elevenlabsClient as any).VoiceConversation;
-
-      // Safe patch for handleErrorEvent prototype bug in @elevenlabs/client SDK
-      if (VoiceConversationClass && VoiceConversationClass.prototype && !(VoiceConversationClass.prototype as any).__patchedForErrorEvent) {
-        const originalHandleErrorEvent = VoiceConversationClass.prototype.handleErrorEvent;
-        VoiceConversationClass.prototype.handleErrorEvent = function (event: any) {
-          if (!event || !event.error_event) {
-            console.error("Safeguarded ElevenLabs Error Event:", event);
-            const msg = event?.message || event?.reason || "Unknown ElevenLabs WebRTC connection error";
-            this.onError(`Server error: ${msg}`, { errorType: "unknown_error", details: event });
-            return;
-          }
-          if (originalHandleErrorEvent) {
-            originalHandleErrorEvent.call(this, event);
-          }
-        };
-        (VoiceConversationClass.prototype as any).__patchedForErrorEvent = true;
-      }
-
-      // Fetch signed URL if an API key is available
-      let signedUrl: string | null = null;
-      try {
-        const tokenRes = await fetch(`/api/voice-token?agent_id=${agentId}`);
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          signedUrl = tokenData.signedUrl;
-        }
-      } catch (tokenErr) {
-        console.warn("Could not fetch signed URL token, checking public connection:", tokenErr);
-      }
 
       const connectionConfig: any = {
         onConnect: ({ conversationId }: { conversationId: string }) => {
           console.log("ElevenLabs Connected:", conversationId);
           conversationIdRef.current = conversationId;
           sessionStartTimeRef.current = Date.now();
-          messagesRef.current = []; // Reset on new connect
+          messagesRef.current = [];
           setStatus('listening');
         },
         onDisconnect: () => {
@@ -305,43 +222,23 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
         },
         onError: (error: any) => {
           console.error("ElevenLabs Error:", error);
-          setErrorMessage(String(error?.message || error || "Failed to connect to ElevenLabs agent."));
+          setErrorMessage(String(error?.message || error || "Connection failed."));
           setStatus('error');
           stopAudioAnalysis();
         },
         onStatusChange: ({ status: statusVal }: { status: string }) => {
-          if (statusVal === 'connecting') {
-            setStatus('processing');
-          } else if (statusVal === 'connected') {
-            setStatus('listening');
-          } else if (statusVal === 'disconnected') {
-            setStatus('idle');
-          }
+          if (statusVal === 'connecting') setStatus('processing');
+          else if (statusVal === 'connected') setStatus('listening');
+          else if (statusVal === 'disconnected') setStatus('idle');
         },
         onModeChange: ({ mode: modeVal }: { mode: string }) => {
-          if (modeVal === 'speaking') {
-            setStatus('speaking');
-          } else if (modeVal === 'listening') {
-            setStatus('listening');
-          }
+          if (modeVal === 'speaking') setStatus('speaking');
+          else if (modeVal === 'listening') setStatus('listening');
         }
       };
 
-      if (signedUrl) {
-        connectionConfig.signedUrl = signedUrl;
-        connectionConfig.overrides = conversationOverrides;
-        console.log("Using ElevenLabs signed URL session with prompt overrides.");
-      } else {
-        connectionConfig.agentId = agentId;
-        // Pass overrides with agentId connection as well.
-        // This works when "Allow client overrides" is enabled in the ElevenLabs agent dashboard.
-        if (conversationOverrides) {
-          connectionConfig.overrides = conversationOverrides;
-          console.log("Using ElevenLabs agentId session WITH client-side prompt overrides (database context injected).");
-        } else {
-          console.log("No overrides available. Connecting to agent publicly.");
-        }
-      }
+      connectionConfig.agentId = agentId;
+      console.log("Using BARE MINIMUM ElevenLabs Agent ID:", agentId);
 
       const conversation = await Conversation.startSession(connectionConfig);
       conversationRef.current = conversation;

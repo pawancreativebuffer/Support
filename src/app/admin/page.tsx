@@ -2248,28 +2248,49 @@ export default function AdminPage() {
                   </div>
                 ) : (
                   <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin space-y-4">
-                    {selectedCallLog.transcript.split('\n').filter(l => l.trim().length > 0).map((line, i) => {
-                      const isCustomer = line.startsWith('Customer:');
-                      const isAgent = line.startsWith('Agent:');
-                      const content = line.replace(/^(Customer|Agent):\s*/, '');
+                    {(() => {
+                      const messages: { sender: string, text: string }[] = [];
+                      let currentMsg: { sender: string, text: string } | null = null;
                       
-                      if (!isCustomer && !isAgent) {
-                        return <p key={i} className="text-sm text-slate-600 whitespace-pre-wrap">{line}</p>;
-                      }
+                      selectedCallLog.transcript.split('\n').forEach((line: string) => {
+                        const trimmed = line.trim();
+                        if (!trimmed) return;
+                        
+                        if (trimmed.startsWith('Customer:')) {
+                          if (currentMsg) messages.push(currentMsg);
+                          currentMsg = { sender: 'Customer', text: trimmed.slice(9).trim() };
+                        } else if (trimmed.startsWith('Agent:')) {
+                          if (currentMsg) messages.push(currentMsg);
+                          currentMsg = { sender: 'Agent', text: trimmed.slice(6).trim() };
+                        } else {
+                          if (currentMsg) {
+                            currentMsg.text += '\n\n' + trimmed;
+                          } else {
+                            currentMsg = { sender: 'System', text: trimmed };
+                          }
+                        }
+                      });
+                      if (currentMsg) messages.push(currentMsg);
                       
-                      return (
-                        <div key={i} className={`flex w-full ${isCustomer ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
-                            <div className={`text-[10px] font-black uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
-                              {isCustomer ? 'Customer' : 'AI Agent'}
-                            </div>
-                            <div className="leading-relaxed whitespace-pre-wrap">
-                              {content}
+                      return messages.map((msg, i) => {
+                        const isCustomer = msg.sender === 'Customer';
+                        if (msg.sender === 'System') {
+                           return <p key={i} className="text-sm text-slate-600 whitespace-pre-wrap">{msg.text}</p>;
+                        }
+                        return (
+                          <div key={i} className={`flex w-full ${isCustomer ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
+                              <div className={`text-[10px] font-black uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
+                                {isCustomer ? 'Customer' : 'AI Agent'}
+                              </div>
+                              <div className="leading-relaxed whitespace-pre-wrap">
+                                {msg.text}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </div>

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const agentId = searchParams.get('agent_id') || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+    const body = await req.json().catch(() => ({}));
+    const agentId = body.agent_id || process.env.NEXT_PUBLIC_ELEVENLABS_WEB_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+    const overrides = body.overrides;
 
     if (!agentId) {
       return NextResponse.json({ error: 'Agent ID is required' }, { status: 400 });
@@ -11,11 +12,18 @@ export async function GET(req: NextRequest) {
 
     const apiKey = process.env.ELEVENLABS_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ signedUrl: null, message: 'ELEVENLABS_API_KEY is not set in environment variables.' });
+      return NextResponse.json({ signedUrl: null, message: 'ELEVENLABS_API_KEY is not set.' });
     }
 
-    console.log(`Generating ElevenLabs signed URL for agent ${agentId}...`);
-    const response = await fetch(`https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`, {
+    console.log(`Generating authenticated ElevenLabs signed URL for agent ${agentId}...`);
+    
+    let elUrl = `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`;
+    
+    if (overrides) {
+      elUrl += `&conversation_config_override=${encodeURIComponent(JSON.stringify(overrides))}`;
+    }
+
+    const response = await fetch(elUrl, {
       method: 'GET',
       headers: {
         'xi-api-key': apiKey,
@@ -35,3 +43,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ signedUrl: null, message: error?.message || 'Internal server error' });
   }
 }
+
+

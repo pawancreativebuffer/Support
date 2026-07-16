@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       where: {
         OR: [
           { email: { equals: trimmedLogin, mode: 'insensitive' } },
-          { name: { equals: trimmedLogin, mode: 'insensitive' } }
+          { login: { equals: trimmedLogin, mode: 'insensitive' } }
         ],
         role: 'AGENT'
       }
@@ -50,10 +50,12 @@ export async function POST(req: NextRequest) {
       }, { status: 401 });
     }
 
+    const fullName = [portalUser.firstName, portalUser.lastName].filter(Boolean).join(' ') || 'Agent';
+
     return NextResponse.json({
       user: {
         id: portalUser.id,
-        name: portalUser.name,
+        name: fullName,
         email: portalUser.email,
         role: 'Agent'
       }

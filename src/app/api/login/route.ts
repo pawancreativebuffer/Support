@@ -79,7 +79,9 @@ export async function POST(req: NextRequest) {
           await postgresPrisma.portalUser.create({
             data: {
               email: portalEmail,
-              name: `${matchedUser.FirstName} ${matchedUser.LastName}`.trim() || 'Client User',
+              login: matchedUser.Login,
+              firstName: matchedUser.FirstName,
+              lastName: matchedUser.LastName,
               passwordHash: matchedUser.UserPassword || 'no-legacy-password',
               role: 'CUSTOMER',
               isActive: true

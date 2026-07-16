@@ -100,7 +100,7 @@ async function callOpenAI(prompt: string, apiKey: string): Promise<string> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, user } = body;
+    const { message, user, sessionKey = 'CH-882910' } = body;
 
     if (!message) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
@@ -371,7 +371,6 @@ I can help you with setup guidelines, pricing plans, and integration steps.
     // Sync chat logs to PostgreSQL database
     if (postgresPrisma) {
       try {
-        const sessionKey = 'CH-882910'; // Default session key from ChatWidget
         const emailClean = user && user.email ? user.email.trim().toLowerCase() : null;
         const nameClean = user && user.name ? user.name.trim() : null;
 

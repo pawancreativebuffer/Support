@@ -75,8 +75,8 @@ export async function GET(req: NextRequest) {
 
       const formattedTickets = allTickets.map(t => ({
         id: `TK-${t.id}`,
-        firstName: t.customer.name.split(' ')[0] || 'Client',
-        lastName: t.customer.name.split(' ').slice(1).join(' ') || 'User',
+        firstName: t.customer.firstName || 'Client',
+        lastName: t.customer.lastName || 'User',
         email: t.customer.email,
         category: t.title,
         description: t.description,
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
         attachmentUrl: t.attachmentUrl,
         attachmentName: t.attachmentName,
         agentId: t.agentId,
-        agent: t.agent ? { id: t.agent.id, name: t.agent.name, email: t.agent.email } : null,
+        agent: t.agent ? { id: t.agent.id, name: [t.agent.firstName, t.agent.lastName].filter(Boolean).join(' ') || 'Agent', email: t.agent.email } : null,
         createdAt: t.createdAt.toLocaleString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
           id: `TK-${mt.id}`,
           description: mt.description,
           createdAt: mt.createdAt.toLocaleString('en-US'),
-          customerName: mt.customer ? mt.customer.name : 'Unknown',
+          customerName: mt.customer ? [mt.customer.firstName, mt.customer.lastName].filter(Boolean).join(' ') : 'Unknown',
           messages: mt.messages.map(m => ({
             sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
             text: m.text,
@@ -125,8 +125,8 @@ export async function GET(req: NextRequest) {
     // Map to client format for customer
     const formattedTickets = portalUser.raisedTickets.map(t => ({
       id: `TK-${t.id}`,
-      firstName: portalUser.name.split(' ')[0] || 'Client',
-      lastName: portalUser.name.split(' ').slice(1).join(' ') || 'User',
+      firstName: portalUser.firstName || 'Client',
+      lastName: portalUser.lastName || 'User',
       email: portalUser.email,
       category: t.title, // Map title as category
       description: t.description,
@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
       attachmentUrl: t.attachmentUrl,
         attachmentName: t.attachmentName,
         agentId: t.agentId,
-        agent: t.agent ? { id: t.agent.id, name: t.agent.name, email: t.agent.email } : null,
+        agent: t.agent ? { id: t.agent.id, name: [t.agent.firstName, t.agent.lastName].filter(Boolean).join(' ') || 'Agent', email: t.agent.email } : null,
         createdAt: t.createdAt.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -200,7 +200,9 @@ export async function POST(req: NextRequest) {
       portalUser = await postgresPrisma.portalUser.create({
         data: {
           email: portalEmail,
-          name: fullName,
+          login: portalEmail,
+          firstName: firstName || '',
+          lastName: lastName || '',
           passwordHash: '', // Set empty since they haven't registered directly via portal, always auths through main DB
           role: 'CUSTOMER',
           isActive: true

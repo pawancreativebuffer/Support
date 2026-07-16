@@ -9,9 +9,14 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  console.log("Clearing all Call Logs from the database...");
-  const result = await prisma.callLog.deleteMany({});
-  console.log(`Successfully deleted ${result.count} old call logs!`);
+  console.log("Clearing all Chat and Voice AI Logs from the database...");
+  
+  const chatMsgs = await prisma.chatWidgetMessage.deleteMany({});
+  const chatSessions = await prisma.chatWidgetSession.deleteMany({});
+  console.log(`Deleted ${chatMsgs.count} chat messages and ${chatSessions.count} chat sessions.`);
+
+  const voiceLogs = await prisma.voiceSessionLog.deleteMany({});
+  console.log(`Deleted ${voiceLogs.count} voice AI logs.`);
 }
 
 main()

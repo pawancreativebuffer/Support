@@ -1645,7 +1645,9 @@ export namespace Prisma {
   export type PortalUserMinAggregateOutputType = {
     id: number | null
     email: string | null
-    name: string | null
+    login: string | null
+    firstName: string | null
+    lastName: string | null
     passwordHash: string | null
     role: $Enums.PortalRole | null
     isActive: boolean | null
@@ -1656,7 +1658,9 @@ export namespace Prisma {
   export type PortalUserMaxAggregateOutputType = {
     id: number | null
     email: string | null
-    name: string | null
+    login: string | null
+    firstName: string | null
+    lastName: string | null
     passwordHash: string | null
     role: $Enums.PortalRole | null
     isActive: boolean | null
@@ -1667,7 +1671,9 @@ export namespace Prisma {
   export type PortalUserCountAggregateOutputType = {
     id: number
     email: number
-    name: number
+    login: number
+    firstName: number
+    lastName: number
     passwordHash: number
     role: number
     isActive: number
@@ -1688,7 +1694,9 @@ export namespace Prisma {
   export type PortalUserMinAggregateInputType = {
     id?: true
     email?: true
-    name?: true
+    login?: true
+    firstName?: true
+    lastName?: true
     passwordHash?: true
     role?: true
     isActive?: true
@@ -1699,7 +1707,9 @@ export namespace Prisma {
   export type PortalUserMaxAggregateInputType = {
     id?: true
     email?: true
-    name?: true
+    login?: true
+    firstName?: true
+    lastName?: true
     passwordHash?: true
     role?: true
     isActive?: true
@@ -1710,7 +1720,9 @@ export namespace Prisma {
   export type PortalUserCountAggregateInputType = {
     id?: true
     email?: true
-    name?: true
+    login?: true
+    firstName?: true
+    lastName?: true
     passwordHash?: true
     role?: true
     isActive?: true
@@ -1808,7 +1820,9 @@ export namespace Prisma {
   export type PortalUserGroupByOutputType = {
     id: number
     email: string
-    name: string
+    login: string | null
+    firstName: string | null
+    lastName: string | null
     passwordHash: string
     role: $Enums.PortalRole
     isActive: boolean
@@ -1838,7 +1852,9 @@ export namespace Prisma {
   export type PortalUserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1855,7 +1871,9 @@ export namespace Prisma {
   export type PortalUserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1866,7 +1884,9 @@ export namespace Prisma {
   export type PortalUserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1877,7 +1897,9 @@ export namespace Prisma {
   export type PortalUserSelectScalar = {
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1885,7 +1907,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PortalUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["portalUser"]>
+  export type PortalUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "login" | "firstName" | "lastName" | "passwordHash" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["portalUser"]>
   export type PortalUserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     raisedTickets?: boolean | PortalUser$raisedTicketsArgs<ExtArgs>
     assignedTickets?: boolean | PortalUser$assignedTicketsArgs<ExtArgs>
@@ -1909,7 +1931,9 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       email: string
-      name: string
+      login: string | null
+      firstName: string | null
+      lastName: string | null
       passwordHash: string
       role: $Enums.PortalRole
       isActive: boolean
@@ -2345,7 +2369,9 @@ export namespace Prisma {
   interface PortalUserFieldRefs {
     readonly id: FieldRef<"PortalUser", 'Int'>
     readonly email: FieldRef<"PortalUser", 'String'>
-    readonly name: FieldRef<"PortalUser", 'String'>
+    readonly login: FieldRef<"PortalUser", 'String'>
+    readonly firstName: FieldRef<"PortalUser", 'String'>
+    readonly lastName: FieldRef<"PortalUser", 'String'>
     readonly passwordHash: FieldRef<"PortalUser", 'String'>
     readonly role: FieldRef<"PortalUser", 'PortalRole'>
     readonly isActive: FieldRef<"PortalUser", 'Boolean'>
@@ -9780,7 +9806,9 @@ export namespace Prisma {
   export const PortalUserScalarFieldEnum: {
     id: 'id',
     email: 'email',
-    name: 'name',
+    login: 'login',
+    firstName: 'firstName',
+    lastName: 'lastName',
     passwordHash: 'passwordHash',
     role: 'role',
     isActive: 'isActive',
@@ -10044,7 +10072,9 @@ export namespace Prisma {
     NOT?: PortalUserWhereInput | PortalUserWhereInput[]
     id?: IntFilter<"PortalUser"> | number
     email?: StringFilter<"PortalUser"> | string
-    name?: StringFilter<"PortalUser"> | string
+    login?: StringNullableFilter<"PortalUser"> | string | null
+    firstName?: StringNullableFilter<"PortalUser"> | string | null
+    lastName?: StringNullableFilter<"PortalUser"> | string | null
     passwordHash?: StringFilter<"PortalUser"> | string
     role?: EnumPortalRoleFilter<"PortalUser"> | $Enums.PortalRole
     isActive?: BoolFilter<"PortalUser"> | boolean
@@ -10060,7 +10090,9 @@ export namespace Prisma {
   export type PortalUserOrderByWithRelationInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrderInput | SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -10076,10 +10108,12 @@ export namespace Prisma {
   export type PortalUserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     email?: string
+    login?: string
     AND?: PortalUserWhereInput | PortalUserWhereInput[]
     OR?: PortalUserWhereInput[]
     NOT?: PortalUserWhereInput | PortalUserWhereInput[]
-    name?: StringFilter<"PortalUser"> | string
+    firstName?: StringNullableFilter<"PortalUser"> | string | null
+    lastName?: StringNullableFilter<"PortalUser"> | string | null
     passwordHash?: StringFilter<"PortalUser"> | string
     role?: EnumPortalRoleFilter<"PortalUser"> | $Enums.PortalRole
     isActive?: BoolFilter<"PortalUser"> | boolean
@@ -10090,12 +10124,14 @@ export namespace Prisma {
     sentMessages?: TicketMessageListRelationFilter
     voiceLogs?: VoiceSessionLogListRelationFilter
     callLogs?: CallLogListRelationFilter
-  }, "id" | "email">
+  }, "id" | "email" | "login">
 
   export type PortalUserOrderByWithAggregationInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrderInput | SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -10114,7 +10150,9 @@ export namespace Prisma {
     NOT?: PortalUserScalarWhereWithAggregatesInput | PortalUserScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"PortalUser"> | number
     email?: StringWithAggregatesFilter<"PortalUser"> | string
-    name?: StringWithAggregatesFilter<"PortalUser"> | string
+    login?: StringNullableWithAggregatesFilter<"PortalUser"> | string | null
+    firstName?: StringNullableWithAggregatesFilter<"PortalUser"> | string | null
+    lastName?: StringNullableWithAggregatesFilter<"PortalUser"> | string | null
     passwordHash?: StringWithAggregatesFilter<"PortalUser"> | string
     role?: EnumPortalRoleWithAggregatesFilter<"PortalUser"> | $Enums.PortalRole
     isActive?: BoolWithAggregatesFilter<"PortalUser"> | boolean
@@ -10561,7 +10599,9 @@ export namespace Prisma {
 
   export type PortalUserCreateInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -10577,7 +10617,9 @@ export namespace Prisma {
   export type PortalUserUncheckedCreateInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -10592,7 +10634,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -10608,7 +10652,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -10624,7 +10670,9 @@ export namespace Prisma {
   export type PortalUserCreateManyInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -10634,7 +10682,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateManyMutationInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -10645,7 +10695,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11113,6 +11165,21 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type EnumPortalRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.PortalRole | EnumPortalRoleFieldRefInput<$PrismaModel>
     in?: $Enums.PortalRole[] | ListEnumPortalRoleFieldRefInput<$PrismaModel>
@@ -11160,6 +11227,11 @@ export namespace Prisma {
     none?: CallLogWhereInput
   }
 
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type SupportTicketOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -11179,7 +11251,9 @@ export namespace Prisma {
   export type PortalUserCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -11194,7 +11268,9 @@ export namespace Prisma {
   export type PortalUserMaxOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -11205,7 +11281,9 @@ export namespace Prisma {
   export type PortalUserMinOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -11249,6 +11327,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type EnumPortalRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -11297,21 +11393,6 @@ export namespace Prisma {
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -11336,11 +11417,6 @@ export namespace Prisma {
   export type SupportTicketNullableScalarRelationFilter = {
     is?: SupportTicketWhereInput | null
     isNot?: SupportTicketWhereInput | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type SupportTicketCountOrderByAggregateInput = {
@@ -11420,24 +11496,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -11785,6 +11843,10 @@ export namespace Prisma {
     set?: string
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type EnumPortalRoleFieldUpdateOperationsInput = {
     set?: $Enums.PortalRole
   }
@@ -11997,10 +12059,6 @@ export namespace Prisma {
 
   export type EnumTicketPriorityFieldUpdateOperationsInput = {
     set?: $Enums.TicketPriority
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput = {
@@ -12244,6 +12302,20 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedEnumPortalRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.PortalRole | EnumPortalRoleFieldRefInput<$PrismaModel>
     in?: $Enums.PortalRole[] | ListEnumPortalRoleFieldRefInput<$PrismaModel>
@@ -12311,6 +12383,34 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumPortalRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.PortalRole | EnumPortalRoleFieldRefInput<$PrismaModel>
     in?: $Enums.PortalRole[] | ListEnumPortalRoleFieldRefInput<$PrismaModel>
@@ -12357,31 +12457,6 @@ export namespace Prisma {
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumTicketStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.TicketStatus | EnumTicketStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
@@ -12400,23 +12475,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12785,7 +12843,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutRaisedTicketsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -12800,7 +12860,9 @@ export namespace Prisma {
   export type PortalUserUncheckedCreateWithoutRaisedTicketsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -12819,7 +12881,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutAssignedTicketsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -12834,7 +12898,9 @@ export namespace Prisma {
   export type PortalUserUncheckedCreateWithoutAssignedTicketsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -12970,7 +13036,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutRaisedTicketsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -12985,7 +13053,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateWithoutRaisedTicketsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13010,7 +13080,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutAssignedTicketsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13025,7 +13097,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateWithoutAssignedTicketsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13149,7 +13223,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutSentMessagesInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -13164,7 +13240,9 @@ export namespace Prisma {
   export type PortalUserUncheckedCreateWithoutSentMessagesInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -13236,7 +13314,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutSentMessagesInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13251,7 +13331,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateWithoutSentMessagesInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13369,7 +13451,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutVoiceLogsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -13384,7 +13468,9 @@ export namespace Prisma {
   export type PortalUserUncheckedCreateWithoutVoiceLogsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -13414,7 +13500,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutVoiceLogsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13429,7 +13517,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateWithoutVoiceLogsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13443,7 +13533,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutCallLogsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -13458,7 +13550,9 @@ export namespace Prisma {
   export type PortalUserUncheckedCreateWithoutCallLogsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -13488,7 +13582,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutCallLogsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -13503,7 +13599,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateWithoutCallLogsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
