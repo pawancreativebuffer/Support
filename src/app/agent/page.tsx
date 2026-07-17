@@ -25,7 +25,6 @@ import {
   PlusCircle,
   Lock
 } from 'lucide-react';
-import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
 
 interface TicketItem {
@@ -43,12 +42,12 @@ interface TicketItem {
   type?: 'Form' | 'Voice' | 'Live Chat';
   attachmentUrl?: string | null;
   attachmentName?: string | null;
-  replies?: { 
-    sender: 'customer' | 'agent' | 'system'; 
-    text: string; 
-    time: string; 
-    attachmentUrl?: string | null; 
-    attachmentName?: string | null; 
+  replies?: {
+    sender: 'customer' | 'agent' | 'system';
+    text: string;
+    time: string;
+    attachmentUrl?: string | null;
+    attachmentName?: string | null;
   }[];
   mergedTickets?: any[];
 }
@@ -252,7 +251,7 @@ export default function AgentPage() {
   const [showMergeModal, setShowMergeModal] = useState(false);
   const [mergePrimaryId, setMergePrimaryId] = useState<string | null>(null);
   const [mergeSubmitting, setMergeSubmitting] = useState(false);
-  
+
   const [showMergedTicketsModal, setShowMergedTicketsModal] = useState(false);
   const [mergedTicketsList, setMergedTicketsList] = useState<any[]>([]);
 
@@ -417,7 +416,7 @@ export default function AgentPage() {
       const ticketsRes = await fetch(`/api/tickets?email=${encodeURIComponent(email)}`);
       if (ticketsRes.ok) {
         const freshTickets: TicketItem[] = await ticketsRes.json();
-        
+
         // If silent refresh and we have previous tickets, detect new customer messages/tickets
         if (silent && tickets.length > 0) {
           freshTickets.forEach(freshT => {
@@ -437,7 +436,7 @@ export default function AgentPage() {
             }
           });
         }
-        
+
         setTickets(freshTickets);
 
         const chatsRes = await fetch('/api/agents/chats');
@@ -492,9 +491,9 @@ export default function AgentPage() {
   // Real-time notifications via SSE
   useEffect(() => {
     if (!user) return;
-    
+
     const eventSource = new EventSource('/api/ticket-events?all=true');
-    
+
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -718,8 +717,8 @@ export default function AgentPage() {
   };
 
   const filteredTickets = tickets.filter(t => {
-    const matchesFilter = ticketFilter === 'All' 
-      ? true 
+    const matchesFilter = ticketFilter === 'All'
+      ? true
       : t.status === ticketFilter;
 
     const matchesPriority = priorityFilter === 'All'
@@ -828,7 +827,7 @@ export default function AgentPage() {
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-20">
-      
+
       {/* Toast Notification Card Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         {toasts.map(toast => (
@@ -843,8 +842,6 @@ export default function AgentPage() {
           </div>
         ))}
       </div>
-
-
 
       {/* Welcome Banner */}
       <div className="w-full px-6 pt-6">
@@ -1019,8 +1016,8 @@ export default function AgentPage() {
                   <div className="relative pl-6 border-l border-slate-200 space-y-8 ml-2 py-2">
                     {activities.slice(0, visibleActivities).map((act, index) => {
                       const requiresReply = needsReply(act.rawItem);
-                      const dotColor = act.rawItem.status === 'Resolved' 
-                        ?"bg-emerald-500 ring-emerald-100" 
+                      const dotColor = act.rawItem.status === 'Resolved'
+                        ?"bg-emerald-500 ring-emerald-100"
                         : requiresReply
                           ?"bg-amber-500 ring-amber-100 animate-pulse"
                           :"bg-blue-500 ring-blue-100";
@@ -1058,11 +1055,11 @@ export default function AgentPage() {
                                 </div>
                                 <span className="text-slate-450 font-bold select-all">{act.rawItem.email}</span>
                               </div>
-                              
+
                               <p className="text-sm text-slate-600 leading-relaxed font-medium select-text pt-1">
                                 {act.description}
                               </p>
-                              
+
                               <div className="flex items-center justify-between border-t border-slate-100 mt-3 pt-3 text-xs">
                                 <span className="font-bold text-slate-400">{act.subtitle}</span>
 
@@ -1222,8 +1219,8 @@ export default function AgentPage() {
 
                     {showPriorityFilters && (
                       <>
-                        <div 
-                          className="fixed inset-0 z-20 cursor-default" 
+                        <div
+                          className="fixed inset-0 z-20 cursor-default"
                           onClick={() => setShowPriorityFilters(false)}
                         />
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-25 py-2 animate-fade-in">
@@ -1388,7 +1385,7 @@ export default function AgentPage() {
                                 onClick={(e) => e.stopPropagation()}
                               />
                             </td>
-                            <td className="py-4 px-4  text-xs font-bold text-slate-500">
+                            <td className="py-4 px-4 text-xs font-bold text-slate-500">
                               <span className="flex items-center gap-2">
                                 {requiresReply && (
                                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Requires Attention" />
@@ -1398,7 +1395,7 @@ export default function AgentPage() {
                             </td>
                             <td className="py-4 px-4">
                               <div className="text-xs font-bold text-slate-800">{ticket.firstName} {ticket.lastName}</div>
-                              <div className="text-[10px] text-slate-400  mt-0.5">{ticket.email}</div>
+                              <div className="text-[10px] text-slate-400 mt-0.5">{ticket.email}</div>
                             </td>
                             <td className="py-4 px-4 text-xs font-bold text-slate-700">
                               {ticket.category}
@@ -1630,7 +1627,7 @@ export default function AgentPage() {
             </div>
           )}
 
-          
+
 {/* TAB 4: VOICE LOGS */}
           {activeTab === 'voice' && (
             <div className="space-y-6 animate-fade-in w-full">
@@ -1753,7 +1750,7 @@ export default function AgentPage() {
 
                 {/* Left Column: Inquiry Metadata & Status */}
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
-                  
+
                   {/* Original Inquiry Description */}
                   <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner">
                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Original Inquiry</p>
@@ -1764,8 +1761,8 @@ export default function AgentPage() {
                     </div>
                     <div className="pt-3 border-t border-slate-200/60 space-y-1">
                       <p className="text-xs text-slate-500 font-bold">Submitter: {selectedTicket.firstName} {selectedTicket.lastName}</p>
-                      <p className="text-[11px] text-slate-400  select-all">{selectedTicket.email}</p>
-                      <p className="text-[10px] text-slate-400  pt-1">Raised: {selectedTicket.createdAt}</p>
+                      <p className="text-[11px] text-slate-400 select-all">{selectedTicket.email}</p>
+                      <p className="text-[10px] text-slate-400 pt-1">Raised: {selectedTicket.createdAt}</p>
                     </div>
                   </div>
 
@@ -1895,7 +1892,7 @@ export default function AgentPage() {
 
                 {/* Right Column: Thread & Reply Form */}
                 <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8 min-h-0">
-                  
+
                   {/* Fixed Header for Conversation Thread */}
                   <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-4 shrink-0">
                     <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
@@ -2002,7 +1999,7 @@ export default function AgentPage() {
                             </button>
                           </div>
                         )}
-                        
+
                         {replyUploading && (
                           <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
                             <Loader2 className="w-3.5 h-3.5 text-primary-600 animate-spin" />
@@ -2130,7 +2127,7 @@ export default function AgentPage() {
         </div>
       )}
 
-      
+
 {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
@@ -2283,7 +2280,7 @@ export default function AgentPage() {
           </div>
         </div>
       )}
-      
+
 
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
@@ -2504,17 +2501,17 @@ export default function AgentPage() {
               <p className="text-sm text-slate-600 leading-relaxed">
                 You are about to merge <strong>{selectedTicketIds.length}</strong> tickets. The ticket you select below will be the <strong>Primary</strong> ticket, and all other tickets will be merged into it and hidden from the table.
               </p>
-              
+
               <div className="space-y-3">
                 {selectedTicketIds.map(id => {
                   const t = tickets.find(ticket => ticket.id === id);
                   if (!t) return null;
                   return (
                     <label key={id} className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${mergePrimaryId === id ? 'border-primary-500 bg-primary-50 shadow-sm' : 'border-slate-200 hover:border-primary-300'}`}>
-                      <input 
-                        type="radio" 
-                        name="primaryTicket" 
-                        value={id} 
+                      <input
+                        type="radio"
+                        name="primaryTicket"
+                        value={id}
                         checked={mergePrimaryId === id}
                         onChange={() => setMergePrimaryId(id)}
                         className="mt-1 w-4 h-4 text-primary-600"
@@ -2546,7 +2543,7 @@ export default function AgentPage() {
 
       {/* MODAL: VIEW MERGED TICKETS */}
       {showMergedTicketsModal && (
-        <div className="fixed inset-0 z-[60] bg-slate-900/80  flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] bg-slate-900/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
@@ -2569,7 +2566,7 @@ export default function AgentPage() {
                     <div>
                       <span className="text-xs font-bold text-primary-700">{mt.id}</span>
                       <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
-                      <p className="text-[10px] text-slate-400  mt-1">{mt.createdAt}</p>
+                      <p className="text-[10px] text-slate-400 mt-1">{mt.createdAt}</p>
                     </div>
                     <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-slate-200">
                       Merged

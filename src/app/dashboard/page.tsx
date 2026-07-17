@@ -9,7 +9,6 @@ import {
   Plus,
   Search,
   X,
-  AlertTriangle,
   AlertCircle,
   CheckSquare,
   ChevronRight,
@@ -19,14 +18,9 @@ import {
   Calendar,
   History,
   Activity,
-  ArrowRight,
   User,
-  Layers,
   FileText,
-  Database,
-  Play,
   Sparkles,
-  HelpCircle,
   Info,
   Volume2,
   VolumeX,
@@ -314,9 +308,9 @@ export default function DashboardPage() {
   // Real-time notifications via SSE
   useEffect(() => {
     if (!user) return;
-    
+
     const eventSource = new EventSource('/api/ticket-events?all=true');
-    
+
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -1223,7 +1217,7 @@ export default function DashboardPage() {
                         {selectedTicket.description}
                       </p>
                     </div>
-                    <p className="text-xs text-slate-400 pt-2  border-t border-slate-200/60">
+                    <p className="text-xs text-slate-400 pt-2 border-t border-slate-200/60">
                       Raised on: {selectedTicket.createdAt}
                     </p>
                   </div>

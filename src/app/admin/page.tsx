@@ -8,7 +8,6 @@ import {
   Clock,
   Search,
   X,
-  CheckSquare,
   ChevronRight,
   Send,
   MessageSquare,
@@ -25,9 +24,8 @@ import {
   SlidersHorizontal,
   PlusCircle,
   Lock,
-  MessageCircle, Mic, Play, Volume2, VolumeX, Calendar, FileDown
+  MessageCircle, Mic, Volume2, VolumeX, Calendar, FileDown
 } from 'lucide-react';
-import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
 import ReportModal from '@/components/ReportModal';
 import { TOPICS } from '@/data/topics';
@@ -469,8 +467,6 @@ export default function AdminPage() {
           setCallLogs(data);
         }
 
-
-
         // Update selected modal state if open
         if (selectedTicket) {
           const updated = freshTickets.find(t => t.id === selectedTicket.id);
@@ -846,8 +842,6 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
-
-
 
       {/* Welcome Banner */}
       <div className="w-full px-6 pt-6">
@@ -1288,7 +1282,7 @@ export default function AdminPage() {
                           return (
                             <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group ${isChecked ? 'bg-primary-50/10' : ''}`}>
 
-                              <td className="py-4 px-4  text-xs font-bold text-slate-500">
+                              <td className="py-4 px-4 text-xs font-bold text-slate-500">
                                 <span className="flex items-center gap-2">
                                   {requiresReply && (
                                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Requires Attention" />
@@ -1298,7 +1292,7 @@ export default function AdminPage() {
                               </td>
                               <td className="py-4 px-4">
                                 <div className="text-xs font-bold text-slate-800">{ticket.firstName} {ticket.lastName}</div>
-                                <div className="text-[10px] text-slate-400  mt-0.5">{ticket.email}</div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">{ticket.email}</div>
                               </td>
                               <td className="py-4 px-4 text-xs font-bold text-slate-700">
                                 {ticket.category}
@@ -1611,7 +1605,7 @@ export default function AdminPage() {
                             <td className="py-4 px-4">
                               <div className="text-xs font-bold text-slate-800">{log.callerNumber}</div>
                               {log.customer && (
-                                <div className="text-[10px] text-slate-400  mt-0.5">{log.customer.name} ({log.customer.email})</div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">{log.customer.name} ({log.customer.email})</div>
                               )}
                             </td>
                             <td className="py-4 px-4 text-xs text-slate-400 font-semibold">
@@ -1714,8 +1708,8 @@ export default function AdminPage() {
                     </div>
                     <div className="pt-3 border-t border-slate-200/60 space-y-1">
                       <p className="text-xs text-slate-500 font-bold">Submitter: {selectedTicket.firstName} {selectedTicket.lastName}</p>
-                      <p className="text-[11px] text-slate-400  select-all">{selectedTicket.email}</p>
-                      <p className="text-[10px] text-slate-400  pt-1">Raised: {selectedTicket.createdAt}</p>
+                      <p className="text-[11px] text-slate-400 select-all">{selectedTicket.email}</p>
+                      <p className="text-[10px] text-slate-400 pt-1">Raised: {selectedTicket.createdAt}</p>
                     </div>
                   </div>
 
@@ -2225,7 +2219,7 @@ export default function AdminPage() {
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
-              
+
               {/* Audio Player */}
               <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-3">
                 <div className="flex items-center gap-2">
@@ -2247,7 +2241,7 @@ export default function AdminPage() {
                   <MessageSquare className="w-4 h-4 text-slate-400" />
                   <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Full Transcript</span>
                 </div>
-                
+
                 {(!selectedCallLog.transcript || selectedCallLog.transcript.startsWith("Call in") || selectedCallLog.transcript ==="Call completed.") ? (
                   <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin">
                     {selectedCallLog.transcript || <span className="italic text-slate-400">No transcript available.</span>}
@@ -2257,11 +2251,11 @@ export default function AdminPage() {
                     {(() => {
                       const messages: { sender: string, text: string }[] = [];
                       let currentMsg: { sender: string, text: string } | null = null;
-                      
+
                       selectedCallLog.transcript.split('\n').forEach((line: string) => {
                         const trimmed = line.trim();
                         if (!trimmed) return;
-                        
+
                         if (trimmed.startsWith('Customer:')) {
                           if (currentMsg) messages.push(currentMsg);
                           currentMsg = { sender: 'Customer', text: trimmed.slice(9).trim() };
@@ -2277,7 +2271,7 @@ export default function AdminPage() {
                         }
                       });
                       if (currentMsg) messages.push(currentMsg);
-                      
+
                       return messages.map((msg, i) => {
                         const isCustomer = msg.sender === 'Customer';
                         if (msg.sender === 'System') {
@@ -2300,7 +2294,7 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
-              
+
             </div>
           </div>
         </div>
@@ -2485,7 +2479,7 @@ export default function AdminPage() {
 
       {/* MODAL: VIEW MERGED TICKETS */}
       {showMergedTicketsModal && (
-        <div className="fixed inset-0 z-[60] bg-slate-900/80  flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] bg-slate-900/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
@@ -2508,7 +2502,7 @@ export default function AdminPage() {
                     <div>
                       <span className="text-xs font-bold text-primary-700">{mt.id}</span>
                       <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
-                      <p className="text-[10px] text-slate-400  mt-1">{mt.createdAt}</p>
+                      <p className="text-[10px] text-slate-400 mt-1">{mt.createdAt}</p>
                     </div>
                     <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-slate-200">
                       Merged
@@ -2551,7 +2545,7 @@ export default function AdminPage() {
 
       {/* Add Agent Modal */}
       {showAddAgentModal && (
-        <div className="fixed inset-0 bg-slate-900/80  flex items-center justify-center p-4 z-[100] animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-[100] animate-fade-in">
           <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up-subtle">
             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
               <div className="flex items-center gap-3">
@@ -2567,7 +2561,7 @@ export default function AdminPage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleCreateAgent} className="p-6 space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">

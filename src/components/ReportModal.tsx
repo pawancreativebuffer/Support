@@ -92,16 +92,16 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
 
     // Generate PDF
     const doc = new jsPDF();
-    
+
     // Title
     doc.setFontSize(20);
     doc.text('Agent Performance & Ticket Report', 14, 22);
-    
+
     // Summary
     doc.setFontSize(12);
     doc.setTextColor(100);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
-    
+
     doc.setFontSize(11);
     doc.setTextColor(50);
     doc.text(`Filters Applied:`, 14, 40);
@@ -114,17 +114,17 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
     doc.text(`- Date Range: ${dateRangeText}`, 20, 52);
     doc.text(`- Status: ${status}`, 20, 58);
     doc.text(`- Priority: ${priority}`, 20, 64);
-    
+
     // Key Metrics
     doc.setFontSize(14);
     doc.setTextColor(0);
     doc.text(`Performance Summary`, 14, 76);
-    
+
     doc.setFontSize(11);
     doc.text(`Total Tickets: ${total}`, 14, 84);
     doc.text(`Resolved/Closed: ${resolved}`, 60, 84);
     doc.text(`Open: ${open}`, 120, 84);
-    
+
     // Table
     const tableColumn = ["Ticket ID", "Customer", "Date", "Priority", "Status"];
     const tableRows: any[] = [];
