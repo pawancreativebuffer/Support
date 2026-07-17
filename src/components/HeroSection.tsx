@@ -45,7 +45,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Background Gradients */}
       <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/60 via-slate-50 to-slate-50 pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         {/* Left: Text */}
         <div className="flex flex-col items-start text-left space-y-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 border border-primary-200 text-primary-700 text-sm font-bold shadow-sm shadow-primary-100 cursor-pointer">
