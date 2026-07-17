@@ -120,7 +120,9 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.PortalUserScalarFieldEnum = {
   id: 'id',
   email: 'email',
-  name: 'name',
+  login: 'login',
+  firstName: 'firstName',
+  lastName: 'lastName',
   passwordHash: 'passwordHash',
   role: 'role',
   isActive: 'isActive',
@@ -139,7 +141,8 @@ exports.Prisma.SupportTicketScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   customerId: 'customerId',
-  agentId: 'agentId'
+  agentId: 'agentId',
+  mergedIntoId: 'mergedIntoId'
 };
 
 exports.Prisma.TicketMessageScalarFieldEnum = {
@@ -181,6 +184,16 @@ exports.Prisma.VoiceSessionLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CallLogScalarFieldEnum = {
+  id: 'id',
+  callerNumber: 'callerNumber',
+  transcript: 'transcript',
+  audioUrl: 'audioUrl',
+  duration: 'duration',
+  createdAt: 'createdAt',
+  customerId: 'customerId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -203,9 +216,12 @@ exports.PortalRole = exports.$Enums.PortalRole = {
 
 exports.TicketStatus = exports.$Enums.TicketStatus = {
   OPEN: 'OPEN',
-  IN_PROGRESS: 'IN_PROGRESS',
+  WITH_CLIENT: 'WITH_CLIENT',
+  ON_HOLD: 'ON_HOLD',
+  ESCALATED: 'ESCALATED',
   RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED'
+  CLOSED: 'CLOSED',
+  MERGED: 'MERGED'
 };
 
 exports.TicketPriority = exports.$Enums.TicketPriority = {
@@ -231,7 +247,8 @@ exports.Prisma.ModelName = {
   TicketMessage: 'TicketMessage',
   ChatWidgetSession: 'ChatWidgetSession',
   ChatWidgetMessage: 'ChatWidgetMessage',
-  VoiceSessionLog: 'VoiceSessionLog'
+  VoiceSessionLog: 'VoiceSessionLog',
+  CallLog: 'CallLog'
 };
 
 /**

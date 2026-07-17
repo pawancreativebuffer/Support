@@ -43,6 +43,11 @@ export type ChatWidgetMessage = $Result.DefaultSelection<Prisma.$ChatWidgetMessa
  * 
  */
 export type VoiceSessionLog = $Result.DefaultSelection<Prisma.$VoiceSessionLogPayload>
+/**
+ * Model CallLog
+ * 
+ */
+export type CallLog = $Result.DefaultSelection<Prisma.$CallLogPayload>
 
 /**
  * Enums
@@ -59,9 +64,12 @@ export type PortalRole = (typeof PortalRole)[keyof typeof PortalRole]
 
 export const TicketStatus: {
   OPEN: 'OPEN',
-  IN_PROGRESS: 'IN_PROGRESS',
+  WITH_CLIENT: 'WITH_CLIENT',
+  ON_HOLD: 'ON_HOLD',
+  ESCALATED: 'ESCALATED',
   RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED'
+  CLOSED: 'CLOSED',
+  MERGED: 'MERGED'
 };
 
 export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus]
@@ -298,6 +306,16 @@ export class PrismaClient<
     * ```
     */
   get voiceSessionLog(): Prisma.VoiceSessionLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.callLog`: Exposes CRUD operations for the **CallLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CallLogs
+    * const callLogs = await prisma.callLog.findMany()
+    * ```
+    */
+  get callLog(): Prisma.CallLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -743,7 +761,8 @@ export namespace Prisma {
     TicketMessage: 'TicketMessage',
     ChatWidgetSession: 'ChatWidgetSession',
     ChatWidgetMessage: 'ChatWidgetMessage',
-    VoiceSessionLog: 'VoiceSessionLog'
+    VoiceSessionLog: 'VoiceSessionLog',
+    CallLog: 'CallLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -759,7 +778,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "portalUser" | "supportTicket" | "ticketMessage" | "chatWidgetSession" | "chatWidgetMessage" | "voiceSessionLog"
+      modelProps: "portalUser" | "supportTicket" | "ticketMessage" | "chatWidgetSession" | "chatWidgetMessage" | "voiceSessionLog" | "callLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1207,6 +1226,80 @@ export namespace Prisma {
           }
         }
       }
+      CallLog: {
+        payload: Prisma.$CallLogPayload<ExtArgs>
+        fields: Prisma.CallLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CallLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CallLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>
+          }
+          findFirst: {
+            args: Prisma.CallLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CallLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>
+          }
+          findMany: {
+            args: Prisma.CallLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>[]
+          }
+          create: {
+            args: Prisma.CallLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>
+          }
+          createMany: {
+            args: Prisma.CallLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CallLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>[]
+          }
+          delete: {
+            args: Prisma.CallLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>
+          }
+          update: {
+            args: Prisma.CallLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.CallLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CallLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CallLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.CallLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CallLogPayload>
+          }
+          aggregate: {
+            args: Prisma.CallLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCallLog>
+          }
+          groupBy: {
+            args: Prisma.CallLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CallLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CallLogCountArgs<ExtArgs>
+            result: $Utils.Optional<CallLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1297,6 +1390,7 @@ export namespace Prisma {
     chatWidgetSession?: ChatWidgetSessionOmit
     chatWidgetMessage?: ChatWidgetMessageOmit
     voiceSessionLog?: VoiceSessionLogOmit
+    callLog?: CallLogOmit
   }
 
   /* Types for Logging */
@@ -1395,6 +1489,7 @@ export namespace Prisma {
     assignedTickets: number
     sentMessages: number
     voiceLogs: number
+    callLogs: number
   }
 
   export type PortalUserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1402,6 +1497,7 @@ export namespace Prisma {
     assignedTickets?: boolean | PortalUserCountOutputTypeCountAssignedTicketsArgs
     sentMessages?: boolean | PortalUserCountOutputTypeCountSentMessagesArgs
     voiceLogs?: boolean | PortalUserCountOutputTypeCountVoiceLogsArgs
+    callLogs?: boolean | PortalUserCountOutputTypeCountCallLogsArgs
   }
 
   // Custom InputTypes
@@ -1443,6 +1539,13 @@ export namespace Prisma {
     where?: VoiceSessionLogWhereInput
   }
 
+  /**
+   * PortalUserCountOutputType without action
+   */
+  export type PortalUserCountOutputTypeCountCallLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CallLogWhereInput
+  }
+
 
   /**
    * Count Type SupportTicketCountOutputType
@@ -1450,10 +1553,12 @@ export namespace Prisma {
 
   export type SupportTicketCountOutputType = {
     messages: number
+    mergedTickets: number
   }
 
   export type SupportTicketCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     messages?: boolean | SupportTicketCountOutputTypeCountMessagesArgs
+    mergedTickets?: boolean | SupportTicketCountOutputTypeCountMergedTicketsArgs
   }
 
   // Custom InputTypes
@@ -1472,6 +1577,13 @@ export namespace Prisma {
    */
   export type SupportTicketCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TicketMessageWhereInput
+  }
+
+  /**
+   * SupportTicketCountOutputType without action
+   */
+  export type SupportTicketCountOutputTypeCountMergedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupportTicketWhereInput
   }
 
 
@@ -1533,7 +1645,9 @@ export namespace Prisma {
   export type PortalUserMinAggregateOutputType = {
     id: number | null
     email: string | null
-    name: string | null
+    login: string | null
+    firstName: string | null
+    lastName: string | null
     passwordHash: string | null
     role: $Enums.PortalRole | null
     isActive: boolean | null
@@ -1544,7 +1658,9 @@ export namespace Prisma {
   export type PortalUserMaxAggregateOutputType = {
     id: number | null
     email: string | null
-    name: string | null
+    login: string | null
+    firstName: string | null
+    lastName: string | null
     passwordHash: string | null
     role: $Enums.PortalRole | null
     isActive: boolean | null
@@ -1555,7 +1671,9 @@ export namespace Prisma {
   export type PortalUserCountAggregateOutputType = {
     id: number
     email: number
-    name: number
+    login: number
+    firstName: number
+    lastName: number
     passwordHash: number
     role: number
     isActive: number
@@ -1576,7 +1694,9 @@ export namespace Prisma {
   export type PortalUserMinAggregateInputType = {
     id?: true
     email?: true
-    name?: true
+    login?: true
+    firstName?: true
+    lastName?: true
     passwordHash?: true
     role?: true
     isActive?: true
@@ -1587,7 +1707,9 @@ export namespace Prisma {
   export type PortalUserMaxAggregateInputType = {
     id?: true
     email?: true
-    name?: true
+    login?: true
+    firstName?: true
+    lastName?: true
     passwordHash?: true
     role?: true
     isActive?: true
@@ -1598,7 +1720,9 @@ export namespace Prisma {
   export type PortalUserCountAggregateInputType = {
     id?: true
     email?: true
-    name?: true
+    login?: true
+    firstName?: true
+    lastName?: true
     passwordHash?: true
     role?: true
     isActive?: true
@@ -1696,7 +1820,9 @@ export namespace Prisma {
   export type PortalUserGroupByOutputType = {
     id: number
     email: string
-    name: string
+    login: string | null
+    firstName: string | null
+    lastName: string | null
     passwordHash: string
     role: $Enums.PortalRole
     isActive: boolean
@@ -1726,7 +1852,9 @@ export namespace Prisma {
   export type PortalUserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1736,13 +1864,16 @@ export namespace Prisma {
     assignedTickets?: boolean | PortalUser$assignedTicketsArgs<ExtArgs>
     sentMessages?: boolean | PortalUser$sentMessagesArgs<ExtArgs>
     voiceLogs?: boolean | PortalUser$voiceLogsArgs<ExtArgs>
+    callLogs?: boolean | PortalUser$callLogsArgs<ExtArgs>
     _count?: boolean | PortalUserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["portalUser"]>
 
   export type PortalUserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1753,7 +1884,9 @@ export namespace Prisma {
   export type PortalUserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1764,7 +1897,9 @@ export namespace Prisma {
   export type PortalUserSelectScalar = {
     id?: boolean
     email?: boolean
-    name?: boolean
+    login?: boolean
+    firstName?: boolean
+    lastName?: boolean
     passwordHash?: boolean
     role?: boolean
     isActive?: boolean
@@ -1772,12 +1907,13 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PortalUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "passwordHash" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["portalUser"]>
+  export type PortalUserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "login" | "firstName" | "lastName" | "passwordHash" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["portalUser"]>
   export type PortalUserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     raisedTickets?: boolean | PortalUser$raisedTicketsArgs<ExtArgs>
     assignedTickets?: boolean | PortalUser$assignedTicketsArgs<ExtArgs>
     sentMessages?: boolean | PortalUser$sentMessagesArgs<ExtArgs>
     voiceLogs?: boolean | PortalUser$voiceLogsArgs<ExtArgs>
+    callLogs?: boolean | PortalUser$callLogsArgs<ExtArgs>
     _count?: boolean | PortalUserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PortalUserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1790,11 +1926,14 @@ export namespace Prisma {
       assignedTickets: Prisma.$SupportTicketPayload<ExtArgs>[]
       sentMessages: Prisma.$TicketMessagePayload<ExtArgs>[]
       voiceLogs: Prisma.$VoiceSessionLogPayload<ExtArgs>[]
+      callLogs: Prisma.$CallLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       email: string
-      name: string
+      login: string | null
+      firstName: string | null
+      lastName: string | null
       passwordHash: string
       role: $Enums.PortalRole
       isActive: boolean
@@ -2198,6 +2337,7 @@ export namespace Prisma {
     assignedTickets<T extends PortalUser$assignedTicketsArgs<ExtArgs> = {}>(args?: Subset<T, PortalUser$assignedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     sentMessages<T extends PortalUser$sentMessagesArgs<ExtArgs> = {}>(args?: Subset<T, PortalUser$sentMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     voiceLogs<T extends PortalUser$voiceLogsArgs<ExtArgs> = {}>(args?: Subset<T, PortalUser$voiceLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoiceSessionLogPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    callLogs<T extends PortalUser$callLogsArgs<ExtArgs> = {}>(args?: Subset<T, PortalUser$callLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2229,7 +2369,9 @@ export namespace Prisma {
   interface PortalUserFieldRefs {
     readonly id: FieldRef<"PortalUser", 'Int'>
     readonly email: FieldRef<"PortalUser", 'String'>
-    readonly name: FieldRef<"PortalUser", 'String'>
+    readonly login: FieldRef<"PortalUser", 'String'>
+    readonly firstName: FieldRef<"PortalUser", 'String'>
+    readonly lastName: FieldRef<"PortalUser", 'String'>
     readonly passwordHash: FieldRef<"PortalUser", 'String'>
     readonly role: FieldRef<"PortalUser", 'PortalRole'>
     readonly isActive: FieldRef<"PortalUser", 'Boolean'>
@@ -2707,6 +2849,30 @@ export namespace Prisma {
   }
 
   /**
+   * PortalUser.callLogs
+   */
+  export type PortalUser$callLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    where?: CallLogWhereInput
+    orderBy?: CallLogOrderByWithRelationInput | CallLogOrderByWithRelationInput[]
+    cursor?: CallLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CallLogScalarFieldEnum | CallLogScalarFieldEnum[]
+  }
+
+  /**
    * PortalUser without action
    */
   export type PortalUserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2741,12 +2907,14 @@ export namespace Prisma {
     id: number | null
     customerId: number | null
     agentId: number | null
+    mergedIntoId: number | null
   }
 
   export type SupportTicketSumAggregateOutputType = {
     id: number | null
     customerId: number | null
     agentId: number | null
+    mergedIntoId: number | null
   }
 
   export type SupportTicketMinAggregateOutputType = {
@@ -2761,6 +2929,7 @@ export namespace Prisma {
     updatedAt: Date | null
     customerId: number | null
     agentId: number | null
+    mergedIntoId: number | null
   }
 
   export type SupportTicketMaxAggregateOutputType = {
@@ -2775,6 +2944,7 @@ export namespace Prisma {
     updatedAt: Date | null
     customerId: number | null
     agentId: number | null
+    mergedIntoId: number | null
   }
 
   export type SupportTicketCountAggregateOutputType = {
@@ -2789,6 +2959,7 @@ export namespace Prisma {
     updatedAt: number
     customerId: number
     agentId: number
+    mergedIntoId: number
     _all: number
   }
 
@@ -2797,12 +2968,14 @@ export namespace Prisma {
     id?: true
     customerId?: true
     agentId?: true
+    mergedIntoId?: true
   }
 
   export type SupportTicketSumAggregateInputType = {
     id?: true
     customerId?: true
     agentId?: true
+    mergedIntoId?: true
   }
 
   export type SupportTicketMinAggregateInputType = {
@@ -2817,6 +2990,7 @@ export namespace Prisma {
     updatedAt?: true
     customerId?: true
     agentId?: true
+    mergedIntoId?: true
   }
 
   export type SupportTicketMaxAggregateInputType = {
@@ -2831,6 +3005,7 @@ export namespace Prisma {
     updatedAt?: true
     customerId?: true
     agentId?: true
+    mergedIntoId?: true
   }
 
   export type SupportTicketCountAggregateInputType = {
@@ -2845,6 +3020,7 @@ export namespace Prisma {
     updatedAt?: true
     customerId?: true
     agentId?: true
+    mergedIntoId?: true
     _all?: true
   }
 
@@ -2946,6 +3122,7 @@ export namespace Prisma {
     updatedAt: Date
     customerId: number
     agentId: number | null
+    mergedIntoId: number | null
     _count: SupportTicketCountAggregateOutputType | null
     _avg: SupportTicketAvgAggregateOutputType | null
     _sum: SupportTicketSumAggregateOutputType | null
@@ -2979,9 +3156,12 @@ export namespace Prisma {
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
+    mergedIntoId?: boolean
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
     messages?: boolean | SupportTicket$messagesArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
+    mergedTickets?: boolean | SupportTicket$mergedTicketsArgs<ExtArgs>
     _count?: boolean | SupportTicketCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["supportTicket"]>
 
@@ -2997,8 +3177,10 @@ export namespace Prisma {
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
+    mergedIntoId?: boolean
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }, ExtArgs["result"]["supportTicket"]>
 
   export type SupportTicketSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3013,8 +3195,10 @@ export namespace Prisma {
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
+    mergedIntoId?: boolean
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }, ExtArgs["result"]["supportTicket"]>
 
   export type SupportTicketSelectScalar = {
@@ -3029,22 +3213,27 @@ export namespace Prisma {
     updatedAt?: boolean
     customerId?: boolean
     agentId?: boolean
+    mergedIntoId?: boolean
   }
 
-  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "attachmentUrl" | "attachmentName" | "createdAt" | "updatedAt" | "customerId" | "agentId", ExtArgs["result"]["supportTicket"]>
+  export type SupportTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "priority" | "attachmentUrl" | "attachmentName" | "createdAt" | "updatedAt" | "customerId" | "agentId" | "mergedIntoId", ExtArgs["result"]["supportTicket"]>
   export type SupportTicketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
     messages?: boolean | SupportTicket$messagesArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
+    mergedTickets?: boolean | SupportTicket$mergedTicketsArgs<ExtArgs>
     _count?: boolean | SupportTicketCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SupportTicketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }
   export type SupportTicketIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | PortalUserDefaultArgs<ExtArgs>
     agent?: boolean | SupportTicket$agentArgs<ExtArgs>
+    mergedInto?: boolean | SupportTicket$mergedIntoArgs<ExtArgs>
   }
 
   export type $SupportTicketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3053,6 +3242,8 @@ export namespace Prisma {
       customer: Prisma.$PortalUserPayload<ExtArgs>
       agent: Prisma.$PortalUserPayload<ExtArgs> | null
       messages: Prisma.$TicketMessagePayload<ExtArgs>[]
+      mergedInto: Prisma.$SupportTicketPayload<ExtArgs> | null
+      mergedTickets: Prisma.$SupportTicketPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3066,6 +3257,7 @@ export namespace Prisma {
       updatedAt: Date
       customerId: number
       agentId: number | null
+      mergedIntoId: number | null
     }, ExtArgs["result"]["supportTicket"]>
     composites: {}
   }
@@ -3463,6 +3655,8 @@ export namespace Prisma {
     customer<T extends PortalUserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortalUserDefaultArgs<ExtArgs>>): Prisma__PortalUserClient<$Result.GetResult<Prisma.$PortalUserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     agent<T extends SupportTicket$agentArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$agentArgs<ExtArgs>>): Prisma__PortalUserClient<$Result.GetResult<Prisma.$PortalUserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     messages<T extends SupportTicket$messagesArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    mergedInto<T extends SupportTicket$mergedIntoArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$mergedIntoArgs<ExtArgs>>): Prisma__SupportTicketClient<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    mergedTickets<T extends SupportTicket$mergedTicketsArgs<ExtArgs> = {}>(args?: Subset<T, SupportTicket$mergedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupportTicketPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3503,6 +3697,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"SupportTicket", 'DateTime'>
     readonly customerId: FieldRef<"SupportTicket", 'Int'>
     readonly agentId: FieldRef<"SupportTicket", 'Int'>
+    readonly mergedIntoId: FieldRef<"SupportTicket", 'Int'>
   }
     
 
@@ -3927,6 +4122,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TicketMessageScalarFieldEnum | TicketMessageScalarFieldEnum[]
+  }
+
+  /**
+   * SupportTicket.mergedInto
+   */
+  export type SupportTicket$mergedIntoArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    where?: SupportTicketWhereInput
+  }
+
+  /**
+   * SupportTicket.mergedTickets
+   */
+  export type SupportTicket$mergedTicketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupportTicket
+     */
+    select?: SupportTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupportTicket
+     */
+    omit?: SupportTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupportTicketInclude<ExtArgs> | null
+    where?: SupportTicketWhereInput
+    orderBy?: SupportTicketOrderByWithRelationInput | SupportTicketOrderByWithRelationInput[]
+    cursor?: SupportTicketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
   }
 
   /**
@@ -8419,6 +8657,1139 @@ export namespace Prisma {
 
 
   /**
+   * Model CallLog
+   */
+
+  export type AggregateCallLog = {
+    _count: CallLogCountAggregateOutputType | null
+    _avg: CallLogAvgAggregateOutputType | null
+    _sum: CallLogSumAggregateOutputType | null
+    _min: CallLogMinAggregateOutputType | null
+    _max: CallLogMaxAggregateOutputType | null
+  }
+
+  export type CallLogAvgAggregateOutputType = {
+    id: number | null
+    duration: number | null
+    customerId: number | null
+  }
+
+  export type CallLogSumAggregateOutputType = {
+    id: number | null
+    duration: number | null
+    customerId: number | null
+  }
+
+  export type CallLogMinAggregateOutputType = {
+    id: number | null
+    callerNumber: string | null
+    transcript: string | null
+    audioUrl: string | null
+    duration: number | null
+    createdAt: Date | null
+    customerId: number | null
+  }
+
+  export type CallLogMaxAggregateOutputType = {
+    id: number | null
+    callerNumber: string | null
+    transcript: string | null
+    audioUrl: string | null
+    duration: number | null
+    createdAt: Date | null
+    customerId: number | null
+  }
+
+  export type CallLogCountAggregateOutputType = {
+    id: number
+    callerNumber: number
+    transcript: number
+    audioUrl: number
+    duration: number
+    createdAt: number
+    customerId: number
+    _all: number
+  }
+
+
+  export type CallLogAvgAggregateInputType = {
+    id?: true
+    duration?: true
+    customerId?: true
+  }
+
+  export type CallLogSumAggregateInputType = {
+    id?: true
+    duration?: true
+    customerId?: true
+  }
+
+  export type CallLogMinAggregateInputType = {
+    id?: true
+    callerNumber?: true
+    transcript?: true
+    audioUrl?: true
+    duration?: true
+    createdAt?: true
+    customerId?: true
+  }
+
+  export type CallLogMaxAggregateInputType = {
+    id?: true
+    callerNumber?: true
+    transcript?: true
+    audioUrl?: true
+    duration?: true
+    createdAt?: true
+    customerId?: true
+  }
+
+  export type CallLogCountAggregateInputType = {
+    id?: true
+    callerNumber?: true
+    transcript?: true
+    audioUrl?: true
+    duration?: true
+    createdAt?: true
+    customerId?: true
+    _all?: true
+  }
+
+  export type CallLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CallLog to aggregate.
+     */
+    where?: CallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CallLogs to fetch.
+     */
+    orderBy?: CallLogOrderByWithRelationInput | CallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CallLogs
+    **/
+    _count?: true | CallLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CallLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CallLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CallLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CallLogMaxAggregateInputType
+  }
+
+  export type GetCallLogAggregateType<T extends CallLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateCallLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCallLog[P]>
+      : GetScalarType<T[P], AggregateCallLog[P]>
+  }
+
+
+
+
+  export type CallLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CallLogWhereInput
+    orderBy?: CallLogOrderByWithAggregationInput | CallLogOrderByWithAggregationInput[]
+    by: CallLogScalarFieldEnum[] | CallLogScalarFieldEnum
+    having?: CallLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CallLogCountAggregateInputType | true
+    _avg?: CallLogAvgAggregateInputType
+    _sum?: CallLogSumAggregateInputType
+    _min?: CallLogMinAggregateInputType
+    _max?: CallLogMaxAggregateInputType
+  }
+
+  export type CallLogGroupByOutputType = {
+    id: number
+    callerNumber: string
+    transcript: string | null
+    audioUrl: string | null
+    duration: number | null
+    createdAt: Date
+    customerId: number | null
+    _count: CallLogCountAggregateOutputType | null
+    _avg: CallLogAvgAggregateOutputType | null
+    _sum: CallLogSumAggregateOutputType | null
+    _min: CallLogMinAggregateOutputType | null
+    _max: CallLogMaxAggregateOutputType | null
+  }
+
+  type GetCallLogGroupByPayload<T extends CallLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CallLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CallLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CallLogGroupByOutputType[P]>
+            : GetScalarType<T[P], CallLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CallLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    callerNumber?: boolean
+    transcript?: boolean
+    audioUrl?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    customerId?: boolean
+    customer?: boolean | CallLog$customerArgs<ExtArgs>
+  }, ExtArgs["result"]["callLog"]>
+
+  export type CallLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    callerNumber?: boolean
+    transcript?: boolean
+    audioUrl?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    customerId?: boolean
+    customer?: boolean | CallLog$customerArgs<ExtArgs>
+  }, ExtArgs["result"]["callLog"]>
+
+  export type CallLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    callerNumber?: boolean
+    transcript?: boolean
+    audioUrl?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    customerId?: boolean
+    customer?: boolean | CallLog$customerArgs<ExtArgs>
+  }, ExtArgs["result"]["callLog"]>
+
+  export type CallLogSelectScalar = {
+    id?: boolean
+    callerNumber?: boolean
+    transcript?: boolean
+    audioUrl?: boolean
+    duration?: boolean
+    createdAt?: boolean
+    customerId?: boolean
+  }
+
+  export type CallLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "callerNumber" | "transcript" | "audioUrl" | "duration" | "createdAt" | "customerId", ExtArgs["result"]["callLog"]>
+  export type CallLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CallLog$customerArgs<ExtArgs>
+  }
+  export type CallLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CallLog$customerArgs<ExtArgs>
+  }
+  export type CallLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CallLog$customerArgs<ExtArgs>
+  }
+
+  export type $CallLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CallLog"
+    objects: {
+      customer: Prisma.$PortalUserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      callerNumber: string
+      transcript: string | null
+      audioUrl: string | null
+      duration: number | null
+      createdAt: Date
+      customerId: number | null
+    }, ExtArgs["result"]["callLog"]>
+    composites: {}
+  }
+
+  type CallLogGetPayload<S extends boolean | null | undefined | CallLogDefaultArgs> = $Result.GetResult<Prisma.$CallLogPayload, S>
+
+  type CallLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CallLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CallLogCountAggregateInputType | true
+    }
+
+  export interface CallLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CallLog'], meta: { name: 'CallLog' } }
+    /**
+     * Find zero or one CallLog that matches the filter.
+     * @param {CallLogFindUniqueArgs} args - Arguments to find a CallLog
+     * @example
+     * // Get one CallLog
+     * const callLog = await prisma.callLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CallLogFindUniqueArgs>(args: SelectSubset<T, CallLogFindUniqueArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one CallLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CallLogFindUniqueOrThrowArgs} args - Arguments to find a CallLog
+     * @example
+     * // Get one CallLog
+     * const callLog = await prisma.callLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CallLogFindUniqueOrThrowArgs>(args: SelectSubset<T, CallLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first CallLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogFindFirstArgs} args - Arguments to find a CallLog
+     * @example
+     * // Get one CallLog
+     * const callLog = await prisma.callLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CallLogFindFirstArgs>(args?: SelectSubset<T, CallLogFindFirstArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first CallLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogFindFirstOrThrowArgs} args - Arguments to find a CallLog
+     * @example
+     * // Get one CallLog
+     * const callLog = await prisma.callLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CallLogFindFirstOrThrowArgs>(args?: SelectSubset<T, CallLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more CallLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CallLogs
+     * const callLogs = await prisma.callLog.findMany()
+     * 
+     * // Get first 10 CallLogs
+     * const callLogs = await prisma.callLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const callLogWithIdOnly = await prisma.callLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CallLogFindManyArgs>(args?: SelectSubset<T, CallLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a CallLog.
+     * @param {CallLogCreateArgs} args - Arguments to create a CallLog.
+     * @example
+     * // Create one CallLog
+     * const CallLog = await prisma.callLog.create({
+     *   data: {
+     *     // ... data to create a CallLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends CallLogCreateArgs>(args: SelectSubset<T, CallLogCreateArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many CallLogs.
+     * @param {CallLogCreateManyArgs} args - Arguments to create many CallLogs.
+     * @example
+     * // Create many CallLogs
+     * const callLog = await prisma.callLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CallLogCreateManyArgs>(args?: SelectSubset<T, CallLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CallLogs and returns the data saved in the database.
+     * @param {CallLogCreateManyAndReturnArgs} args - Arguments to create many CallLogs.
+     * @example
+     * // Create many CallLogs
+     * const callLog = await prisma.callLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CallLogs and only return the `id`
+     * const callLogWithIdOnly = await prisma.callLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CallLogCreateManyAndReturnArgs>(args?: SelectSubset<T, CallLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "createManyAndReturn", ClientOptions>>
+
+    /**
+     * Delete a CallLog.
+     * @param {CallLogDeleteArgs} args - Arguments to delete one CallLog.
+     * @example
+     * // Delete one CallLog
+     * const CallLog = await prisma.callLog.delete({
+     *   where: {
+     *     // ... filter to delete one CallLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CallLogDeleteArgs>(args: SelectSubset<T, CallLogDeleteArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one CallLog.
+     * @param {CallLogUpdateArgs} args - Arguments to update one CallLog.
+     * @example
+     * // Update one CallLog
+     * const callLog = await prisma.callLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CallLogUpdateArgs>(args: SelectSubset<T, CallLogUpdateArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more CallLogs.
+     * @param {CallLogDeleteManyArgs} args - Arguments to filter CallLogs to delete.
+     * @example
+     * // Delete a few CallLogs
+     * const { count } = await prisma.callLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CallLogDeleteManyArgs>(args?: SelectSubset<T, CallLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CallLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CallLogs
+     * const callLog = await prisma.callLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CallLogUpdateManyArgs>(args: SelectSubset<T, CallLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CallLogs and returns the data updated in the database.
+     * @param {CallLogUpdateManyAndReturnArgs} args - Arguments to update many CallLogs.
+     * @example
+     * // Update many CallLogs
+     * const callLog = await prisma.callLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CallLogs and only return the `id`
+     * const callLogWithIdOnly = await prisma.callLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CallLogUpdateManyAndReturnArgs>(args: SelectSubset<T, CallLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "updateManyAndReturn", ClientOptions>>
+
+    /**
+     * Create or update one CallLog.
+     * @param {CallLogUpsertArgs} args - Arguments to update or create a CallLog.
+     * @example
+     * // Update or create a CallLog
+     * const callLog = await prisma.callLog.upsert({
+     *   create: {
+     *     // ... data to create a CallLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CallLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CallLogUpsertArgs>(args: SelectSubset<T, CallLogUpsertArgs<ExtArgs>>): Prisma__CallLogClient<$Result.GetResult<Prisma.$CallLogPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of CallLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogCountArgs} args - Arguments to filter CallLogs to count.
+     * @example
+     * // Count the number of CallLogs
+     * const count = await prisma.callLog.count({
+     *   where: {
+     *     // ... the filter for the CallLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends CallLogCountArgs>(
+      args?: Subset<T, CallLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CallLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CallLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CallLogAggregateArgs>(args: Subset<T, CallLogAggregateArgs>): Prisma.PrismaPromise<GetCallLogAggregateType<T>>
+
+    /**
+     * Group by CallLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CallLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CallLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CallLogGroupByArgs['orderBy'] }
+        : { orderBy?: CallLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CallLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCallLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CallLog model
+   */
+  readonly fields: CallLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CallLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CallLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customer<T extends CallLog$customerArgs<ExtArgs> = {}>(args?: Subset<T, CallLog$customerArgs<ExtArgs>>): Prisma__PortalUserClient<$Result.GetResult<Prisma.$PortalUserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CallLog model
+   */ 
+  interface CallLogFieldRefs {
+    readonly id: FieldRef<"CallLog", 'Int'>
+    readonly callerNumber: FieldRef<"CallLog", 'String'>
+    readonly transcript: FieldRef<"CallLog", 'String'>
+    readonly audioUrl: FieldRef<"CallLog", 'String'>
+    readonly duration: FieldRef<"CallLog", 'Int'>
+    readonly createdAt: FieldRef<"CallLog", 'DateTime'>
+    readonly customerId: FieldRef<"CallLog", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CallLog findUnique
+   */
+  export type CallLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which CallLog to fetch.
+     */
+    where: CallLogWhereUniqueInput
+  }
+
+  /**
+   * CallLog findUniqueOrThrow
+   */
+  export type CallLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which CallLog to fetch.
+     */
+    where: CallLogWhereUniqueInput
+  }
+
+  /**
+   * CallLog findFirst
+   */
+  export type CallLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which CallLog to fetch.
+     */
+    where?: CallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CallLogs to fetch.
+     */
+    orderBy?: CallLogOrderByWithRelationInput | CallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CallLogs.
+     */
+    cursor?: CallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CallLogs.
+     */
+    distinct?: CallLogScalarFieldEnum | CallLogScalarFieldEnum[]
+  }
+
+  /**
+   * CallLog findFirstOrThrow
+   */
+  export type CallLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which CallLog to fetch.
+     */
+    where?: CallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CallLogs to fetch.
+     */
+    orderBy?: CallLogOrderByWithRelationInput | CallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CallLogs.
+     */
+    cursor?: CallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CallLogs.
+     */
+    distinct?: CallLogScalarFieldEnum | CallLogScalarFieldEnum[]
+  }
+
+  /**
+   * CallLog findMany
+   */
+  export type CallLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which CallLogs to fetch.
+     */
+    where?: CallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CallLogs to fetch.
+     */
+    orderBy?: CallLogOrderByWithRelationInput | CallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CallLogs.
+     */
+    cursor?: CallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CallLogs.
+     */
+    skip?: number
+    distinct?: CallLogScalarFieldEnum | CallLogScalarFieldEnum[]
+  }
+
+  /**
+   * CallLog create
+   */
+  export type CallLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CallLog.
+     */
+    data: XOR<CallLogCreateInput, CallLogUncheckedCreateInput>
+  }
+
+  /**
+   * CallLog createMany
+   */
+  export type CallLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CallLogs.
+     */
+    data: CallLogCreateManyInput | CallLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CallLog createManyAndReturn
+   */
+  export type CallLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many CallLogs.
+     */
+    data: CallLogCreateManyInput | CallLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CallLog update
+   */
+  export type CallLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CallLog.
+     */
+    data: XOR<CallLogUpdateInput, CallLogUncheckedUpdateInput>
+    /**
+     * Choose, which CallLog to update.
+     */
+    where: CallLogWhereUniqueInput
+  }
+
+  /**
+   * CallLog updateMany
+   */
+  export type CallLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CallLogs.
+     */
+    data: XOR<CallLogUpdateManyMutationInput, CallLogUncheckedUpdateManyInput>
+    /**
+     * Filter which CallLogs to update
+     */
+    where?: CallLogWhereInput
+  }
+
+  /**
+   * CallLog updateManyAndReturn
+   */
+  export type CallLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * The data used to update CallLogs.
+     */
+    data: XOR<CallLogUpdateManyMutationInput, CallLogUncheckedUpdateManyInput>
+    /**
+     * Filter which CallLogs to update
+     */
+    where?: CallLogWhereInput
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CallLog upsert
+   */
+  export type CallLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CallLog to update in case it exists.
+     */
+    where: CallLogWhereUniqueInput
+    /**
+     * In case the CallLog found by the `where` argument doesn't exist, create a new CallLog with this data.
+     */
+    create: XOR<CallLogCreateInput, CallLogUncheckedCreateInput>
+    /**
+     * In case the CallLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CallLogUpdateInput, CallLogUncheckedUpdateInput>
+  }
+
+  /**
+   * CallLog delete
+   */
+  export type CallLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+    /**
+     * Filter which CallLog to delete.
+     */
+    where: CallLogWhereUniqueInput
+  }
+
+  /**
+   * CallLog deleteMany
+   */
+  export type CallLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CallLogs to delete
+     */
+    where?: CallLogWhereInput
+  }
+
+  /**
+   * CallLog.customer
+   */
+  export type CallLog$customerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PortalUser
+     */
+    select?: PortalUserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PortalUser
+     */
+    omit?: PortalUserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortalUserInclude<ExtArgs> | null
+    where?: PortalUserWhereInput
+  }
+
+  /**
+   * CallLog without action
+   */
+  export type CallLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CallLog
+     */
+    select?: CallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CallLog
+     */
+    omit?: CallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CallLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8435,7 +9806,9 @@ export namespace Prisma {
   export const PortalUserScalarFieldEnum: {
     id: 'id',
     email: 'email',
-    name: 'name',
+    login: 'login',
+    firstName: 'firstName',
+    lastName: 'lastName',
     passwordHash: 'passwordHash',
     role: 'role',
     isActive: 'isActive',
@@ -8457,7 +9830,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     customerId: 'customerId',
-    agentId: 'agentId'
+    agentId: 'agentId',
+    mergedIntoId: 'mergedIntoId'
   };
 
   export type SupportTicketScalarFieldEnum = (typeof SupportTicketScalarFieldEnum)[keyof typeof SupportTicketScalarFieldEnum]
@@ -8512,6 +9886,19 @@ export namespace Prisma {
   };
 
   export type VoiceSessionLogScalarFieldEnum = (typeof VoiceSessionLogScalarFieldEnum)[keyof typeof VoiceSessionLogScalarFieldEnum]
+
+
+  export const CallLogScalarFieldEnum: {
+    id: 'id',
+    callerNumber: 'callerNumber',
+    transcript: 'transcript',
+    audioUrl: 'audioUrl',
+    duration: 'duration',
+    createdAt: 'createdAt',
+    customerId: 'customerId'
+  };
+
+  export type CallLogScalarFieldEnum = (typeof CallLogScalarFieldEnum)[keyof typeof CallLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8685,7 +10072,9 @@ export namespace Prisma {
     NOT?: PortalUserWhereInput | PortalUserWhereInput[]
     id?: IntFilter<"PortalUser"> | number
     email?: StringFilter<"PortalUser"> | string
-    name?: StringFilter<"PortalUser"> | string
+    login?: StringNullableFilter<"PortalUser"> | string | null
+    firstName?: StringNullableFilter<"PortalUser"> | string | null
+    lastName?: StringNullableFilter<"PortalUser"> | string | null
     passwordHash?: StringFilter<"PortalUser"> | string
     role?: EnumPortalRoleFilter<"PortalUser"> | $Enums.PortalRole
     isActive?: BoolFilter<"PortalUser"> | boolean
@@ -8695,12 +10084,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketListRelationFilter
     sentMessages?: TicketMessageListRelationFilter
     voiceLogs?: VoiceSessionLogListRelationFilter
+    callLogs?: CallLogListRelationFilter
   }
 
   export type PortalUserOrderByWithRelationInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrderInput | SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -8710,15 +10102,18 @@ export namespace Prisma {
     assignedTickets?: SupportTicketOrderByRelationAggregateInput
     sentMessages?: TicketMessageOrderByRelationAggregateInput
     voiceLogs?: VoiceSessionLogOrderByRelationAggregateInput
+    callLogs?: CallLogOrderByRelationAggregateInput
   }
 
   export type PortalUserWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     email?: string
+    login?: string
     AND?: PortalUserWhereInput | PortalUserWhereInput[]
     OR?: PortalUserWhereInput[]
     NOT?: PortalUserWhereInput | PortalUserWhereInput[]
-    name?: StringFilter<"PortalUser"> | string
+    firstName?: StringNullableFilter<"PortalUser"> | string | null
+    lastName?: StringNullableFilter<"PortalUser"> | string | null
     passwordHash?: StringFilter<"PortalUser"> | string
     role?: EnumPortalRoleFilter<"PortalUser"> | $Enums.PortalRole
     isActive?: BoolFilter<"PortalUser"> | boolean
@@ -8728,12 +10123,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketListRelationFilter
     sentMessages?: TicketMessageListRelationFilter
     voiceLogs?: VoiceSessionLogListRelationFilter
-  }, "id" | "email">
+    callLogs?: CallLogListRelationFilter
+  }, "id" | "email" | "login">
 
   export type PortalUserOrderByWithAggregationInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrderInput | SortOrder
+    firstName?: SortOrderInput | SortOrder
+    lastName?: SortOrderInput | SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -8752,7 +10150,9 @@ export namespace Prisma {
     NOT?: PortalUserScalarWhereWithAggregatesInput | PortalUserScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"PortalUser"> | number
     email?: StringWithAggregatesFilter<"PortalUser"> | string
-    name?: StringWithAggregatesFilter<"PortalUser"> | string
+    login?: StringNullableWithAggregatesFilter<"PortalUser"> | string | null
+    firstName?: StringNullableWithAggregatesFilter<"PortalUser"> | string | null
+    lastName?: StringNullableWithAggregatesFilter<"PortalUser"> | string | null
     passwordHash?: StringWithAggregatesFilter<"PortalUser"> | string
     role?: EnumPortalRoleWithAggregatesFilter<"PortalUser"> | $Enums.PortalRole
     isActive?: BoolWithAggregatesFilter<"PortalUser"> | boolean
@@ -8775,9 +10175,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
     agentId?: IntNullableFilter<"SupportTicket"> | number | null
+    mergedIntoId?: IntNullableFilter<"SupportTicket"> | number | null
     customer?: XOR<PortalUserScalarRelationFilter, PortalUserWhereInput>
     agent?: XOR<PortalUserNullableScalarRelationFilter, PortalUserWhereInput> | null
     messages?: TicketMessageListRelationFilter
+    mergedInto?: XOR<SupportTicketNullableScalarRelationFilter, SupportTicketWhereInput> | null
+    mergedTickets?: SupportTicketListRelationFilter
   }
 
   export type SupportTicketOrderByWithRelationInput = {
@@ -8792,9 +10195,12 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrderInput | SortOrder
+    mergedIntoId?: SortOrderInput | SortOrder
     customer?: PortalUserOrderByWithRelationInput
     agent?: PortalUserOrderByWithRelationInput
     messages?: TicketMessageOrderByRelationAggregateInput
+    mergedInto?: SupportTicketOrderByWithRelationInput
+    mergedTickets?: SupportTicketOrderByRelationAggregateInput
   }
 
   export type SupportTicketWhereUniqueInput = Prisma.AtLeast<{
@@ -8812,9 +10218,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
     agentId?: IntNullableFilter<"SupportTicket"> | number | null
+    mergedIntoId?: IntNullableFilter<"SupportTicket"> | number | null
     customer?: XOR<PortalUserScalarRelationFilter, PortalUserWhereInput>
     agent?: XOR<PortalUserNullableScalarRelationFilter, PortalUserWhereInput> | null
     messages?: TicketMessageListRelationFilter
+    mergedInto?: XOR<SupportTicketNullableScalarRelationFilter, SupportTicketWhereInput> | null
+    mergedTickets?: SupportTicketListRelationFilter
   }, "id">
 
   export type SupportTicketOrderByWithAggregationInput = {
@@ -8829,6 +10238,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrderInput | SortOrder
+    mergedIntoId?: SortOrderInput | SortOrder
     _count?: SupportTicketCountOrderByAggregateInput
     _avg?: SupportTicketAvgOrderByAggregateInput
     _max?: SupportTicketMaxOrderByAggregateInput
@@ -8851,6 +10261,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"SupportTicket"> | Date | string
     customerId?: IntWithAggregatesFilter<"SupportTicket"> | number
     agentId?: IntNullableWithAggregatesFilter<"SupportTicket"> | number | null
+    mergedIntoId?: IntNullableWithAggregatesFilter<"SupportTicket"> | number | null
   }
 
   export type TicketMessageWhereInput = {
@@ -9119,9 +10530,78 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"VoiceSessionLog"> | Date | string
   }
 
+  export type CallLogWhereInput = {
+    AND?: CallLogWhereInput | CallLogWhereInput[]
+    OR?: CallLogWhereInput[]
+    NOT?: CallLogWhereInput | CallLogWhereInput[]
+    id?: IntFilter<"CallLog"> | number
+    callerNumber?: StringFilter<"CallLog"> | string
+    transcript?: StringNullableFilter<"CallLog"> | string | null
+    audioUrl?: StringNullableFilter<"CallLog"> | string | null
+    duration?: IntNullableFilter<"CallLog"> | number | null
+    createdAt?: DateTimeFilter<"CallLog"> | Date | string
+    customerId?: IntNullableFilter<"CallLog"> | number | null
+    customer?: XOR<PortalUserNullableScalarRelationFilter, PortalUserWhereInput> | null
+  }
+
+  export type CallLogOrderByWithRelationInput = {
+    id?: SortOrder
+    callerNumber?: SortOrder
+    transcript?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    customerId?: SortOrderInput | SortOrder
+    customer?: PortalUserOrderByWithRelationInput
+  }
+
+  export type CallLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: CallLogWhereInput | CallLogWhereInput[]
+    OR?: CallLogWhereInput[]
+    NOT?: CallLogWhereInput | CallLogWhereInput[]
+    callerNumber?: StringFilter<"CallLog"> | string
+    transcript?: StringNullableFilter<"CallLog"> | string | null
+    audioUrl?: StringNullableFilter<"CallLog"> | string | null
+    duration?: IntNullableFilter<"CallLog"> | number | null
+    createdAt?: DateTimeFilter<"CallLog"> | Date | string
+    customerId?: IntNullableFilter<"CallLog"> | number | null
+    customer?: XOR<PortalUserNullableScalarRelationFilter, PortalUserWhereInput> | null
+  }, "id">
+
+  export type CallLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    callerNumber?: SortOrder
+    transcript?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    customerId?: SortOrderInput | SortOrder
+    _count?: CallLogCountOrderByAggregateInput
+    _avg?: CallLogAvgOrderByAggregateInput
+    _max?: CallLogMaxOrderByAggregateInput
+    _min?: CallLogMinOrderByAggregateInput
+    _sum?: CallLogSumOrderByAggregateInput
+  }
+
+  export type CallLogScalarWhereWithAggregatesInput = {
+    AND?: CallLogScalarWhereWithAggregatesInput | CallLogScalarWhereWithAggregatesInput[]
+    OR?: CallLogScalarWhereWithAggregatesInput[]
+    NOT?: CallLogScalarWhereWithAggregatesInput | CallLogScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"CallLog"> | number
+    callerNumber?: StringWithAggregatesFilter<"CallLog"> | string
+    transcript?: StringNullableWithAggregatesFilter<"CallLog"> | string | null
+    audioUrl?: StringNullableWithAggregatesFilter<"CallLog"> | string | null
+    duration?: IntNullableWithAggregatesFilter<"CallLog"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"CallLog"> | Date | string
+    customerId?: IntNullableWithAggregatesFilter<"CallLog"> | number | null
+  }
+
   export type PortalUserCreateInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -9131,12 +10611,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketCreateNestedManyWithoutAgentInput
     sentMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     voiceLogs?: VoiceSessionLogCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserUncheckedCreateInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -9146,11 +10629,14 @@ export namespace Prisma {
     assignedTickets?: SupportTicketUncheckedCreateNestedManyWithoutAgentInput
     sentMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     voiceLogs?: VoiceSessionLogUncheckedCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserUpdateInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -9160,12 +10646,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketUpdateManyWithoutAgentNestedInput
     sentMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     voiceLogs?: VoiceSessionLogUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -9175,12 +10664,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketUncheckedUpdateManyWithoutAgentNestedInput
     sentMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     voiceLogs?: VoiceSessionLogUncheckedUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserCreateManyInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -9190,7 +10682,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateManyMutationInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -9201,7 +10695,9 @@ export namespace Prisma {
   export type PortalUserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -9221,6 +10717,8 @@ export namespace Prisma {
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateInput = {
@@ -9235,7 +10733,9 @@ export namespace Prisma {
     updatedAt?: Date | string
     customerId: number
     agentId?: number | null
+    mergedIntoId?: number | null
     messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUpdateInput = {
@@ -9250,6 +10750,8 @@ export namespace Prisma {
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateInput = {
@@ -9264,7 +10766,9 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketCreateManyInput = {
@@ -9279,6 +10783,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customerId: number
     agentId?: number | null
+    mergedIntoId?: number | null
   }
 
   export type SupportTicketUpdateManyMutationInput = {
@@ -9304,6 +10809,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type TicketMessageCreateInput = {
@@ -9567,6 +11073,72 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CallLogCreateInput = {
+    callerNumber: string
+    transcript?: string | null
+    audioUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+    customer?: PortalUserCreateNestedOneWithoutCallLogsInput
+  }
+
+  export type CallLogUncheckedCreateInput = {
+    id?: number
+    callerNumber: string
+    transcript?: string | null
+    audioUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+    customerId?: number | null
+  }
+
+  export type CallLogUpdateInput = {
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: PortalUserUpdateOneWithoutCallLogsNestedInput
+  }
+
+  export type CallLogUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type CallLogCreateManyInput = {
+    id?: number
+    callerNumber: string
+    transcript?: string | null
+    audioUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+    customerId?: number | null
+  }
+
+  export type CallLogUpdateManyMutationInput = {
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CallLogUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -9591,6 +11163,21 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type EnumPortalRoleFilter<$PrismaModel = never> = {
@@ -9634,6 +11221,17 @@ export namespace Prisma {
     none?: VoiceSessionLogWhereInput
   }
 
+  export type CallLogListRelationFilter = {
+    every?: CallLogWhereInput
+    some?: CallLogWhereInput
+    none?: CallLogWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type SupportTicketOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -9646,10 +11244,16 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type CallLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type PortalUserCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -9664,7 +11268,9 @@ export namespace Prisma {
   export type PortalUserMaxOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -9675,7 +11281,9 @@ export namespace Prisma {
   export type PortalUserMinOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
-    name?: SortOrder
+    login?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
     passwordHash?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
@@ -9719,6 +11327,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type EnumPortalRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -9767,21 +11393,6 @@ export namespace Prisma {
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -9803,9 +11414,9 @@ export namespace Prisma {
     isNot?: PortalUserWhereInput | null
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type SupportTicketNullableScalarRelationFilter = {
+    is?: SupportTicketWhereInput | null
+    isNot?: SupportTicketWhereInput | null
   }
 
   export type SupportTicketCountOrderByAggregateInput = {
@@ -9820,12 +11431,14 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
+    mergedIntoId?: SortOrder
   }
 
   export type SupportTicketAvgOrderByAggregateInput = {
     id?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
+    mergedIntoId?: SortOrder
   }
 
   export type SupportTicketMaxOrderByAggregateInput = {
@@ -9840,6 +11453,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
+    mergedIntoId?: SortOrder
   }
 
   export type SupportTicketMinOrderByAggregateInput = {
@@ -9854,12 +11468,14 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
+    mergedIntoId?: SortOrder
   }
 
   export type SupportTicketSumOrderByAggregateInput = {
     id?: SortOrder
     customerId?: SortOrder
     agentId?: SortOrder
+    mergedIntoId?: SortOrder
   }
 
   export type EnumTicketStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -9880,24 +11496,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -10129,6 +11727,48 @@ export namespace Prisma {
     duration?: SortOrder
   }
 
+  export type CallLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    callerNumber?: SortOrder
+    transcript?: SortOrder
+    audioUrl?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type CallLogAvgOrderByAggregateInput = {
+    id?: SortOrder
+    duration?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type CallLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    callerNumber?: SortOrder
+    transcript?: SortOrder
+    audioUrl?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type CallLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    callerNumber?: SortOrder
+    transcript?: SortOrder
+    audioUrl?: SortOrder
+    duration?: SortOrder
+    createdAt?: SortOrder
+    customerId?: SortOrder
+  }
+
+  export type CallLogSumOrderByAggregateInput = {
+    id?: SortOrder
+    duration?: SortOrder
+    customerId?: SortOrder
+  }
+
   export type SupportTicketCreateNestedManyWithoutCustomerInput = {
     create?: XOR<SupportTicketCreateWithoutCustomerInput, SupportTicketUncheckedCreateWithoutCustomerInput> | SupportTicketCreateWithoutCustomerInput[] | SupportTicketUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: SupportTicketCreateOrConnectWithoutCustomerInput | SupportTicketCreateOrConnectWithoutCustomerInput[]
@@ -10155,6 +11795,13 @@ export namespace Prisma {
     connectOrCreate?: VoiceSessionLogCreateOrConnectWithoutCustomerInput | VoiceSessionLogCreateOrConnectWithoutCustomerInput[]
     createMany?: VoiceSessionLogCreateManyCustomerInputEnvelope
     connect?: VoiceSessionLogWhereUniqueInput | VoiceSessionLogWhereUniqueInput[]
+  }
+
+  export type CallLogCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<CallLogCreateWithoutCustomerInput, CallLogUncheckedCreateWithoutCustomerInput> | CallLogCreateWithoutCustomerInput[] | CallLogUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CallLogCreateOrConnectWithoutCustomerInput | CallLogCreateOrConnectWithoutCustomerInput[]
+    createMany?: CallLogCreateManyCustomerInputEnvelope
+    connect?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
   }
 
   export type SupportTicketUncheckedCreateNestedManyWithoutCustomerInput = {
@@ -10185,8 +11832,19 @@ export namespace Prisma {
     connect?: VoiceSessionLogWhereUniqueInput | VoiceSessionLogWhereUniqueInput[]
   }
 
+  export type CallLogUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<CallLogCreateWithoutCustomerInput, CallLogUncheckedCreateWithoutCustomerInput> | CallLogCreateWithoutCustomerInput[] | CallLogUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CallLogCreateOrConnectWithoutCustomerInput | CallLogCreateOrConnectWithoutCustomerInput[]
+    createMany?: CallLogCreateManyCustomerInputEnvelope
+    connect?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type EnumPortalRoleFieldUpdateOperationsInput = {
@@ -10257,6 +11915,20 @@ export namespace Prisma {
     deleteMany?: VoiceSessionLogScalarWhereInput | VoiceSessionLogScalarWhereInput[]
   }
 
+  export type CallLogUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<CallLogCreateWithoutCustomerInput, CallLogUncheckedCreateWithoutCustomerInput> | CallLogCreateWithoutCustomerInput[] | CallLogUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CallLogCreateOrConnectWithoutCustomerInput | CallLogCreateOrConnectWithoutCustomerInput[]
+    upsert?: CallLogUpsertWithWhereUniqueWithoutCustomerInput | CallLogUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: CallLogCreateManyCustomerInputEnvelope
+    set?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    disconnect?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    delete?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    connect?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    update?: CallLogUpdateWithWhereUniqueWithoutCustomerInput | CallLogUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: CallLogUpdateManyWithWhereWithoutCustomerInput | CallLogUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: CallLogScalarWhereInput | CallLogScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -10321,6 +11993,20 @@ export namespace Prisma {
     deleteMany?: VoiceSessionLogScalarWhereInput | VoiceSessionLogScalarWhereInput[]
   }
 
+  export type CallLogUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<CallLogCreateWithoutCustomerInput, CallLogUncheckedCreateWithoutCustomerInput> | CallLogCreateWithoutCustomerInput[] | CallLogUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: CallLogCreateOrConnectWithoutCustomerInput | CallLogCreateOrConnectWithoutCustomerInput[]
+    upsert?: CallLogUpsertWithWhereUniqueWithoutCustomerInput | CallLogUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: CallLogCreateManyCustomerInputEnvelope
+    set?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    disconnect?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    delete?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    connect?: CallLogWhereUniqueInput | CallLogWhereUniqueInput[]
+    update?: CallLogUpdateWithWhereUniqueWithoutCustomerInput | CallLogUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: CallLogUpdateManyWithWhereWithoutCustomerInput | CallLogUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: CallLogScalarWhereInput | CallLogScalarWhereInput[]
+  }
+
   export type PortalUserCreateNestedOneWithoutRaisedTicketsInput = {
     create?: XOR<PortalUserCreateWithoutRaisedTicketsInput, PortalUserUncheckedCreateWithoutRaisedTicketsInput>
     connectOrCreate?: PortalUserCreateOrConnectWithoutRaisedTicketsInput
@@ -10340,11 +12026,31 @@ export namespace Prisma {
     connect?: TicketMessageWhereUniqueInput | TicketMessageWhereUniqueInput[]
   }
 
+  export type SupportTicketCreateNestedOneWithoutMergedTicketsInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedTicketsInput
+    connect?: SupportTicketWhereUniqueInput
+  }
+
+  export type SupportTicketCreateNestedManyWithoutMergedIntoInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+  }
+
   export type TicketMessageUncheckedCreateNestedManyWithoutTicketInput = {
     create?: XOR<TicketMessageCreateWithoutTicketInput, TicketMessageUncheckedCreateWithoutTicketInput> | TicketMessageCreateWithoutTicketInput[] | TicketMessageUncheckedCreateWithoutTicketInput[]
     connectOrCreate?: TicketMessageCreateOrConnectWithoutTicketInput | TicketMessageCreateOrConnectWithoutTicketInput[]
     createMany?: TicketMessageCreateManyTicketInputEnvelope
     connect?: TicketMessageWhereUniqueInput | TicketMessageWhereUniqueInput[]
+  }
+
+  export type SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
   }
 
   export type EnumTicketStatusFieldUpdateOperationsInput = {
@@ -10353,10 +12059,6 @@ export namespace Prisma {
 
   export type EnumTicketPriorityFieldUpdateOperationsInput = {
     set?: $Enums.TicketPriority
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput = {
@@ -10391,6 +12093,30 @@ export namespace Prisma {
     deleteMany?: TicketMessageScalarWhereInput | TicketMessageScalarWhereInput[]
   }
 
+  export type SupportTicketUpdateOneWithoutMergedTicketsNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedTicketsInput
+    upsert?: SupportTicketUpsertWithoutMergedTicketsInput
+    disconnect?: SupportTicketWhereInput | boolean
+    delete?: SupportTicketWhereInput | boolean
+    connect?: SupportTicketWhereUniqueInput
+    update?: XOR<XOR<SupportTicketUpdateToOneWithWhereWithoutMergedTicketsInput, SupportTicketUpdateWithoutMergedTicketsInput>, SupportTicketUncheckedUpdateWithoutMergedTicketsInput>
+  }
+
+  export type SupportTicketUpdateManyWithoutMergedIntoNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutMergedIntoInput | SupportTicketUpdateManyWithWhereWithoutMergedIntoInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -10411,6 +12137,20 @@ export namespace Prisma {
     update?: TicketMessageUpdateWithWhereUniqueWithoutTicketInput | TicketMessageUpdateWithWhereUniqueWithoutTicketInput[]
     updateMany?: TicketMessageUpdateManyWithWhereWithoutTicketInput | TicketMessageUpdateManyWithWhereWithoutTicketInput[]
     deleteMany?: TicketMessageScalarWhereInput | TicketMessageScalarWhereInput[]
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput = {
+    create?: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput> | SupportTicketCreateWithoutMergedIntoInput[] | SupportTicketUncheckedCreateWithoutMergedIntoInput[]
+    connectOrCreate?: SupportTicketCreateOrConnectWithoutMergedIntoInput | SupportTicketCreateOrConnectWithoutMergedIntoInput[]
+    upsert?: SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput[]
+    createMany?: SupportTicketCreateManyMergedIntoInputEnvelope
+    set?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    disconnect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    delete?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    connect?: SupportTicketWhereUniqueInput | SupportTicketWhereUniqueInput[]
+    update?: SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput | SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput[]
+    updateMany?: SupportTicketUpdateManyWithWhereWithoutMergedIntoInput | SupportTicketUpdateManyWithWhereWithoutMergedIntoInput[]
+    deleteMany?: SupportTicketScalarWhereInput | SupportTicketScalarWhereInput[]
   }
 
   export type SupportTicketCreateNestedOneWithoutMessagesInput = {
@@ -10521,6 +12261,22 @@ export namespace Prisma {
     update?: XOR<XOR<PortalUserUpdateToOneWithWhereWithoutVoiceLogsInput, PortalUserUpdateWithoutVoiceLogsInput>, PortalUserUncheckedUpdateWithoutVoiceLogsInput>
   }
 
+  export type PortalUserCreateNestedOneWithoutCallLogsInput = {
+    create?: XOR<PortalUserCreateWithoutCallLogsInput, PortalUserUncheckedCreateWithoutCallLogsInput>
+    connectOrCreate?: PortalUserCreateOrConnectWithoutCallLogsInput
+    connect?: PortalUserWhereUniqueInput
+  }
+
+  export type PortalUserUpdateOneWithoutCallLogsNestedInput = {
+    create?: XOR<PortalUserCreateWithoutCallLogsInput, PortalUserUncheckedCreateWithoutCallLogsInput>
+    connectOrCreate?: PortalUserCreateOrConnectWithoutCallLogsInput
+    upsert?: PortalUserUpsertWithoutCallLogsInput
+    disconnect?: PortalUserWhereInput | boolean
+    delete?: PortalUserWhereInput | boolean
+    connect?: PortalUserWhereUniqueInput
+    update?: XOR<XOR<PortalUserUpdateToOneWithWhereWithoutCallLogsInput, PortalUserUpdateWithoutCallLogsInput>, PortalUserUncheckedUpdateWithoutCallLogsInput>
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -10544,6 +12300,20 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedEnumPortalRoleFilter<$PrismaModel = never> = {
@@ -10613,6 +12383,34 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumPortalRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.PortalRole | EnumPortalRoleFieldRefInput<$PrismaModel>
     in?: $Enums.PortalRole[] | ListEnumPortalRoleFieldRefInput<$PrismaModel>
@@ -10659,31 +12457,6 @@ export namespace Prisma {
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumTicketStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.TicketStatus | EnumTicketStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TicketStatus[] | ListEnumTicketStatusFieldRefInput<$PrismaModel>
@@ -10702,23 +12475,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -10793,6 +12549,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateWithoutCustomerInput = {
@@ -10806,7 +12564,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     agentId?: number | null
+    mergedIntoId?: number | null
     messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketCreateOrConnectWithoutCustomerInput = {
@@ -10830,6 +12590,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
     messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateWithoutAgentInput = {
@@ -10843,7 +12605,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
+    mergedIntoId?: number | null
     messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketCreateOrConnectWithoutAgentInput = {
@@ -10912,6 +12676,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CallLogCreateWithoutCustomerInput = {
+    callerNumber: string
+    transcript?: string | null
+    audioUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+  }
+
+  export type CallLogUncheckedCreateWithoutCustomerInput = {
+    id?: number
+    callerNumber: string
+    transcript?: string | null
+    audioUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+  }
+
+  export type CallLogCreateOrConnectWithoutCustomerInput = {
+    where: CallLogWhereUniqueInput
+    create: XOR<CallLogCreateWithoutCustomerInput, CallLogUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type CallLogCreateManyCustomerInputEnvelope = {
+    data: CallLogCreateManyCustomerInput | CallLogCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SupportTicketUpsertWithWhereUniqueWithoutCustomerInput = {
     where: SupportTicketWhereUniqueInput
     update: XOR<SupportTicketUpdateWithoutCustomerInput, SupportTicketUncheckedUpdateWithoutCustomerInput>
@@ -10943,6 +12734,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"SupportTicket"> | Date | string
     customerId?: IntFilter<"SupportTicket"> | number
     agentId?: IntNullableFilter<"SupportTicket"> | number | null
+    mergedIntoId?: IntNullableFilter<"SupportTicket"> | number | null
   }
 
   export type SupportTicketUpsertWithWhereUniqueWithoutAgentInput = {
@@ -11020,9 +12812,40 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"VoiceSessionLog"> | Date | string
   }
 
+  export type CallLogUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: CallLogWhereUniqueInput
+    update: XOR<CallLogUpdateWithoutCustomerInput, CallLogUncheckedUpdateWithoutCustomerInput>
+    create: XOR<CallLogCreateWithoutCustomerInput, CallLogUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type CallLogUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: CallLogWhereUniqueInput
+    data: XOR<CallLogUpdateWithoutCustomerInput, CallLogUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type CallLogUpdateManyWithWhereWithoutCustomerInput = {
+    where: CallLogScalarWhereInput
+    data: XOR<CallLogUpdateManyMutationInput, CallLogUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type CallLogScalarWhereInput = {
+    AND?: CallLogScalarWhereInput | CallLogScalarWhereInput[]
+    OR?: CallLogScalarWhereInput[]
+    NOT?: CallLogScalarWhereInput | CallLogScalarWhereInput[]
+    id?: IntFilter<"CallLog"> | number
+    callerNumber?: StringFilter<"CallLog"> | string
+    transcript?: StringNullableFilter<"CallLog"> | string | null
+    audioUrl?: StringNullableFilter<"CallLog"> | string | null
+    duration?: IntNullableFilter<"CallLog"> | number | null
+    createdAt?: DateTimeFilter<"CallLog"> | Date | string
+    customerId?: IntNullableFilter<"CallLog"> | number | null
+  }
+
   export type PortalUserCreateWithoutRaisedTicketsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11031,12 +12854,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketCreateNestedManyWithoutAgentInput
     sentMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     voiceLogs?: VoiceSessionLogCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserUncheckedCreateWithoutRaisedTicketsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11045,6 +12871,7 @@ export namespace Prisma {
     assignedTickets?: SupportTicketUncheckedCreateNestedManyWithoutAgentInput
     sentMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     voiceLogs?: VoiceSessionLogUncheckedCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserCreateOrConnectWithoutRaisedTicketsInput = {
@@ -11054,7 +12881,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutAssignedTicketsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11063,12 +12892,15 @@ export namespace Prisma {
     raisedTickets?: SupportTicketCreateNestedManyWithoutCustomerInput
     sentMessages?: TicketMessageCreateNestedManyWithoutSenderInput
     voiceLogs?: VoiceSessionLogCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserUncheckedCreateWithoutAssignedTicketsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11077,6 +12909,7 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUncheckedCreateNestedManyWithoutCustomerInput
     sentMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
     voiceLogs?: VoiceSessionLogUncheckedCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserCreateOrConnectWithoutAssignedTicketsInput = {
@@ -11113,6 +12946,83 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SupportTicketCreateWithoutMergedTicketsInput = {
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
+    agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
+    messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutMergedTicketsInput = {
+    id?: number
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerId: number
+    agentId?: number | null
+    mergedIntoId?: number | null
+    messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+  }
+
+  export type SupportTicketCreateOrConnectWithoutMergedTicketsInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+  }
+
+  export type SupportTicketCreateWithoutMergedIntoInput = {
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
+    agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
+    messages?: TicketMessageCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
+  }
+
+  export type SupportTicketUncheckedCreateWithoutMergedIntoInput = {
+    id?: number
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerId: number
+    agentId?: number | null
+    messages?: TicketMessageUncheckedCreateNestedManyWithoutTicketInput
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
+  }
+
+  export type SupportTicketCreateOrConnectWithoutMergedIntoInput = {
+    where: SupportTicketWhereUniqueInput
+    create: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput>
+  }
+
+  export type SupportTicketCreateManyMergedIntoInputEnvelope = {
+    data: SupportTicketCreateManyMergedIntoInput | SupportTicketCreateManyMergedIntoInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PortalUserUpsertWithoutRaisedTicketsInput = {
     update: XOR<PortalUserUpdateWithoutRaisedTicketsInput, PortalUserUncheckedUpdateWithoutRaisedTicketsInput>
     create: XOR<PortalUserCreateWithoutRaisedTicketsInput, PortalUserUncheckedCreateWithoutRaisedTicketsInput>
@@ -11126,7 +13036,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutRaisedTicketsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11135,12 +13047,15 @@ export namespace Prisma {
     assignedTickets?: SupportTicketUpdateManyWithoutAgentNestedInput
     sentMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     voiceLogs?: VoiceSessionLogUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserUncheckedUpdateWithoutRaisedTicketsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11149,6 +13064,7 @@ export namespace Prisma {
     assignedTickets?: SupportTicketUncheckedUpdateManyWithoutAgentNestedInput
     sentMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     voiceLogs?: VoiceSessionLogUncheckedUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserUpsertWithoutAssignedTicketsInput = {
@@ -11164,7 +13080,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutAssignedTicketsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11173,12 +13091,15 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUpdateManyWithoutCustomerNestedInput
     sentMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
     voiceLogs?: VoiceSessionLogUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserUncheckedUpdateWithoutAssignedTicketsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11187,6 +13108,7 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUncheckedUpdateManyWithoutCustomerNestedInput
     sentMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
     voiceLogs?: VoiceSessionLogUncheckedUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type TicketMessageUpsertWithWhereUniqueWithoutTicketInput = {
@@ -11205,6 +13127,64 @@ export namespace Prisma {
     data: XOR<TicketMessageUpdateManyMutationInput, TicketMessageUncheckedUpdateManyWithoutTicketInput>
   }
 
+  export type SupportTicketUpsertWithoutMergedTicketsInput = {
+    update: XOR<SupportTicketUpdateWithoutMergedTicketsInput, SupportTicketUncheckedUpdateWithoutMergedTicketsInput>
+    create: XOR<SupportTicketCreateWithoutMergedTicketsInput, SupportTicketUncheckedCreateWithoutMergedTicketsInput>
+    where?: SupportTicketWhereInput
+  }
+
+  export type SupportTicketUpdateToOneWithWhereWithoutMergedTicketsInput = {
+    where?: SupportTicketWhereInput
+    data: XOR<SupportTicketUpdateWithoutMergedTicketsInput, SupportTicketUncheckedUpdateWithoutMergedTicketsInput>
+  }
+
+  export type SupportTicketUpdateWithoutMergedTicketsInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
+    agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
+    messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutMergedTicketsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
+    messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+  }
+
+  export type SupportTicketUpsertWithWhereUniqueWithoutMergedIntoInput = {
+    where: SupportTicketWhereUniqueInput
+    update: XOR<SupportTicketUpdateWithoutMergedIntoInput, SupportTicketUncheckedUpdateWithoutMergedIntoInput>
+    create: XOR<SupportTicketCreateWithoutMergedIntoInput, SupportTicketUncheckedCreateWithoutMergedIntoInput>
+  }
+
+  export type SupportTicketUpdateWithWhereUniqueWithoutMergedIntoInput = {
+    where: SupportTicketWhereUniqueInput
+    data: XOR<SupportTicketUpdateWithoutMergedIntoInput, SupportTicketUncheckedUpdateWithoutMergedIntoInput>
+  }
+
+  export type SupportTicketUpdateManyWithWhereWithoutMergedIntoInput = {
+    where: SupportTicketScalarWhereInput
+    data: XOR<SupportTicketUpdateManyMutationInput, SupportTicketUncheckedUpdateManyWithoutMergedIntoInput>
+  }
+
   export type SupportTicketCreateWithoutMessagesInput = {
     title: string
     description: string
@@ -11216,6 +13196,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer: PortalUserCreateNestedOneWithoutRaisedTicketsInput
     agent?: PortalUserCreateNestedOneWithoutAssignedTicketsInput
+    mergedInto?: SupportTicketCreateNestedOneWithoutMergedTicketsInput
+    mergedTickets?: SupportTicketCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketUncheckedCreateWithoutMessagesInput = {
@@ -11230,6 +13212,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     customerId: number
     agentId?: number | null
+    mergedIntoId?: number | null
+    mergedTickets?: SupportTicketUncheckedCreateNestedManyWithoutMergedIntoInput
   }
 
   export type SupportTicketCreateOrConnectWithoutMessagesInput = {
@@ -11239,7 +13223,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutSentMessagesInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11248,12 +13234,15 @@ export namespace Prisma {
     raisedTickets?: SupportTicketCreateNestedManyWithoutCustomerInput
     assignedTickets?: SupportTicketCreateNestedManyWithoutAgentInput
     voiceLogs?: VoiceSessionLogCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserUncheckedCreateWithoutSentMessagesInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11262,6 +13251,7 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUncheckedCreateNestedManyWithoutCustomerInput
     assignedTickets?: SupportTicketUncheckedCreateNestedManyWithoutAgentInput
     voiceLogs?: VoiceSessionLogUncheckedCreateNestedManyWithoutCustomerInput
+    callLogs?: CallLogUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserCreateOrConnectWithoutSentMessagesInput = {
@@ -11291,6 +13281,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateWithoutMessagesInput = {
@@ -11305,6 +13297,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type PortalUserUpsertWithoutSentMessagesInput = {
@@ -11320,7 +13314,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutSentMessagesInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11329,12 +13325,15 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUpdateManyWithoutCustomerNestedInput
     assignedTickets?: SupportTicketUpdateManyWithoutAgentNestedInput
     voiceLogs?: VoiceSessionLogUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserUncheckedUpdateWithoutSentMessagesInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11343,6 +13342,7 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUncheckedUpdateManyWithoutCustomerNestedInput
     assignedTickets?: SupportTicketUncheckedUpdateManyWithoutAgentNestedInput
     voiceLogs?: VoiceSessionLogUncheckedUpdateManyWithoutCustomerNestedInput
+    callLogs?: CallLogUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type ChatWidgetMessageCreateWithoutSessionInput = {
@@ -11451,7 +13451,9 @@ export namespace Prisma {
 
   export type PortalUserCreateWithoutVoiceLogsInput = {
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11460,12 +13462,15 @@ export namespace Prisma {
     raisedTickets?: SupportTicketCreateNestedManyWithoutCustomerInput
     assignedTickets?: SupportTicketCreateNestedManyWithoutAgentInput
     sentMessages?: TicketMessageCreateNestedManyWithoutSenderInput
+    callLogs?: CallLogCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserUncheckedCreateWithoutVoiceLogsInput = {
     id?: number
     email: string
-    name: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
     passwordHash: string
     role?: $Enums.PortalRole
     isActive?: boolean
@@ -11474,6 +13479,7 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUncheckedCreateNestedManyWithoutCustomerInput
     assignedTickets?: SupportTicketUncheckedCreateNestedManyWithoutAgentInput
     sentMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+    callLogs?: CallLogUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type PortalUserCreateOrConnectWithoutVoiceLogsInput = {
@@ -11494,7 +13500,9 @@ export namespace Prisma {
 
   export type PortalUserUpdateWithoutVoiceLogsInput = {
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11503,12 +13511,15 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUpdateManyWithoutCustomerNestedInput
     assignedTickets?: SupportTicketUpdateManyWithoutAgentNestedInput
     sentMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
+    callLogs?: CallLogUpdateManyWithoutCustomerNestedInput
   }
 
   export type PortalUserUncheckedUpdateWithoutVoiceLogsInput = {
     id?: IntFieldUpdateOperationsInput | number
     email?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: StringFieldUpdateOperationsInput | string
     role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -11517,6 +13528,89 @@ export namespace Prisma {
     raisedTickets?: SupportTicketUncheckedUpdateManyWithoutCustomerNestedInput
     assignedTickets?: SupportTicketUncheckedUpdateManyWithoutAgentNestedInput
     sentMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+    callLogs?: CallLogUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type PortalUserCreateWithoutCallLogsInput = {
+    email: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    passwordHash: string
+    role?: $Enums.PortalRole
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    raisedTickets?: SupportTicketCreateNestedManyWithoutCustomerInput
+    assignedTickets?: SupportTicketCreateNestedManyWithoutAgentInput
+    sentMessages?: TicketMessageCreateNestedManyWithoutSenderInput
+    voiceLogs?: VoiceSessionLogCreateNestedManyWithoutCustomerInput
+  }
+
+  export type PortalUserUncheckedCreateWithoutCallLogsInput = {
+    id?: number
+    email: string
+    login?: string | null
+    firstName?: string | null
+    lastName?: string | null
+    passwordHash: string
+    role?: $Enums.PortalRole
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    raisedTickets?: SupportTicketUncheckedCreateNestedManyWithoutCustomerInput
+    assignedTickets?: SupportTicketUncheckedCreateNestedManyWithoutAgentInput
+    sentMessages?: TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+    voiceLogs?: VoiceSessionLogUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type PortalUserCreateOrConnectWithoutCallLogsInput = {
+    where: PortalUserWhereUniqueInput
+    create: XOR<PortalUserCreateWithoutCallLogsInput, PortalUserUncheckedCreateWithoutCallLogsInput>
+  }
+
+  export type PortalUserUpsertWithoutCallLogsInput = {
+    update: XOR<PortalUserUpdateWithoutCallLogsInput, PortalUserUncheckedUpdateWithoutCallLogsInput>
+    create: XOR<PortalUserCreateWithoutCallLogsInput, PortalUserUncheckedCreateWithoutCallLogsInput>
+    where?: PortalUserWhereInput
+  }
+
+  export type PortalUserUpdateToOneWithWhereWithoutCallLogsInput = {
+    where?: PortalUserWhereInput
+    data: XOR<PortalUserUpdateWithoutCallLogsInput, PortalUserUncheckedUpdateWithoutCallLogsInput>
+  }
+
+  export type PortalUserUpdateWithoutCallLogsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    raisedTickets?: SupportTicketUpdateManyWithoutCustomerNestedInput
+    assignedTickets?: SupportTicketUpdateManyWithoutAgentNestedInput
+    sentMessages?: TicketMessageUpdateManyWithoutSenderNestedInput
+    voiceLogs?: VoiceSessionLogUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type PortalUserUncheckedUpdateWithoutCallLogsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    login?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumPortalRoleFieldUpdateOperationsInput | $Enums.PortalRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    raisedTickets?: SupportTicketUncheckedUpdateManyWithoutCustomerNestedInput
+    assignedTickets?: SupportTicketUncheckedUpdateManyWithoutAgentNestedInput
+    sentMessages?: TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+    voiceLogs?: VoiceSessionLogUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type SupportTicketCreateManyCustomerInput = {
@@ -11530,6 +13624,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     agentId?: number | null
+    mergedIntoId?: number | null
   }
 
   export type SupportTicketCreateManyAgentInput = {
@@ -11543,6 +13638,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     customerId: number
+    mergedIntoId?: number | null
   }
 
   export type TicketMessageCreateManySenderInput = {
@@ -11564,6 +13660,15 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type CallLogCreateManyCustomerInput = {
+    id?: number
+    callerNumber: string
+    transcript?: string | null
+    audioUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+  }
+
   export type SupportTicketUpdateWithoutCustomerInput = {
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -11575,6 +13680,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateWithoutCustomerInput = {
@@ -11588,7 +13695,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateManyWithoutCustomerInput = {
@@ -11602,6 +13711,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type SupportTicketUpdateWithoutAgentInput = {
@@ -11615,6 +13725,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
     messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedInto?: SupportTicketUpdateOneWithoutMergedTicketsNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateWithoutAgentInput = {
@@ -11628,7 +13740,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
   }
 
   export type SupportTicketUncheckedUpdateManyWithoutAgentInput = {
@@ -11642,6 +13756,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: IntFieldUpdateOperationsInput | number
+    mergedIntoId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type TicketMessageUpdateWithoutSenderInput = {
@@ -11699,6 +13814,32 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CallLogUpdateWithoutCustomerInput = {
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CallLogUncheckedUpdateWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CallLogUncheckedUpdateManyWithoutCustomerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    callerNumber?: StringFieldUpdateOperationsInput | string
+    transcript?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TicketMessageCreateManyTicketInput = {
     id?: number
     senderId: number
@@ -11707,6 +13848,20 @@ export namespace Prisma {
     attachmentName?: string | null
     isSystem?: boolean
     createdAt?: Date | string
+  }
+
+  export type SupportTicketCreateManyMergedIntoInput = {
+    id?: number
+    title: string
+    description: string
+    status?: $Enums.TicketStatus
+    priority?: $Enums.TicketPriority
+    attachmentUrl?: string | null
+    attachmentName?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customerId: number
+    agentId?: number | null
   }
 
   export type TicketMessageUpdateWithoutTicketInput = {
@@ -11736,6 +13891,51 @@ export namespace Prisma {
     attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
     isSystem?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupportTicketUpdateWithoutMergedIntoInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: PortalUserUpdateOneRequiredWithoutRaisedTicketsNestedInput
+    agent?: PortalUserUpdateOneWithoutAssignedTicketsNestedInput
+    messages?: TicketMessageUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUpdateManyWithoutMergedIntoNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateWithoutMergedIntoInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    agentId?: NullableIntFieldUpdateOperationsInput | number | null
+    messages?: TicketMessageUncheckedUpdateManyWithoutTicketNestedInput
+    mergedTickets?: SupportTicketUncheckedUpdateManyWithoutMergedIntoNestedInput
+  }
+
+  export type SupportTicketUncheckedUpdateManyWithoutMergedIntoInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
+    priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    attachmentName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: IntFieldUpdateOperationsInput | number
+    agentId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ChatWidgetMessageCreateManySessionInput = {

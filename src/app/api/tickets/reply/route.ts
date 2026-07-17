@@ -56,6 +56,10 @@ export async function POST(req: NextRequest) {
         }
       });
 
+      import('@/lib/eventEmitter').then(({ ticketEventEmitter }) => {
+        ticketEventEmitter.emit('ticketUpdate', { type: 'status_update', ticketId: ticketId });
+      });
+
       return NextResponse.json({ success: true, status: 'RESOLVED' });
     }
 
@@ -98,24 +102,27 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // If sender is agent/admin, update status to IN_PROGRESS and assign agent
+    // If sender is agent/admin, assign agent
     if (sender.role === 'AGENT' || sender.role === 'ADMIN') {
       await postgresPrisma.supportTicket.update({
         where: { id: parsedId },
         data: {
-          status: 'IN_PROGRESS',
           agentId: sender.id
         }
       });
     } else {
-      // If customer replied, and ticket was resolved, mark it open again
-      if (ticket.status === 'RESOLVED') {
+      // If customer replied, and ticket was resolved or closed, mark it open again
+      if (ticket.status === 'RESOLVED' || ticket.status === 'CLOSED') {
         await postgresPrisma.supportTicket.update({
           where: { id: parsedId },
           data: { status: 'OPEN' }
         });
       }
     }
+
+    import('@/lib/eventEmitter').then(({ ticketEventEmitter }) => {
+      ticketEventEmitter.emit('ticketUpdate', { type: 'new_reply', ticketId: ticketId });
+    });
 
     return NextResponse.json({ success: true, message: userMessage });
   } catch (error) {

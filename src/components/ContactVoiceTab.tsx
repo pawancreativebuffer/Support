@@ -27,7 +27,7 @@ export const ContactVoiceTab: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
+  const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_WEB_AGENT_ID || process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID || '';
 
 
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -56,6 +56,8 @@ export const ContactVoiceTab: React.FC = () => {
 
     if (!transcriptText.trim()) return;
 
+    const audioUrl = `/api/voice-audio?conversation_id=${cid}`;
+
     try {
       await fetch('/api/voice-logs', {
         method: 'POST',
@@ -64,7 +66,8 @@ export const ContactVoiceTab: React.FC = () => {
           conversationId: cid,
           customerEmail: currentUser?.email || null,
           transcript: transcriptText,
-          duration: durationSec
+          duration: durationSec,
+          audioUrl: audioUrl
         })
       });
       console.log("Voice session saved in PostgreSQL database.");
@@ -82,7 +85,7 @@ export const ContactVoiceTab: React.FC = () => {
         duration: `${durationSec}s`,
         transcript: transcriptText,
         confidence: '98%',
-        audioUrl: null
+        audioUrl: audioUrl
       };
 
       const existing = localStorage.getItem('nexus_voice_logs');
@@ -117,7 +120,7 @@ export const ContactVoiceTab: React.FC = () => {
         {
           id: 'welcome',
           sender: 'assistant',
-          text: "Hello! I am your Ticket-it AI Voice Assistant. Click the microphone button to start our conversation.",
+          text:"Hello! I am your Ticket-it AI Voice Assistant. Click the microphone button to start our conversation.",
           timestamp: getCurrentTime()
         }
       ]);
@@ -180,7 +183,7 @@ export const ContactVoiceTab: React.FC = () => {
   // ElevenLabs live conversation controls
   const startElevenLabsSession = async () => {
     if (!agentId) {
-      setErrorMessage("ElevenLabs Agent ID is not configured. Please define NEXT_PUBLIC_ELEVENLABS_AGENT_ID in your environment (.env) file.");
+      setErrorMessage("ElevenLabs Agent ID is not configured. Please define NEXT_PUBLIC_ELEVENLABS_WEB_AGENT_ID or NEXT_PUBLIC_ELEVENLABS_AGENT_ID in your .env");
       setStatus('error');
       return;
     }
@@ -200,25 +203,27 @@ export const ContactVoiceTab: React.FC = () => {
           });
           if (res.ok) {
             const dbData = await res.json();
+
+            // COMPRESS CONTEXT TO AVOID WEBSOCKET PAYLOAD SIZE LIMITS!
+            const miniTickets = (dbData.tickets || []).slice(0, 3).map((t: any) =>
+              `[Ticket ${t.ticketNumber}: ${t.status}]`
+            ).join(', ');
+
+            const miniBatches = (dbData.batches || []).slice(0, 3).map((b: any) =>
+              `[Batch ${b.id}: ${b.status}]`
+            ).join(', ');
+
             conversationOverrides = {
               agent: {
                 prompt: {
-                  prompt: `You are Sarah, a highly helpful, professional customer support agent representing the Ticket-it platform. 
-You are speaking in real-time with the logged-in customer: ${dbData.profile.name} (${dbData.profile.email}).
-Under no circumstances should you talk about any other customer's details or accounts.
-Here is the customer's authenticated real-time data from our SQL Server database:
-- Profile: Name is ${dbData.profile.name}, email is ${dbData.profile.email}, phone is ${dbData.profile.phone}, address is ${dbData.profile.address}, and client organization is ${dbData.profile.client}.
-- Tickets: ${JSON.stringify(dbData.tickets)}
-- Batches: ${JSON.stringify(dbData.batches)}
-- File Notes: ${JSON.stringify(dbData.fileNotes)}
-- FTP Details: ${JSON.stringify(dbData.ftpDetails)}
-- Saved Templates: ${JSON.stringify(dbData.savedTemplates)}
-- Store Groups: ${JSON.stringify(dbData.storeGroups)}
-- Active API Integrations: ${JSON.stringify(dbData.userIntegrations)}
-- Outlets Count: ${dbData.outletsCount}
-
-Rule: Since the user is logged in and authenticated, you are authorized to verify, summarize, and tell them details from their tickets, batches, FTP settings, integrations, templates, or profile history when they ask. Keep answers conversational, natural, and friendly.`
-                }
+                  prompt: `You are Max, a highly helpful customer support voice agent for Ticket-it. 
+You are speaking in real-time with: ${dbData.profile?.name} (${dbData.profile?.email}).
+Phone: ${dbData.profile?.phone || 'N/A'}. Org: ${dbData.profile?.client || 'N/A'}.
+Recent Tickets: ${miniTickets || 'None'}
+Recent Batches: ${miniBatches || 'None'}
+Keep your answers brief, conversational, and friendly.`
+                },
+                firstMessage: `Hello ${dbData.profile?.name?.split(' ')[0] || 'there'}! I'm Max, your AI Support Specialist. How can I assist you with your account today?`
               }
             };
           }
@@ -226,62 +231,29 @@ Rule: Since the user is logged in and authenticated, you are authorized to verif
           console.warn("Could not fetch database voice context, falling back to basic session:", dbErr);
         }
       } else {
-        // User is anonymous / NOT logged in
         conversationOverrides = {
           agent: {
             prompt: {
-              prompt: `You are Sarah, a helpful customer support voice assistant for Ticket-it.
+              prompt: `You are Max, a helpful customer support voice assistant for Ticket-it.
 The user is NOT logged in. You are speaking with an anonymous visitor.
-RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group, or system configurations under any circumstances. If they ask about their account, tickets, batches, or any personal details, politely inform them that they must close this voice session, sign in to their account on the portal first, and then return to use the voice assistant.`
-            }
+Our website (Ticket-it) provides a robust ticketing and batch management system.
+RULE: You MUST NOT disclose any personal details. Tell them to sign in if they need account support.`
+            },
+            firstMessage: `Hello! I'm Max, your AI Support Specialist for Ticket-IT. How can I assist you today?`
           }
         };
       }
 
-      // Request microphone access
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      await startAudioAnalysis();
-
-      // Dynamically import @elevenlabs/client to avoid SSR build issues
+      // Dynamically import @elevenlabs/client
       const elevenlabsClient = await import('@elevenlabs/client');
       const { Conversation } = elevenlabsClient;
-      const VoiceConversationClass = (elevenlabsClient as any).VoiceConversation;
-
-      // Safe patch for handleErrorEvent prototype bug in @elevenlabs/client SDK
-      if (VoiceConversationClass && VoiceConversationClass.prototype && !(VoiceConversationClass.prototype as any).__patchedForErrorEvent) {
-        const originalHandleErrorEvent = VoiceConversationClass.prototype.handleErrorEvent;
-        VoiceConversationClass.prototype.handleErrorEvent = function (event: any) {
-          if (!event || !event.error_event) {
-            console.error("Safeguarded ElevenLabs Error Event:", event);
-            const msg = event?.message || event?.reason || "Unknown ElevenLabs WebRTC connection error";
-            this.onError(`Server error: ${msg}`, { errorType: "unknown_error", details: event });
-            return;
-          }
-          if (originalHandleErrorEvent) {
-            originalHandleErrorEvent.call(this, event);
-          }
-        };
-        (VoiceConversationClass.prototype as any).__patchedForErrorEvent = true;
-      }
-
-      // Fetch signed URL if an API key is available
-      let signedUrl: string | null = null;
-      try {
-        const tokenRes = await fetch(`/api/voice-token?agent_id=${agentId}`);
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          signedUrl = tokenData.signedUrl;
-        }
-      } catch (tokenErr) {
-        console.warn("Could not fetch signed URL token, checking public connection:", tokenErr);
-      }
 
       const connectionConfig: any = {
         onConnect: ({ conversationId }: { conversationId: string }) => {
           console.log("ElevenLabs Connected:", conversationId);
           conversationIdRef.current = conversationId;
           sessionStartTimeRef.current = Date.now();
-          messagesRef.current = []; // Reset on new connect
+          messagesRef.current = [];
           setStatus('listening');
         },
         onDisconnect: () => {
@@ -305,49 +277,34 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
         },
         onError: (error: any) => {
           console.error("ElevenLabs Error:", error);
-          setErrorMessage(String(error?.message || error || "Failed to connect to ElevenLabs agent."));
+          setErrorMessage(String(error?.message || error ||"Connection failed."));
           setStatus('error');
           stopAudioAnalysis();
         },
         onStatusChange: ({ status: statusVal }: { status: string }) => {
-          if (statusVal === 'connecting') {
-            setStatus('processing');
-          } else if (statusVal === 'connected') {
-            setStatus('listening');
-          } else if (statusVal === 'disconnected') {
-            setStatus('idle');
-          }
+          if (statusVal === 'connecting') setStatus('processing');
+          else if (statusVal === 'connected') setStatus('listening');
+          else if (statusVal === 'disconnected') setStatus('idle');
         },
         onModeChange: ({ mode: modeVal }: { mode: string }) => {
-          if (modeVal === 'speaking') {
-            setStatus('speaking');
-          } else if (modeVal === 'listening') {
-            setStatus('listening');
-          }
+          if (modeVal === 'speaking') setStatus('speaking');
+          else if (modeVal === 'listening') setStatus('listening');
         }
       };
 
-      if (signedUrl) {
-        connectionConfig.signedUrl = signedUrl;
+      connectionConfig.agentId = agentId;
+      if (conversationOverrides) {
         connectionConfig.overrides = conversationOverrides;
-        console.log("Using ElevenLabs signed URL session with prompt overrides.");
+        console.log("Using ElevenLabs agentId session WITH client-side prompt overrides.");
       } else {
-        connectionConfig.agentId = agentId;
-        // Pass overrides with agentId connection as well.
-        // This works when "Allow client overrides" is enabled in the ElevenLabs agent dashboard.
-        if (conversationOverrides) {
-          connectionConfig.overrides = conversationOverrides;
-          console.log("Using ElevenLabs agentId session WITH client-side prompt overrides (database context injected).");
-        } else {
-          console.log("No overrides available. Connecting to agent publicly.");
-        }
+        console.log("Using BARE MINIMUM ElevenLabs Agent ID:", agentId);
       }
 
       const conversation = await Conversation.startSession(connectionConfig);
       conversationRef.current = conversation;
     } catch (err: any) {
       console.error("Failed to start ElevenLabs session:", err);
-      setErrorMessage(err?.message || String(err) || "Microphone access denied or connection failed.");
+      setErrorMessage(err?.message || String(err) ||"Microphone access denied or connection failed.");
       setStatus('error');
       stopAudioAnalysis();
     }
@@ -530,16 +487,14 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
   };
 
   return (
-    <div className="py-2 space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
         {/* Left Visual Voice Assistant Panel */}
         <div className="lg:col-span-6 relative flex flex-col">
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-3xl blur opacity-25"></div>
-
-          <div className="relative bg-slate-950 border border-slate-900 rounded-3xl p-8 shadow-2xl flex flex-col items-center justify-center overflow-hidden flex-1 h-[460px] w-full">
+          <div className="relative bg-slate-950 border border-slate-900 rounded-[8px] p-8 flex flex-col items-center justify-center overflow-hidden flex-1 h-[460px] w-full">
             {/* Grid overlay */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:16px_28px] pointer-events-none"></div>
 
@@ -553,7 +508,7 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
             <button
               onClick={toggleMute}
               className="absolute top-4 right-6 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors z-10 cursor-pointer"
-              title={isMuted ? "Unmute Mic" : "Mute Mic"}
+              title={isMuted ?"Unmute Mic" :"Mute Mic"}
             >
               {isMuted ? <VolumeX className="w-4.5 h-4.5 text-red-500" /> : <Volume2 className="w-4.5 h-4.5 text-green-400" />}
             </button>
@@ -575,7 +530,7 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
                 />
 
                 {/* Status Indicator Text */}
-                <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-2">
+                <span className="text-[10px] text-slate-500  tracking-widest uppercase mt-2">
                   {status === 'listening' ? 'LISTENING NOW' :
                     status === 'speaking' ? 'SPEAKING' :
                       status === 'processing' ? 'CONNECTING...' : 'READY'}
@@ -597,7 +552,7 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
               </button>
 
               <p className="text-[12px] text-slate-400 text-center max-w-[280px]">
-                {status === 'listening' || status === 'speaking' || status === 'processing' ? "Conversation active. Click to end call." : "Click microphone to start call."}
+                {status === 'listening' || status === 'speaking' || status === 'processing' ?"Conversation active. Click to end call." :"Click microphone to start call."}
               </p>
             </div>
 
@@ -611,7 +566,7 @@ RULE: You MUST NOT disclose any personal, ticketing, batch, FTP, template, group
         </div>
 
         {/* Right Voice Log Console */}
-        <div className="lg:col-span-6 flex flex-col h-[460px] bg-white border border-slate-200 rounded-3xl shadow-md overflow-hidden">
+        <div className="lg:col-span-6 flex flex-col h-[460px] bg-white border border-slate-200 rounded-[8px] overflow-hidden">
           {/* Header */}
           <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">

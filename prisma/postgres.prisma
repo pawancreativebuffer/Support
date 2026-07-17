@@ -17,7 +17,9 @@ enum PortalRole {
 model PortalUser {
   id           Int          @id @default(autoincrement())
   email        String       @unique
-  name         String
+  login        String?      @unique
+  firstName    String?
+  lastName     String?
   passwordHash String
   role         PortalRole   @default(CUSTOMER)
   isActive     Boolean      @default(true)
@@ -29,13 +31,17 @@ model PortalUser {
   assignedTickets SupportTicket[] @relation("AgentTickets")
   sentMessages    TicketMessage[]
   voiceLogs       VoiceSessionLog[]
+  callLogs        CallLog[]
 }
 
 enum TicketStatus {
   OPEN
-  IN_PROGRESS
+  WITH_CLIENT
+  ON_HOLD
+  ESCALATED
   RESOLVED
   CLOSED
+  MERGED
 }
 
 enum TicketPriority {
@@ -58,11 +64,15 @@ model SupportTicket {
   // Foreign keys
   customerId  Int
   agentId     Int?
+  mergedIntoId Int?
 
   // Relations
   customer    PortalUser     @relation("CustomerTickets", fields: [customerId], references: [id], onDelete: Cascade)
   agent       PortalUser?    @relation("AgentTickets", fields: [agentId], references: [id], onDelete: SetNull)
   messages    TicketMessage[]
+
+  mergedInto  SupportTicket?  @relation("MergedTickets", fields: [mergedIntoId], references: [id])
+  mergedTickets SupportTicket[] @relation("MergedTickets")
 }
 
 model TicketMessage {
@@ -124,5 +134,18 @@ model VoiceSessionLog {
   createdAt      DateTime    @default(now())
 
   // Relations
+  customer       PortalUser? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+}
+
+model CallLog {
+  id             Int         @id @default(autoincrement())
+  callerNumber   String
+  transcript     String?
+  audioUrl       String?
+  duration       Int?        // in seconds
+  createdAt      DateTime    @default(now())
+
+  // Relations
+  customerId     Int?
   customer       PortalUser? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 }

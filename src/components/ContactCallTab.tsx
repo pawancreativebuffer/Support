@@ -24,8 +24,8 @@ export const ContactCallTab: React.FC = () => {
           </div>
           <div className="space-y-1.5">
             <h4 className="font-bold text-slate-900 text-sm">United States & Canada</h4>
-            <a href="tel:+18002519588" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
-              +1 (800) 251-9588
+            <a href="tel:+16263294415" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
+              +1 (626) 329-4415
             </a>
             <p className="text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
               <Clock className="w-4 h-4 text-slate-400" /> 24 Hours / 7 Days a week
@@ -40,8 +40,8 @@ export const ContactCallTab: React.FC = () => {
           </div>
           <div className="space-y-1.5">
             <h4 className="font-bold text-slate-900 text-sm">United Kingdom</h4>
-            <a href="tel:+442036080610" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
-              +44 (20) 3608-0610
+            <a href="tel:+16263294415" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
+              +1 (626) 329-4415
             </a>
             <p className="text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
               <Clock className="w-4 h-4 text-slate-400" /> Mon - Fri, 8:00 AM - 6:00 PM GMT
@@ -56,8 +56,8 @@ export const ContactCallTab: React.FC = () => {
           </div>
           <div className="space-y-1.5">
             <h4 className="font-bold text-slate-900 text-sm">Eurozone Countries</h4>
-            <a href="tel:+3224011422" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
-              +32 (2) 401-1422
+            <a href="tel:+16263294415" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
+              +1 (626) 329-4415
             </a>
             <p className="text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
               <Clock className="w-4 h-4 text-slate-400" /> Mon - Fri, 9:00 AM - 6:00 PM CET
@@ -72,8 +72,8 @@ export const ContactCallTab: React.FC = () => {
           </div>
           <div className="space-y-1.5">
             <h4 className="font-bold text-slate-900 text-sm">Asia-Pacific & Rest of World</h4>
-            <a href="tel:+16462246990" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
-              +1 (646) 224-6990
+            <a href="tel:+16263294415" className="block text-xl md:text-2xl font-semibold text-primary-600 font-sans hover:underline">
+              +1 (626) 329-4415
             </a>
             <p className="text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
               <Clock className="w-4 h-4 text-slate-400" /> Mon - Fri, 9:00 AM - 6:00 PM EST

@@ -24,7 +24,7 @@ import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
 
 interface ReplyItem {
-  sender: 'customer' | 'agent';
+  sender: 'customer' | 'agent' | 'system';
   text: string;
   time: string;
   attachmentUrl?: string | null;
@@ -38,7 +38,7 @@ interface TicketDetail {
   email: string;
   category: string;
   description: string;
-  status: 'Open' | 'In Progress' | 'Resolved';
+  status: 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed' | 'Resolved';
   createdAt: string;
   attachmentUrl?: string | null;
   attachmentName?: string | null;
@@ -102,15 +102,26 @@ function TicketTrackerContent() {
     }
   };
 
-  // Poll for agent updates every 5 seconds
+  // Listen for real-time updates via SSE
   useEffect(() => {
     fetchTicketDetails(true);
 
-    const interval = setInterval(() => {
-      fetchTicketDetails(false);
-    }, 5000);
+    if (!ticketId) return;
 
-    return () => clearInterval(interval);
+    const eventSource = new EventSource(`/api/ticket-events?ticketId=${ticketId}`);
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_reply' || data.type === 'status_update') {
+          fetchTicketDetails(false);
+        }
+      } catch (err) {}
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, [ticketId, token]);
 
   const handleResolveTicket = async () => {
@@ -128,7 +139,7 @@ function TicketTrackerContent() {
       });
 
       if (res.ok) {
-        setTicket(prev => prev ? { ...prev, status: 'Resolved' } : null);
+        setTicket(prev => prev ? { ...prev, status: 'Closed' } : null);
       } else {
         alert('Failed to update ticket status.');
       }
@@ -162,7 +173,7 @@ function TicketTrackerContent() {
       if (!prev) return null;
       return {
         ...prev,
-        status: prev.status === 'Resolved' ? 'Open' : prev.status,
+        status: (prev.status === 'Closed' || prev.status === 'Resolved') ? 'Open' : prev.status,
         replies: [...(prev.replies || []), localReply]
       };
     });
@@ -212,7 +223,7 @@ function TicketTrackerContent() {
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-slate-800">Access Denied</h2>
             <p className="text-sm text-slate-500 leading-relaxed">
-              {error || "The tracking token is invalid or has expired. Make sure you copy-pasted the complete URL."}
+              {error ||"The tracking token is invalid or has expired. Make sure you copy-pasted the complete URL."}
             </p>
           </div>
           <div className="pt-2">
@@ -236,10 +247,10 @@ function TicketTrackerContent() {
         <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
+              <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                 {ticket.id}
               </span>
-              <span className="text-xs font-black uppercase text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+              <span className="text-xs font-bold uppercase text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                 Guest Tracker
               </span>
             </div>
@@ -260,12 +271,12 @@ function TicketTrackerContent() {
             <div className="bg-white border border-slate-200 rounded-[24px] p-6 space-y-3.5 shadow-sm">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                 <Ticket className="w-4 h-4 text-primary-600" />
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Inquiry Description</h3>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Inquiry Description</h3>
               </div>
               <p className="text-sm text-slate-650 leading-relaxed select-text font-normal">
                 {ticket.description}
               </p>
-              <div className="text-[11px] text-slate-400 pt-2 font-mono border-t border-slate-100">
+              <div className="text-[11px] text-slate-400 pt-2  border-t border-slate-100">
                 Created: {ticket.createdAt}
               </div>
             </div>
@@ -275,7 +286,7 @@ function TicketTrackerContent() {
               <div className="bg-white border border-slate-200 rounded-[24px] p-6 space-y-3.5 shadow-sm">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                   <FileText className="w-4 h-4 text-primary-600" />
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Attachments</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Attachments</h3>
                 </div>
                 <div className="flex">
                   <a
@@ -295,17 +306,21 @@ function TicketTrackerContent() {
             <div className="bg-white border border-slate-200 rounded-[24px] p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
-                <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
+                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${
                   ticket.status === 'Open'
-                    ? 'bg-blue-50 text-blue-600 border-blue-100'
-                    : ticket.status === 'In Progress'
-                      ? 'bg-amber-50 text-amber-600 border-amber-100'
-                      : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                    ? 'bg-slate-50 text-slate-700 border-slate-200'
+                    : ticket.status === 'With Client' || ticket.status === 'On Hold'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : ticket.status === 'Escalated'
+                        ? 'bg-slate-50 text-slate-800 border-slate-250'
+                        : ticket.status === 'Closed' || ticket.status === 'Resolved'
+                          ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                          : 'bg-slate-50 text-slate-650 border-slate-100'
                 }`}>
                   {ticket.status}
                 </span>
               </div>
-              {ticket.status !== 'Resolved' ? (
+              {ticket.status !== 'Closed' && ticket.status !== 'Resolved' ? (
                 <button
                   type="button"
                   onClick={handleResolveTicket}
@@ -333,7 +348,7 @@ function TicketTrackerContent() {
                 </span>
                 Conversation History
               </h4>
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
                 Live Sync
               </span>
             </div>
@@ -355,6 +370,15 @@ function TicketTrackerContent() {
               ) : (
                 <div className="space-y-4">
                   {ticket.replies.map((reply, idx) => {
+                    if (reply.sender === 'system') {
+                      return (
+                        <div key={idx} className="text-center my-2">
+                          <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                            {reply.text}
+                          </span>
+                        </div>
+                      );
+                    }
                     const isUser = reply.sender === 'customer';
                     return (
                       <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -444,7 +468,7 @@ function TicketTrackerContent() {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder="Type your message update to the support agent..."
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm focus:border-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
+                    className="flex-1 h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] px-4 text-xs md:text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
                   />
                   <button
                     type="submit"

@@ -19,7 +19,10 @@ export async function GET(req: NextRequest) {
       where: { email: email.trim().toLowerCase() },
       include: {
         raisedTickets: {
+          take: 50,
+          where: { status: { not: 'MERGED' } },
           include: {
+            agent: true,
             messages: {
               include: {
                 sender: true
@@ -43,14 +46,25 @@ export async function GET(req: NextRequest) {
     // If agent or admin, return all tickets
     if (portalUser.role === 'AGENT' || portalUser.role === 'ADMIN') {
       const allTickets = await postgresPrisma.supportTicket.findMany({
+        take: 100,
+        where: { status: { not: 'MERGED' } },
         include: {
           customer: true,
+          agent: true,
           messages: {
             include: {
               sender: true
             },
             orderBy: {
               createdAt: 'asc'
+            }
+          },
+          mergedTickets: {
+            include: {
+              messages: {
+                include: { sender: true }
+              },
+              customer: true
             }
           }
         },
@@ -61,16 +75,18 @@ export async function GET(req: NextRequest) {
 
       const formattedTickets = allTickets.map(t => ({
         id: `TK-${t.id}`,
-        firstName: t.customer.name.split(' ')[0] || 'Client',
-        lastName: t.customer.name.split(' ').slice(1).join(' ') || 'User',
+        firstName: t.customer.firstName || 'Client',
+        lastName: t.customer.lastName || 'User',
         email: t.customer.email,
         category: t.title,
         description: t.description,
-        status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+        status: t.status === 'WITH_CLIENT' ? 'With Client' : t.status === 'ON_HOLD' ? 'On Hold' : t.status === 'ESCALATED' ? 'Escalated' : t.status === 'CLOSED' ? 'Closed' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
         priority: t.priority,
         type: 'Form',
         attachmentUrl: t.attachmentUrl,
         attachmentName: t.attachmentName,
+        agentId: t.agentId,
+        agent: t.agent ? { id: t.agent.id, name: [t.agent.firstName, t.agent.lastName].filter(Boolean).join(' ') || 'Agent', email: t.agent.email } : null,
         createdAt: t.createdAt.toLocaleString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -79,7 +95,7 @@ export async function GET(req: NextRequest) {
           minute: '2-digit'
         }),
         replies: t.messages.map(m => ({
-          sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+          sender: m.isSystem ? 'system' : (m.sender.role === 'CUSTOMER' ? 'customer' : 'agent'),
           text: m.text,
           attachmentUrl: m.attachmentUrl,
           attachmentName: m.attachmentName,
@@ -89,7 +105,18 @@ export async function GET(req: NextRequest) {
             hour: '2-digit',
             minute: '2-digit'
           })
-        }))
+        })),
+        mergedTickets: t.mergedTickets ? t.mergedTickets.map(mt => ({
+          id: `TK-${mt.id}`,
+          description: mt.description,
+          createdAt: mt.createdAt.toLocaleString('en-US'),
+          customerName: mt.customer ? [mt.customer.firstName, mt.customer.lastName].filter(Boolean).join(' ') : 'Unknown',
+          messages: mt.messages.map(m => ({
+            sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+            text: m.text,
+            time: m.createdAt.toLocaleString('en-US')
+          }))
+        })) : []
       }));
 
       return NextResponse.json(formattedTickets);
@@ -98,17 +125,19 @@ export async function GET(req: NextRequest) {
     // Map to client format for customer
     const formattedTickets = portalUser.raisedTickets.map(t => ({
       id: `TK-${t.id}`,
-      firstName: portalUser.name.split(' ')[0] || 'Client',
-      lastName: portalUser.name.split(' ').slice(1).join(' ') || 'User',
+      firstName: portalUser.firstName || 'Client',
+      lastName: portalUser.lastName || 'User',
       email: portalUser.email,
       category: t.title, // Map title as category
       description: t.description,
-      status: t.status === 'IN_PROGRESS' ? 'In Progress' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
+      status: t.status === 'WITH_CLIENT' ? 'With Client' : t.status === 'ON_HOLD' ? 'On Hold' : t.status === 'ESCALATED' ? 'Escalated' : t.status === 'CLOSED' ? 'Closed' : t.status === 'RESOLVED' ? 'Resolved' : 'Open',
       priority: t.priority,
       type: 'Form',
       attachmentUrl: t.attachmentUrl,
-      attachmentName: t.attachmentName,
-      createdAt: t.createdAt.toLocaleString('en-US', {
+        attachmentName: t.attachmentName,
+        agentId: t.agentId,
+        agent: t.agent ? { id: t.agent.id, name: [t.agent.firstName, t.agent.lastName].filter(Boolean).join(' ') || 'Agent', email: t.agent.email } : null,
+        createdAt: t.createdAt.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
@@ -116,7 +145,7 @@ export async function GET(req: NextRequest) {
         minute: '2-digit'
       }),
       replies: t.messages.map(m => ({
-        sender: m.sender.role === 'CUSTOMER' ? 'customer' : 'agent',
+        sender: m.isSystem ? 'system' : (m.sender.role === 'CUSTOMER' ? 'customer' : 'agent'),
         text: m.text,
         attachmentUrl: m.attachmentUrl,
         attachmentName: m.attachmentName,
@@ -148,7 +177,7 @@ function generateMagicToken(ticketId: number, email: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName, priority } = await req.json();
+    const { firstName, lastName, email, category, description, type, attachmentUrl, attachmentName, priority, status } = await req.json();
 
     if (!email || !description) {
       return NextResponse.json({ error: 'Email and description are required' }, { status: 400 });
@@ -171,7 +200,9 @@ export async function POST(req: NextRequest) {
       portalUser = await postgresPrisma.portalUser.create({
         data: {
           email: portalEmail,
-          name: fullName,
+          login: portalEmail,
+          firstName: firstName || '',
+          lastName: lastName || '',
           passwordHash: '', // Set empty since they haven't registered directly via portal, always auths through main DB
           role: 'CUSTOMER',
           isActive: true
@@ -179,12 +210,20 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    let dbStatus: any = 'OPEN';
+    if (status) {
+      const s = status.toUpperCase().replace(' ', '_');
+      if (['OPEN', 'WITH_CLIENT', 'ON_HOLD', 'ESCALATED', 'CLOSED'].includes(s)) {
+        dbStatus = s;
+      }
+    }
+
     // 2. Create the ticket in PostgreSQL
     const newTicket = await postgresPrisma.supportTicket.create({
       data: {
         title: category || 'General Inquiry',
         description: description,
-        status: 'OPEN',
+        status: dbStatus,
         priority: (priority || 'MEDIUM').toUpperCase() as any,
         customerId: portalUser.id,
         attachmentUrl: attachmentUrl || null,
@@ -195,14 +234,24 @@ export async function POST(req: NextRequest) {
     // 3. Create the initial system/customer ticket message if needed
     // In this case, we don't need a separate reply yet, the description is the initial query.
 
+    import('@/lib/eventEmitter').then(({ ticketEventEmitter }) => {
+      ticketEventEmitter.emit('ticketUpdate', { type: 'new_ticket', ticketId: `TK-${newTicket.id}` });
+    });
+
     return NextResponse.json({
       success: true,
       ticketId: newTicket.id,
       ticketCode: `TK-${newTicket.id}`,
       magicToken: generateMagicToken(newTicket.id, portalEmail)
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating ticket:', error);
-    return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 });
+    try {
+      const fs = require('fs');
+      fs.appendFileSync('./error_log.txt', new Date().toISOString() + ': ' + (error.stack || error.message || error) + '\n');
+    } catch (e) {
+      console.error('Failed to log to error_log.txt:', e);
+    }
+    return NextResponse.json({ error: `Failed to create ticket: ${error.message || error}` }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, Mic } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, Mic, LogIn } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -10,6 +10,22 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('nexus_user');
+    if (userStr) {
+      try {
+        const parsed = JSON.parse(userStr);
+        if (parsed.role === 'Admin') {
+          window.location.href = '/admin';
+        } else if (parsed.role === 'Agent') {
+          window.location.href = '/agent';
+        } else {
+          window.location.href = '/dashboard';
+        }
+      } catch (err) {}
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,12 +176,19 @@ export default function LoginPage() {
 
   return (
     <div className="flex-1 flex items-center justify-center py-12 px-4 lg:px-8 bg-slate-50 relative overflow-hidden">
-      {/* Background glowing mesh blobs */}
-      <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary-400/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-400/20 rounded-full blur-[140px] pointer-events-none" />
+      {/* Clean Theme Gradients */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-500/5 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent" />
+      
+      {/* Elegant Grid Texture (Light) */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTSA0MCAwIEwgMCAwIDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjA0KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] pointer-events-none" />
+      
+      {/* Dynamic Theme Glows */}
+      <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Main Container Card: Split 12-Column Layout */}
-      <div className="relative w-full max-w-5xl bg-white rounded-[32px] border border-slate-200/80 shadow-[0_20px_50px_rgba(99,102,241,0.06)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10">
+      <div className="relative w-full max-w-5xl bg-white rounded-[16px] border border-slate-200/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10">
 
         {/* Left Side: Ticket Support System Panel (5 Columns) */}
         <div className="lg:col-span-5 bg-gradient-to-br from-primary-900 via-primary-850 to-primary-800 p-8 lg:p-10 flex flex-col justify-start space-y-6 text-white relative overflow-hidden">
@@ -284,7 +307,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Username / Login ID</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Username / Login ID</label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                       <Mail className="w-4.5 h-4.5" />
@@ -294,7 +317,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] pl-11 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none transition-all"
                       placeholder="Enter your login username"
                     />
                   </div>
@@ -302,7 +325,7 @@ export default function LoginPage() {
 
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+                    <label className="block text-sm font-medium capitalize text-slate-700">Password</label>
                   </div>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
@@ -313,7 +336,7 @@ export default function LoginPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-11 py-3.5 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] pl-11 pr-11 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none transition-all"
                       placeholder="••••••••"
                     />
                     <button
@@ -330,11 +353,11 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm rounded-full transition-all shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2 cursor-pointer focus:outline-none"
+                className="w-full bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] flex items-center justify-center gap-2 rounded-[8px] transition-all duration-300 cursor-pointer focus:outline-none"
               >
                 {loading ? 'Securing Session...' : (
                   <>
-                    Sign In <ArrowRight className="w-4 h-4" />
+                    <LogIn className="w-4 h-4" /> Sign In
                   </>
                 )}
               </button>

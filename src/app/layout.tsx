@@ -4,6 +4,7 @@ import "./globals.css";
 import { LayoutDashboard } from "lucide-react";
 import ChatWidget from "../components/ChatWidget";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Link from "next/link";
 
 const poppins = Poppins({
@@ -37,37 +38,7 @@ export default function RootLayout({
         <ChatWidget />
 
         {/* Footer */}
-        <footer className="bg-slate-950 border-t border-slate-900 py-12 mt-auto">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2 text-slate-400 font-medium">
-              <div className="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center text-slate-300">
-                <LayoutDashboard className="w-3 h-3" />
-              </div>
-              © {new Date().getFullYear()} Ticket-it. All rights reserved.
-            </div>
-            <div className="flex gap-6 text-sm text-slate-400">
-              <a 
-                href="https://ticket-it.com/wp-content/uploads/2025/07/Ticket-IT-Privacy-Policy-1.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-primary-400 transition-colors cursor-pointer"
-              >
-                Privacy Policy
-              </a>
-              <a 
-                href="https://ticket-it.com/wp-content/uploads/2025/05/ESL-Sales-Agreement-inclusive-of-End-User-Licence.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-primary-400 transition-colors cursor-pointer"
-              >
-                Terms of Service
-              </a>
-              <Link href="/agent-login" className="hover:text-primary-400 transition-colors cursor-pointer">
-                Agent Login
-              </Link>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );

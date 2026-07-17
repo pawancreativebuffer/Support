@@ -12,11 +12,11 @@ import { CATEGORIES } from '../data/categories';
 export default function SupportPage() {
   const router = useRouter();
   const [heroSearch, setHeroSearch] = useState('');
-  const [faqCategory, setFaqCategory] = useState('Account');
+  const [faqCategory, setFaqCategory] = useState('Billing');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
-  const categories = ['Account', 'Billing', 'Developers', 'Pricing', 'Usage', 'System', 'Security'];
+  const categories = ['Billing', 'Account', 'Developers', 'Pricing', 'Usage', 'System', 'Security'];
   const searchTags = ["SSO & SAML", "API Authentication", "WhatsApp Integration", "SLA Policies", "Agent Roles"];
 
   const handleTagClick = (tag: string) => {
@@ -91,15 +91,23 @@ export default function SupportPage() {
         searchTags={searchTags}
       />
 
-      {/* Main Content Area */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] py-16 flex flex-col items-center">
         {/* Services Bento Grid */}
         <ServicesSection />
+      </div>
 
-        {/* Video Tutorials Section */}
-        <VideoSection />
+      {/* Video Tutorials Section - Full Width */}
+      <div className="relative w-full bg-slate-50 py-20 border-y border-slate-200 overflow-hidden">
+        {/* Technical Square Grid Texture & Gradient */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e1_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e1_1px,transparent_1px)] [background-size:48px_48px] opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-transparent to-slate-100/90"></div>
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] flex flex-col items-center">
+          <VideoSection />
+        </div>
+      </div>
 
-        {/* Predefined Questions / FAQ */}
+      {/* Predefined Questions / FAQ */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] py-16 flex flex-col items-center">
         <FAQSection
           faqCategory={faqCategory}
           setFaqCategory={setFaqCategory}

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -43,4 +47,71 @@ body {
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Custom Thin Scrollbar Design */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
+}
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+/* Global Input and Label Standardization */
+input[type="text"]:not(.no-global-style),
+input[type="email"]:not(.no-global-style),
+input[type="password"]:not(.no-global-style),
+input[type="tel"]:not(.no-global-style),
+input[type="number"]:not(.no-global-style) {
+  height: 46px !important;
+  border-radius: 8px !important;
+  border-color: #cbd5e1 !important; /* slate-300 */
+  border-width: 1px !important;
+  outline: none !important;
+}
+
+input[type="text"]:not(.no-global-style):focus,
+input[type="email"]:not(.no-global-style):focus,
+input[type="password"]:not(.no-global-style):focus,
+input[type="tel"]:not(.no-global-style):focus,
+input[type="number"]:not(.no-global-style):focus {
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--primary-500) !important;
+  border-color: var(--primary-500) !important;
+}
+
+textarea:not(.no-global-style) {
+  border-radius: 8px !important;
+  border-color: #cbd5e1 !important; /* slate-300 */
+  border-width: 1px !important;
+  outline: none !important;
+}
+
+textarea:not(.no-global-style):focus {
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--primary-500) !important;
+  border-color: var(--primary-500) !important;
+}
+
+label:not(.no-global-style) {
+  font-weight: 500 !important; /* medium */
+  text-transform: capitalize !important;
+  letter-spacing: normal !important;
+}
+
+/* Global Button Icon Gap */
+button, a.hidden.md\:flex, a.inline-flex {
+  column-gap: 0.5rem !important;
 }

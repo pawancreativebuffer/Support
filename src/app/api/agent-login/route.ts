@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
 import { postgresPrisma } from '@/lib/postgresDb';
 import bcrypt from 'bcryptjs';
 
@@ -12,89 +11,37 @@ export async function POST(req: NextRequest) {
 
     const trimmedLogin = login.trim();
 
-    if (!prisma) {
-      return NextResponse.json({
-        error: 'SQL Server database connection is not active'
-      }, { status: 500 });
-    }
-
     if (!postgresPrisma) {
       return NextResponse.json({
         error: 'PostgreSQL database connection is not active'
       }, { status: 500 });
     }
 
-    // 1. Seed John Doe in SQL Server if he doesn't exist
-    let sqlAgentUser = await prisma.users.findFirst({
-      where: { Login: 'john.doe' }
-    });
-
-    if (!sqlAgentUser) {
-      console.log('Seeding default agent john.doe into SQL Server database...');
-      try {
-        sqlAgentUser = await prisma.users.create({
-          data: {
-            Login: 'john.doe',
-            Email: 'john.doe@ticket-it.com',
-            FirstName: 'John',
-            LastName: 'Doe',
-            AddressLine1: '123 Support Lane',
-            Phone: '123-456-7890',
-            Client: 'Support Agent Client',
-            RegionName: 'Global',
-            IsActive: true,
-            UserPassword: '' // Will fallback to dev password
-          }
-        });
-      } catch (err) {
-        console.error("Failed to seed john.doe in SQL Server:", err);
+    const portalUser = await postgresPrisma.portalUser.findFirst({
+      where: {
+        OR: [
+          { email: { equals: trimmedLogin, mode: 'insensitive' } },
+          { login: { equals: trimmedLogin, mode: 'insensitive' } }
+        ],
+        role: 'AGENT'
       }
-    }
-
-    // 2. Seed John Doe in PostgreSQL if he doesn't exist
-    let pgAgentUser = await postgresPrisma.portalUser.findUnique({
-      where: { email: 'john.doe@ticket-it.com' }
     });
 
-    if (!pgAgentUser) {
-      console.log('Seeding default agent john.doe into PostgreSQL database...');
-      pgAgentUser = await postgresPrisma.portalUser.create({
-        data: {
-          email: 'john.doe@ticket-it.com',
-          name: 'John Doe',
-          passwordHash: '',
-          role: 'AGENT',
-          isActive: true
-        }
-      });
-    }
-
-    // 3. Look up SQL Server database for the matching Login ID
-    let matchedUser = await prisma.users.findFirst({
-      where: { Login: trimmedLogin }
-    });
-
-    if (!matchedUser) {
+    if (!portalUser) {
       return NextResponse.json({
-        error: `Login ID '${login}' not found in the database. Please check your credentials.`
+        error: `Agent Login ID or Email '${login}' not found. Please check your credentials.`
       }, { status: 404 });
     }
 
-    if (matchedUser.IsActive === false) {
+    if (!portalUser.isActive) {
       return NextResponse.json({
-        error: 'This account has been deactivated.'
+        error: 'This agent account is currently deactivated.'
       }, { status: 403 });
     }
 
-    // 4. Verify password matching
     let isPasswordValid = false;
-    if (matchedUser.UserPassword) {
-      isPasswordValid = await bcrypt.compare(password, matchedUser.UserPassword);
-    }
-    
-    // Dev fallback: allow login with "root", "admin", or "password"
-    if (password === 'root' || password === 'admin' || password === 'password') {
-      isPasswordValid = true;
+    if (portalUser.passwordHash) {
+      isPasswordValid = await bcrypt.compare(password, portalUser.passwordHash);
     }
 
     if (!isPasswordValid) {
@@ -103,34 +50,12 @@ export async function POST(req: NextRequest) {
       }, { status: 401 });
     }
 
-    // 5. Look up matching PostgreSQL Portal User to check role permission
-    const portalEmail = matchedUser.Email.trim().toLowerCase();
-    const portalUser = await postgresPrisma.portalUser.findUnique({
-      where: { email: portalEmail }
-    });
-
-    if (!portalUser) {
-      return NextResponse.json({
-        error: 'Access denied. This login ID does not have a support portal account configured.'
-      }, { status: 403 });
-    }
-
-    // Strict validation: Only allow AGENT role
-    if (portalUser.role !== 'AGENT') {
-      return NextResponse.json({
-        error: 'Access denied. This login is reserved for support agents only.'
-      }, { status: 403 });
-    }
-
-    if (portalUser.isActive === false) {
-      return NextResponse.json({
-        error: 'This agent account is currently deactivated.'
-      }, { status: 403 });
-    }
+    const fullName = [portalUser.firstName, portalUser.lastName].filter(Boolean).join(' ') || 'Agent';
 
     return NextResponse.json({
       user: {
-        name: portalUser.name,
+        id: portalUser.id,
+        name: fullName,
         email: portalUser.email,
         role: 'Agent'
       }

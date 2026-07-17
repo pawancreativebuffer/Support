@@ -13,13 +13,7 @@ interface ArticleViewerProps {
   setFeedbackSubmitted: (val: boolean) => void;
 }
 
-const FAQ_MAPPINGS: Record<string, string[]> = {
-  "ticketing-helpdesk": ["Account", "Usage"],
-  "live-chat-widgets": ["Developers", "Usage"],
-  "agent-team-routing": ["Account"],
-  "api-integrations": ["Developers"],
-  "status-performance": ["System"],
-  "security-compliance": ["Security"]
+const FAQ_MAPPINGS: Record<string, string[]> = {"ticketing-helpdesk": ["Account","Usage"],"live-chat-widgets": ["Developers","Usage"],"agent-team-routing": ["Account"],"api-integrations": ["Developers"],"status-performance": ["System"],"security-compliance": ["Security"]
 };
 
 export const ArticleViewer: React.FC<ArticleViewerProps> = ({
@@ -41,12 +35,12 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
     if (relevantFaqs.length === 0) return null;
 
     return (
-      <div className={isInsideCard ? 'border-t border-slate-100 pt-6 px-8 md:px-10 pb-4' : 'mt-8 bg-white rounded-3xl border border-slate-200 shadow-sm p-8 md:p-10'}>
-        <div className="flex items-center gap-2 mb-6">
-          <MessageSquare className="w-5 h-5 text-primary-500" />
-          <h3 className="text-xl font-bold text-slate-900">Frequently Asked Questions</h3>
+      <div className={isInsideCard ? 'border-t border-slate-100 pt-6 px-6 pb-6' : 'mt-8 bg-white rounded-lg border border-slate-200 shadow-sm p-6'}>
+        <div className="flex items-center gap-3 mb-6">
+          <MessageSquare className="w-6 h-6 text-primary-500" />
+          <h3 className="text-2xl font-bold text-slate-900">Frequently Asked Questions</h3>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-2">
           {relevantFaqs.map((faq, idx) => {
             const isOpen = openFaqIndex === idx;
             return (
@@ -115,8 +109,8 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
 
   /* ARTICLE VIEW: Displays detailed step-by-step documentation */
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="p-8 md:p-10">
+    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+      <div className="p-6">
         <Link
           href={`/article/${activeCategory.slug}`}
           className="inline-flex items-center gap-2 text-primary-600 font-semibold text-sm mb-6 hover:text-primary-700 transition-colors"
@@ -137,7 +131,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
         </div>
 
         {/* Article content container */}
-        <div className="prose prose-slate max-w-none">
+        <div className="prose prose-slate max-w-none [&>*:last-child]:mb-0">
           <p className="text-base text-slate-600 leading-relaxed mb-6">
             Welcome to the comprehensive guide on <strong>{activeArticle.title.toLowerCase()}</strong>.
             Follow the steps below to complete the configuration or review related details.
@@ -158,13 +152,13 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
 
           {/* Step list */}
           {activeArticle.steps && (
-            <div className="space-y-6 mb-8">
+            <div className="space-y-4 mb-8">
               {activeArticle.steps.map((step, idx) => (
-                <div key={idx} className="flex gap-4 items-start">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
+                <div key={idx} className="flex gap-3 items-start">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs mt-0.5">
                     {idx + 1}
                   </div>
-                  <p className="text-slate-600 text-base leading-relaxed pt-0.5">
+                  <p className="text-slate-600 text-base leading-relaxed">
                     {step}
                   </p>
                 </div>
@@ -179,7 +173,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                 <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                <div className="text-xs text-slate-400 font-mono ml-2 truncate">https://console.ticket-it.com/portal</div>
+                <div className="text-xs text-slate-400  ml-2 truncate">https://console.ticket-it.com/portal</div>
               </div>
               <div className="relative w-full h-[350px]">
                 <Image
@@ -232,7 +226,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                     <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">{activeArticle.sample.title}</h4>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse text-sm md:text-base">
+                    <table className="w-full text-left border-collapse text-sm">
                       <thead>
                         <tr className="bg-slate-100/50 text-slate-600 font-semibold border-b border-slate-200">
                           {(activeArticle.sample.data as TableData).headers.map((h: string, i: number) => (
@@ -268,7 +262,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                     {Object.entries(activeArticle.sample.data as ReceivingAccountData).map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center text-sm">
                         <span className="text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                        <span className="font-mono text-slate-800 font-semibold">{String(value)}</span>
+                        <span className="text-slate-800 font-semibold">{String(value)}</span>
                       </div>
                     ))}
                   </div>
@@ -277,11 +271,11 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
 
               {activeArticle.sample.type === 'json' && activeArticle.sample.data && (
                 <div className="bg-slate-900 rounded-2xl p-5 overflow-hidden">
-                  <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800 text-sm font-mono text-slate-500">
+                  <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800 text-sm  text-slate-500">
                     <span>{activeArticle.sample.title}</span>
                     <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded">JSON</span>
                   </div>
-                  <pre className="text-slate-300 text-sm font-mono overflow-x-auto m-0">
+                  <pre className="text-slate-300 text-sm  overflow-x-auto m-0">
                     <code>{JSON.stringify(activeArticle.sample.data, null, 2)}</code>
                   </pre>
                 </div>
@@ -293,7 +287,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
           {activeArticle.codeBlock && (
             <div className="bg-slate-900 rounded-xl p-5 mb-8 relative group overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
-              <pre className="text-slate-300 text-sm font-mono overflow-x-auto m-0">
+              <pre className="text-slate-300 text-sm  overflow-x-auto m-0">
                 <code>{activeArticle.codeBlock}</code>
               </pre>
             </div>
@@ -323,7 +317,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       {renderRelatedFaqs(true)}
 
       {/* Feedback bottom block */}
-      <div className="bg-slate-50 border-t border-slate-100 p-8 md:p-10 flex flex-col items-center justify-center text-center">
+      <div className="bg-slate-50 border-t border-slate-100 py-8 px-6 flex flex-col items-center justify-center text-center">
         {feedbackSubmitted ? (
           <div className="space-y-2 py-4">
             <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
