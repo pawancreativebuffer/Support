@@ -633,7 +633,7 @@ export default function DashboardPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => loadDatabaseData(user.email)}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
                 disabled={isRefreshing}
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -774,7 +774,7 @@ export default function DashboardPage() {
                               <div className="bg-white border border-slate-200/80 p-5 rounded-xl mt-2.5 group-hover:border-slate-350 hover:shadow-sm transition-all max-w-full space-y-3.5">
                                 {act.type === 'ticket' && (
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
                                       Category
                                     </span>
                                     <span className="text-xs font-bold text-slate-700">
@@ -895,7 +895,7 @@ export default function DashboardPage() {
                     <select
                       value={ticketFilter}
                       onChange={(e) => setTicketFilter(e.target.value as any)}
-                      className="h-[38px] px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-slate-650 hover:border-slate-350 focus:border-primary-500 focus:outline-none transition-all text-[10px] font-bold uppercase tracking-wider cursor-pointer shadow-sm"
+                      className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
                     >
                       <option value="All">All Statuses</option>
                       <option value="Open">Open</option>
@@ -932,7 +932,7 @@ export default function DashboardPage() {
                           <span className="text-xs font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2.5 py-0.5 rounded">
                             {ticket.id}
                           </span>
-                          <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${ticket.type === 'Voice'
+                          <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${ticket.type === 'Voice'
                             ? 'bg-blue-50 text-blue-650 border-blue-100'
                             : ticket.type === 'Live Chat'
                               ? 'bg-sky-50 text-sky-650 border-sky-100'
@@ -967,11 +967,11 @@ export default function DashboardPage() {
                           }`}>
                           <span className="text-[8px] leading-none">
                             {ticket.status === 'Open'
-                              ? '⚫'
+                              ? '⚪'
                               : ticket.status === 'With Client' || ticket.status === 'On Hold'
                                 ? '🟠'
                                 : ticket.status === 'Escalated'
-                                  ? '⚫'
+                                  ? '⚪'
                                   : '🟢'}
                           </span>
                           <span className="ml-1">{ticket.status}</span>
@@ -990,14 +990,14 @@ export default function DashboardPage() {
                       <button
                         disabled={ticketsPage === 1}
                         onClick={() => setTicketsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
                         onClick={() => setTicketsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1038,7 +1038,7 @@ export default function DashboardPage() {
                                 {chat.title}
                               </span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
                               ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
                               : 'bg-slate-100 text-slate-450 border-slate-200/60'
                               }`}>
@@ -1046,7 +1046,7 @@ export default function DashboardPage() {
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
                             &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
                           </p>
                         </div>
@@ -1073,14 +1073,14 @@ export default function DashboardPage() {
                       <button
                         disabled={chatsPage === 1}
                         onClick={() => setChatsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={chatsPage * chatsPerPage >= chats.length}
                         onClick={() => setChatsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1121,7 +1121,7 @@ export default function DashboardPage() {
                                 Voice Session
                               </span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
                               ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                               : 'bg-slate-100 text-slate-450 border-slate-200/60'
                               }`}>
@@ -1129,7 +1129,7 @@ export default function DashboardPage() {
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
                             &quot;{log.transcript}&quot;
                           </p>
                         </div>
@@ -1156,14 +1156,14 @@ export default function DashboardPage() {
                       <button
                         disabled={voicePage === 1}
                         onClick={() => setVoicePage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={voicePage * voicePerPage >= voiceLogs.length}
                         onClick={() => setVoicePage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1181,7 +1181,7 @@ export default function DashboardPage() {
       {/* MODAL 1: TICKET CONVERSATION THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
@@ -1216,8 +1216,8 @@ export default function DashboardPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Original Inquiry Description */}
-                  <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner">
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Inquiry Description</p>
+                  <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Inquiry Description</p>
                     <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
                       <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed select-text font-normal">
                         {selectedTicket.description}
@@ -1230,8 +1230,8 @@ export default function DashboardPage() {
 
                   {/* Ticket Attachments */}
                   {selectedTicket.attachmentUrl && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
+                    <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Ticket Attachments</p>
                       <div className="flex flex-wrap gap-2.5">
                         <a
                           href={selectedTicket.attachmentUrl}
@@ -1247,10 +1247,10 @@ export default function DashboardPage() {
                   )}
 
                   {/* Status Indicator & Resolve Action */}
-                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-xl bg-slate-50/50 shadow-inner">
+                  <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50/50">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${selectedTicket.status === 'Open'
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${selectedTicket.status === 'Open'
                         ? 'bg-slate-50 text-slate-700 border-slate-200'
                         : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
                           ? 'bg-amber-50 text-amber-700 border-amber-200'
@@ -1287,7 +1287,7 @@ export default function DashboardPage() {
                       </span>
                       Conversation Thread
                     </h4>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
                       Live responses
                     </span>
                   </div>
@@ -1437,7 +1437,7 @@ export default function DashboardPage() {
       {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
@@ -1504,7 +1504,7 @@ export default function DashboardPage() {
       {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
@@ -1536,8 +1536,8 @@ export default function DashboardPage() {
 
                   {/* Status Indicator */}
                   <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Session Status</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
                       ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                       : 'bg-slate-105 text-slate-455 border-slate-200/60'
                       }`}>
@@ -1548,19 +1548,19 @@ export default function DashboardPage() {
                   {/* Call Stats Grid */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
-                      <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Call Duration</span>
+                      <span className="text-base font-bold text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
                     </div>
                     <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
-                      <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Confidence Score</span>
+                      <span className="text-base font-bold mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
                     </div>
                   </div>
 
                   {/* Audio Recording Player */}
                   <div className="bg-white border border-slate-200 p-5 rounded-xl space-y-3.5 shadow-sm">
                     <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Call Recording</p>
                       {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
                     </div>
 
@@ -1606,7 +1606,7 @@ export default function DashboardPage() {
                       </span>
                       Call Transcript Thread
                     </h4>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
                       Speech-To-Text Log
                     </span>
                   </div>
@@ -1626,7 +1626,7 @@ export default function DashboardPage() {
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
-                                <span className={`block text-[9px] font-black uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
+                                <span className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
                                   }`}>
                                   {isUser ? 'Customer' : 'AI Assistant'}
                                 </span>

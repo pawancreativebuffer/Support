@@ -250,7 +250,7 @@ function TicketTrackerContent() {
               <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                 {ticket.id}
               </span>
-              <span className="text-xs font-black uppercase text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+              <span className="text-xs font-bold uppercase text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                 Guest Tracker
               </span>
             </div>
@@ -271,7 +271,7 @@ function TicketTrackerContent() {
             <div className="bg-white border border-slate-200 rounded-[24px] p-6 space-y-3.5 shadow-sm">
               <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                 <Ticket className="w-4 h-4 text-primary-600" />
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Inquiry Description</h3>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Inquiry Description</h3>
               </div>
               <p className="text-sm text-slate-650 leading-relaxed select-text font-normal">
                 {ticket.description}
@@ -286,7 +286,7 @@ function TicketTrackerContent() {
               <div className="bg-white border border-slate-200 rounded-[24px] p-6 space-y-3.5 shadow-sm">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                   <FileText className="w-4 h-4 text-primary-600" />
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Attachments</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">Attachments</h3>
                 </div>
                 <div className="flex">
                   <a
@@ -306,7 +306,7 @@ function TicketTrackerContent() {
             <div className="bg-white border border-slate-200 rounded-[24px] p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
-                <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
+                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${
                   ticket.status === 'Open'
                     ? 'bg-slate-50 text-slate-700 border-slate-200'
                     : ticket.status === 'With Client' || ticket.status === 'On Hold'
@@ -348,7 +348,7 @@ function TicketTrackerContent() {
                 </span>
                 Conversation History
               </h4>
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
                 Live Sync
               </span>
             </div>

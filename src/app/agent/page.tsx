@@ -867,7 +867,7 @@ export default function AgentPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => loadDatabaseData(user.email)}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
                 disabled={isRefreshing}
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -875,7 +875,7 @@ export default function AgentPage() {
               </button>
               <button
                 onClick={() => setShowReportModal(true)}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
               >
                 <FileDown className="w-4 h-4 text-primary-600" />
                 Generate Report
@@ -1049,7 +1049,7 @@ export default function AgentPage() {
                             <div className="bg-white border border-slate-200/80 p-5 rounded-xl mt-2.5 group-hover:border-slate-355 hover:shadow-sm transition-all max-w-full space-y-3">
                               <div className="flex justify-between items-center flex-wrap gap-2 text-xs">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
                                     Category
                                   </span>
                                   <span className="text-xs font-bold text-slate-700">
@@ -1182,7 +1182,7 @@ export default function AgentPage() {
                       placeholder="Search queue..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full md:w-56 h-[38px] bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 text-xs font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
                     />
                   </div>
 
@@ -1191,7 +1191,7 @@ export default function AgentPage() {
                      <select
                        value={ticketFilter}
                        onChange={(e) => setTicketFilter(e.target.value as any)}
-                       className="h-[38px] px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-slate-650 hover:border-slate-350 focus:border-primary-500 focus:outline-none transition-all text-[10px] font-bold uppercase tracking-wider cursor-pointer shadow-sm"
+                       className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
                      >
                        <option value="All">All Statuses</option>
                        <option value="Open">Open</option>
@@ -1206,7 +1206,7 @@ export default function AgentPage() {
                   <div className="relative">
                     <button
                       onClick={() => setShowPriorityFilters(!showPriorityFilters)}
-                      className={`h-[38px] px-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
+                      className={`h-[46px] px-4 rounded-[8px] border transition-all cursor-pointer flex items-center justify-center gap-2 text-sm font-medium ${
                         showPriorityFilters || priorityFilter !== 'All'
                           ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm shadow-primary-100/30'
                           : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
@@ -1228,7 +1228,7 @@ export default function AgentPage() {
                         />
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-25 py-2 animate-fade-in">
                           <div className="px-3 pb-1 border-b border-slate-100 mb-1">
-                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Filter Priority</span>
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Filter Priority</span>
                           </div>
                           {(['All', 'High', 'Medium', 'Low'] as const).map(p => (
                             <button
@@ -1268,7 +1268,7 @@ export default function AgentPage() {
                   {selectedTicketIds.length > 0 && (
                     <div className="flex items-center gap-3 px-4 py-3 bg-slate-50/80 border border-slate-200/80 rounded-xl mb-4 animate-fade-in">
                       <div className="flex items-center gap-2 pr-4 border-r border-slate-200">
-                        <span className="w-5 h-5 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-[10px] font-black">
+                        <span className="w-5 h-5 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-[10px] font-bold">
                           {selectedTicketIds.length}
                         </span>
                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -1328,7 +1328,7 @@ export default function AgentPage() {
                   <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                      <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                         <th className="py-3 px-4 w-10">
                           <input
                             type="checkbox"
@@ -1426,7 +1426,7 @@ export default function AgentPage() {
                                 <span
                                   className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${
                                     ticket.priority === 'HIGH'
-                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                                       : ticket.priority === 'LOW'
                                         ? 'bg-slate-50 border-slate-200 text-slate-600'
                                         : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1440,7 +1440,7 @@ export default function AgentPage() {
                                   onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
                                   className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
                                     ticket.priority === 'HIGH'
-                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                                       : ticket.priority === 'LOW'
                                         ? 'bg-slate-50 border-slate-200 text-slate-600'
                                         : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1454,7 +1454,7 @@ export default function AgentPage() {
                             </td>
                             <td className="py-4 px-4">
                               {user?.role === 'Admin' ? (
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border ${
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border ${
                                   ticket.status === 'Open'
                                     ? 'bg-slate-50 border-slate-200 text-slate-750'
                                     : ticket.status === 'With Client' || ticket.status === 'On Hold'
@@ -1465,11 +1465,11 @@ export default function AgentPage() {
                                 }`}>
                                    <span className="text-[8px] leading-none">
                                      {ticket.status === 'Open'
-                                       ? '⚫'
+                                       ? '⚪'
                                        : ticket.status === 'With Client' || ticket.status === 'On Hold'
                                          ? '🟠'
                                          : ticket.status === 'Escalated'
-                                           ? '⚫'
+                                           ? '⚪'
                                            : '🟢'}
                                    </span>
                                    <span className="ml-1">{ticket.status}</span>
@@ -1478,7 +1478,7 @@ export default function AgentPage() {
                                 <select
                                   value={ticket.status}
                                   onChange={(e) => handleUpdateStatus(ticket.id, e.target.value as any)}
-                                  className={`text-[10px] font-black uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
+                                  className={`text-[10px] font-bold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
                                     ticket.status === 'Open'
                                       ? 'bg-slate-50 border-slate-200 text-slate-750'
                                       : ticket.status === 'With Client' || ticket.status === 'On Hold'
@@ -1488,10 +1488,10 @@ export default function AgentPage() {
                                           : 'bg-emerald-50 border-emerald-250 text-emerald-750 font-bold'
                                   }`}
                                 >
-                                  <option value="Open">⚫ Open</option>
+                                  <option value="Open">⚪ Open</option>
                                   <option value="With Client">🟠 With Client</option>
                                   <option value="On Hold">🟠 On Hold</option>
-                                  <option value="Escalated">⚫ Escalated</option>
+                                  <option value="Escalated">⚪ Escalated</option>
                                   <option value="Closed">🟢 Closed</option>
                                 </select>
                               )}
@@ -1501,7 +1501,7 @@ export default function AgentPage() {
                                 {ticket.status !== 'Closed' && ticket.status !== 'Resolved' && user?.role !== 'Admin' && (
                                   <button
                                     onClick={() => handleUpdateStatus(ticket.id, 'Closed')}
-                                    className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                                    className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                                     title="Quick Close Ticket"
                                   >
                                     Quick Close
@@ -1531,14 +1531,14 @@ export default function AgentPage() {
                     <button
                       disabled={ticketsPage === 1}
                       onClick={() => setTicketsPage(prev => prev - 1)}
-                      className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                      className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                     >
                       Previous
                     </button>
                     <button
                       disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
                       onClick={() => setTicketsPage(prev => prev + 1)}
-                      className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                      className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                     >
                       Next
                     </button>
@@ -1577,7 +1577,7 @@ export default function AgentPage() {
                                 {chat.customerName && chat.customerEmail ? `${chat.customerName} (${chat.customerEmail})` : chat.customerName ? chat.customerName : chat.customerEmail ? chat.customerEmail : 'Guest User'}
                               </span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
                               ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
                               : 'bg-slate-100 text-slate-450 border-slate-200/60'
                               }`}>
@@ -1585,7 +1585,7 @@ export default function AgentPage() {
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
                             &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
                           </p>
                         </div>
@@ -1612,14 +1612,14 @@ export default function AgentPage() {
                       <button
                         disabled={chatsPage === 1}
                         onClick={() => setChatsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={chatsPage * chatsPerPage >= chats.length}
                         onClick={() => setChatsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1661,7 +1661,7 @@ export default function AgentPage() {
                                 {log.customerName && log.customerEmail ? `${log.customerName} (${log.customerEmail})` : log.customerName ? log.customerName : log.customerEmail ? log.customerEmail : 'Guest User'}
                               </span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
                               ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                               : 'bg-slate-100 text-slate-450 border-slate-200/60'
                               }`}>
@@ -1669,7 +1669,7 @@ export default function AgentPage() {
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
                             &quot;{log.transcript}&quot;
                           </p>
                         </div>
@@ -1696,14 +1696,14 @@ export default function AgentPage() {
                       <button
                         disabled={voicePage === 1}
                         onClick={() => setVoicePage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={voicePage * voicePerPage >= voiceLogs.length}
                         onClick={() => setVoicePage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1720,7 +1720,7 @@ export default function AgentPage() {
       {/* DISCUSSION MODAL THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
@@ -1728,7 +1728,7 @@ export default function AgentPage() {
                 <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                   {selectedTicket.id}
                 </span>
-                <h3 className="font-extrabold text-slate-800 text-lg">
+                <h3 className="text-base font-bold text-slate-900">
                   Agent Dispatch Hub
                 </h3>
                 <span className="text-slate-300 text-sm font-semibold hidden sm:inline">•</span>
@@ -1755,8 +1755,8 @@ export default function AgentPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
                   
                   {/* Original Inquiry Description */}
-                  <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner">
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Original Inquiry</p>
+                  <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Original Inquiry</p>
                     <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
                       <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed font-normal">
                         {selectedTicket.description}
@@ -1771,8 +1771,8 @@ export default function AgentPage() {
 
                   {/* Ticket Attachments */}
                   {selectedTicket.attachmentUrl && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
+                    <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Ticket Attachments</p>
                       <div className="flex flex-wrap gap-2.5">
                         <a
                           href={selectedTicket.attachmentUrl}
@@ -1788,8 +1788,8 @@ export default function AgentPage() {
                   )}
 
                   {selectedTicket.mergedTickets && selectedTicket.mergedTickets.length > 0 && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                      <span className="text-xs font-black uppercase tracking-widest text-slate-400">Merged Tickets</span>
+                    <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Merged Tickets</span>
                       <button
                         onClick={() => {
                           setMergedTicketsList(selectedTicket.mergedTickets || []);
@@ -1803,12 +1803,12 @@ export default function AgentPage() {
                   )}
 
                   {/* Status Indicator & Resolve Action */}
-                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-xl bg-slate-50/50 shadow-inner">
+                  <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50/50">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
                       {user?.role === 'Admin' ? (
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
+                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${
                             selectedTicket.status === 'Open'
                               ? 'bg-slate-50 text-slate-700 border-slate-200'
                               : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
@@ -1828,20 +1828,20 @@ export default function AgentPage() {
                           onChange={(e) => handleUpdateStatus(selectedTicket.id, e.target.value)}
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
                             selectedTicket.status === 'Open'
-                              ? 'bg-slate-50 border-slate-200 text-slate-700 font-black'
+                              ? 'bg-slate-50 border-slate-200 text-slate-700 font-bold'
                               : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
-                                ? 'bg-amber-50 border-amber-250 text-amber-700 font-black'
+                                ? 'bg-amber-50 border-amber-250 text-amber-700 font-bold'
                                 : selectedTicket.status === 'Escalated'
-                                  ? 'bg-slate-50 border-slate-250 text-slate-800 font-black'
+                                  ? 'bg-slate-50 border-slate-250 text-slate-800 font-bold'
                                   : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
-                                    ? 'bg-emerald-50 border-emerald-250 text-emerald-750 font-black'
-                                    : 'bg-slate-50 border-slate-200 text-slate-700 font-black'
+                                    ? 'bg-emerald-50 border-emerald-250 text-emerald-750 font-bold'
+                                    : 'bg-slate-50 border-slate-200 text-slate-700 font-bold'
                           }`}
                         >
-                          <option value="Open">⚫ Open</option>
+                          <option value="Open">⚪ Open</option>
                           <option value="With Client">🟠 With Client</option>
                           <option value="On Hold">🟠 On Hold</option>
-                          <option value="Escalated">⚫ Escalated</option>
+                          <option value="Escalated">⚪ Escalated</option>
                           <option value="Closed">🟢 Closed</option>
                         </select>
                       )}
@@ -1854,7 +1854,7 @@ export default function AgentPage() {
                         <span
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${
                             selectedTicket.priority === 'HIGH'
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                               : selectedTicket.priority === 'LOW'
                                 ? 'bg-slate-50 border-slate-200 text-slate-600'
                                 : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1868,7 +1868,7 @@ export default function AgentPage() {
                           onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
                             selectedTicket.priority === 'HIGH'
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                               : selectedTicket.priority === 'LOW'
                                 ? 'bg-slate-50 border-slate-200 text-slate-600'
                                 : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1904,7 +1904,7 @@ export default function AgentPage() {
                       </span>
                       Conversation Thread
                     </h4>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
                       Live responses
                     </span>
                   </div>
@@ -2066,20 +2066,20 @@ export default function AgentPage() {
       {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
                   <MessageCircle className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-[15px] select-text">
+                  <h3 className="text-base font-bold text-slate-900">
                     {selectedChat.customerName ? `Chat with ${selectedChat.customerName}` : selectedChat.customerEmail ? `Chat with ${selectedChat.customerEmail}` : 'Chat with Guest User'}
                   </h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className={`w-1.5 h-1.5 rounded-full ${selectedChat.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                    <span className="text-xs text-slate-500 mt-0.5">
                       {selectedChat.status} Session Transcript
                     </span>
                   </div>
@@ -2134,17 +2134,17 @@ export default function AgentPage() {
 {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
                   <Mic className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-base select-text">AI Voice Session Details</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                  <h3 className="text-base font-bold text-slate-900">AI Voice Session Details</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     {selectedVoiceLog.customerName ? `Customer: ${selectedVoiceLog.customerName}` : selectedVoiceLog.customerEmail ? `Customer: ${selectedVoiceLog.customerEmail}` : 'Guest User'} • ID: {selectedVoiceLog.id.slice(0, 8)} • Called: {selectedVoiceLog.createdAt}
                   </p>
                 </div>
@@ -2166,8 +2166,8 @@ export default function AgentPage() {
 
                   {/* Status Indicator */}
                   <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Session Status</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
                       ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                       : 'bg-slate-105 text-slate-455 border-slate-200/60'
                       }`}>
@@ -2178,19 +2178,19 @@ export default function AgentPage() {
                   {/* Call Stats Grid */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
-                      <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Call Duration</span>
+                      <span className="text-base font-bold text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
                     </div>
                     <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
-                      <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Confidence Score</span>
+                      <span className="text-base font-bold mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
                     </div>
                   </div>
 
                   {/* Audio Recording Player */}
                   <div className="bg-white border border-slate-200 p-5 rounded-xl space-y-3.5 shadow-sm">
                     <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Call Recording</p>
                       {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
                     </div>
 
@@ -2237,7 +2237,7 @@ export default function AgentPage() {
                         </span>
                         Call Transcript Thread
                       </h4>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
                         Speech-To-Text Log
                       </span>
                     </div>
@@ -2254,7 +2254,7 @@ export default function AgentPage() {
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
-                                <span className={`block text-[9px] font-black uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
+                                <span className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
                                   }`}>
                                   {isUser ? 'Customer' : 'AI Assistant'}
                                 </span>
@@ -2288,16 +2288,16 @@ export default function AgentPage() {
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
               <div className="flex items-center gap-3.5">
-                <span className="p-2.5 rounded-xl bg-indigo-50 text-indigo-650 border border-indigo-100 shadow-sm">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-50 text-indigo-650 border border-indigo-100 shadow-sm">
                   <PlusCircle className="w-5.5 h-5.5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg">Create Custom Ticket</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                  <h3 className="text-base font-bold text-slate-900">Create Custom Ticket</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Log a direct client issue or phone request
                   </p>
                 </div>
@@ -2307,7 +2307,7 @@ export default function AgentPage() {
                   setShowCreateModal(false);
                   setNewTicketAttachment(null);
                 }}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-455 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2318,47 +2318,47 @@ export default function AgentPage() {
               <div className="flex-1 p-8 space-y-6 overflow-y-auto">
                 <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">First Name</label>
                   <input
                     type="text"
                     required
                     value={newTicketFirstName}
                     onChange={(e) => setNewTicketFirstName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
                     placeholder="e.g. John"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Last Name</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Last Name</label>
                   <input
                     type="text"
                     required
                     value={newTicketLastName}
                     onChange={(e) => setNewTicketLastName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
                     placeholder="e.g. Doe"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Customer Email Address</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Customer Email Address</label>
                 <input
                   type="email"
                   required
                   value={newTicketEmail}
                   onChange={(e) => setNewTicketEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
                   placeholder="e.g. client@domain.com"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Inquiry Category</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Inquiry Category</label>
                 <select
                   value={newTicketCategory}
                   onChange={(e) => setNewTicketCategory(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
                 >
                   {TOPICS.map(topic => (
                     <option key={topic.slug} value={topic.label}>{topic.label}</option>
@@ -2368,11 +2368,11 @@ export default function AgentPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Urgency</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Ticket Urgency</label>
                   <select
                     value={newTicketPriority}
                     onChange={(e) => setNewTicketPriority(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
                   >
                     <option value="LOW">Low Priority</option>
                     <option value="MEDIUM">Medium Priority</option>
@@ -2380,11 +2380,11 @@ export default function AgentPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Status</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Ticket Status</label>
                   <select
                     value={newTicketStatus}
                     onChange={(e) => setNewTicketStatus(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
                   >
                     <option value="Open">Open</option>
                     <option value="With Client">With Client</option>
@@ -2396,20 +2396,20 @@ export default function AgentPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Problem Description</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Problem Description</label>
                 <textarea
                   required
                   rows={5}
                   value={newTicketDescription}
                   onChange={(e) => setNewTicketDescription(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 resize-none leading-relaxed"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 resize-none leading-relaxed"
                   placeholder="Summarize the support call or issue details here..."
                 />
               </div>
 
               {/* Attachments Upload */}
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4.5 space-y-3">
-                <label className="block text-xs font-semibold text-slate-500">Ticket Attachments (Optional)</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Ticket Attachments (Optional)</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="file"
@@ -2457,7 +2457,7 @@ export default function AgentPage() {
                     setShowCreateModal(false);
                     setNewTicketAttachment(null);
                   }}
-                  className="px-5 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                 >
                   Cancel
                 </button>
@@ -2485,15 +2485,15 @@ export default function AgentPage() {
       {/* MODAL: MERGE TICKETS CONFIRMATION */}
       {showMergeModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col animate-scale-up">
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
                   <Paperclip className="w-5.5 h-5.5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg">Merge Tickets</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Select the PRIMARY ticket</p>
+                  <h3 className="text-base font-bold text-slate-900">Merge Tickets</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Select the PRIMARY ticket</p>
                 </div>
               </div>
               <button onClick={() => setShowMergeModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
@@ -2532,7 +2532,7 @@ export default function AgentPage() {
               </div>
             </div>
             <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-              <button onClick={() => setShowMergeModal(false)} className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none">
+              <button onClick={() => setShowMergeModal(false)} className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none">
                 Cancel
               </button>
               <button onClick={handleMergeSubmit} disabled={mergeSubmitting} className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
@@ -2547,15 +2547,15 @@ export default function AgentPage() {
       {/* MODAL: VIEW MERGED TICKETS */}
       {showMergedTicketsModal && (
         <div className="fixed inset-0 z-[60] bg-slate-900/80  flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
                   <History className="w-5.5 h-5.5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg">Merged Tickets History</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
+                  <h3 className="text-base font-bold text-slate-900">Merged Tickets History</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
                 </div>
               </div>
               <button onClick={() => setShowMergedTicketsModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
@@ -2571,19 +2571,19 @@ export default function AgentPage() {
                       <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
                       <p className="text-[10px] text-slate-400  mt-1">{mt.createdAt}</p>
                     </div>
-                    <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                    <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-slate-200">
                       Merged
                     </span>
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Original Inquiry</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Original Inquiry</p>
                     <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
                       {mt.description}
                     </p>
                   </div>
                   {mt.messages && mt.messages.length > 0 && (
                     <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Prior Thread</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Prior Thread</p>
                       <div className="space-y-3">
                         {mt.messages.filter((m: any) => !m.text.startsWith('[SYSTEM]')).map((msg: any, mIdx: number) => (
                           <div key={mIdx} className="bg-slate-50 rounded-xl p-3 border border-slate-100">

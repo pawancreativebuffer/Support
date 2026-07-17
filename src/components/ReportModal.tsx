@@ -162,8 +162,8 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 text-base">Generate Report</h3>
-              <p className="text-xs text-slate-500">Download a filtered PDF report</p>
+              <h3 className="text-base font-bold text-slate-900">Generate Report</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Download a filtered PDF report</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
@@ -174,13 +174,13 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
         <div className="p-6 space-y-5 flex-1 overflow-y-auto">
           {/* Agent Select */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <label className="text-sm font-medium capitalize text-slate-700 flex items-center gap-1.5">
               <Filter className="w-3.5 h-3.5 text-primary-500" /> Select Agent
             </label>
             <select
               value={selectedAgent}
               onChange={(e) => setSelectedAgent(e.target.value)}
-              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm text-slate-700"
             >
               <option value="all">All Agents</option>
               {agents.map((agent) => (
@@ -193,10 +193,9 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
 
           {/* Date Range */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Date Range Filter</label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Start Date</label>
+                <label className="text-sm font-medium capitalize text-slate-700">Start Date</label>
                 <input
                   type="date"
                   value={startDate}
@@ -204,11 +203,11 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
                     setStartDate(e.target.value);
                     setDateRange('custom');
                   }}
-                  className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+                  className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm text-slate-700"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">End Date</label>
+                <label className="text-sm font-medium capitalize text-slate-700">End Date</label>
                 <input
                   type="date"
                   value={endDate}
@@ -216,7 +215,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
                     setEndDate(e.target.value);
                     setDateRange('custom');
                   }}
-                  className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+                  className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm text-slate-700"
                 />
               </div>
             </div>
@@ -224,11 +223,11 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
 
           {/* Status */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Status</label>
+            <label className="text-sm font-medium capitalize text-slate-700">Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm text-slate-700"
             >
               <option value="All">All Statuses</option>
               <option value="Open">Open</option>
@@ -242,11 +241,11 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
 
           {/* Priority */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Priority</label>
+            <label className="text-sm font-medium capitalize text-slate-700">Priority</label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm text-slate-700"
             >
               <option value="All">All Priorities</option>
               <option value="HIGH">High</option>
@@ -259,7 +258,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
         <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-3">
           <button
             onClick={onClose}
-            className="flex flex-1 items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+            className="flex flex-1 items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
           >
             Cancel
           </button>

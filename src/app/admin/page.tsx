@@ -870,7 +870,7 @@ export default function AdminPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => loadDatabaseData(user.email)}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
                 disabled={isRefreshing}
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -878,7 +878,7 @@ export default function AdminPage() {
               </button>
               <button
                 onClick={() => setShowReportModal(true)}
-                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
               >
                 <FileDown className="w-4 h-4 text-primary-600" />
                 Generate Report
@@ -1053,7 +1053,7 @@ export default function AdminPage() {
                             <div className="bg-white border border-slate-200/80 p-5 rounded-xl mt-2.5 group-hover:border-slate-355 hover:shadow-sm transition-all max-w-full space-y-3">
                               <div className="flex justify-between items-center flex-wrap gap-2 text-xs">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
                                     Category
                                   </span>
                                   <span className="text-xs font-bold text-slate-700">
@@ -1186,7 +1186,7 @@ export default function AdminPage() {
                       placeholder="Search queue..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full md:w-56 h-[38px] bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 text-xs font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
                     />
                   </div>
 
@@ -1195,7 +1195,7 @@ export default function AdminPage() {
                     <select
                       value={ticketFilter}
                       onChange={(e) => setTicketFilter(e.target.value as any)}
-                      className="h-[38px] px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-slate-650 hover:border-slate-350 focus:border-primary-500 focus:outline-none transition-all text-[10px] font-bold uppercase tracking-wider cursor-pointer shadow-sm"
+                      className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
                     >
                       <option value="All">All Statuses</option>
                       <option value="Open">Open</option>
@@ -1210,7 +1210,7 @@ export default function AdminPage() {
                   <div className="relative">
                     <button
                       onClick={() => setShowPriorityFilters(!showPriorityFilters)}
-                      className={`h-[38px] px-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${showPriorityFilters || priorityFilter !== 'All'
+                      className={`h-[46px] px-4 rounded-[8px] border transition-all cursor-pointer flex items-center justify-center gap-2 text-sm font-medium ${showPriorityFilters || priorityFilter !== 'All'
                         ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm shadow-primary-100/30'
                         : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                         }`}
@@ -1231,7 +1231,7 @@ export default function AdminPage() {
                         />
                         <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-25 py-2 animate-fade-in">
                           <div className="px-3 pb-1 border-b border-slate-100 mb-1">
-                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Filter Priority</span>
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Filter Priority</span>
                           </div>
                           {(['All', 'High', 'Medium', 'Low'] as const).map(p => (
                             <button
@@ -1269,7 +1269,7 @@ export default function AdminPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
 
                           <th className="py-3 px-4">Ticket ID</th>
                           <th className="py-3 px-4">Submitter Info</th>
@@ -1315,7 +1315,7 @@ export default function AdminPage() {
                                 {user?.role === 'Admin' ? (
                                   <span
                                     className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${ticket.priority === 'HIGH'
-                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                                       : ticket.priority === 'LOW'
                                         ? 'bg-slate-50 border-slate-200 text-slate-600'
                                         : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1328,7 +1328,7 @@ export default function AdminPage() {
                                     value={ticket.priority || 'MEDIUM'}
                                     onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
                                     className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${ticket.priority === 'HIGH'
-                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                                       : ticket.priority === 'LOW'
                                         ? 'bg-slate-50 border-slate-200 text-slate-600'
                                         : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1341,7 +1341,7 @@ export default function AdminPage() {
                                 )}
                               </td>
                               <td className="py-4 px-4">
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border ${ticket.status === 'Open'
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border ${ticket.status === 'Open'
                                   ? 'bg-slate-50 border-slate-200 text-slate-750'
                                   : ticket.status === 'With Client' || ticket.status === 'On Hold'
                                     ? 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1351,11 +1351,11 @@ export default function AdminPage() {
                                   }`}>
                                   <span className="text-[8px] leading-none">
                                     {ticket.status === 'Open'
-                                      ? '⚫'
+                                      ? '⚪'
                                       : ticket.status === 'With Client' || ticket.status === 'On Hold'
                                         ? '🟠'
                                         : ticket.status === 'Escalated'
-                                          ? '⚫'
+                                          ? '⚪'
                                           : '🟢'}
                                   </span>
                                   <span className="ml-1">{ticket.status}</span>
@@ -1387,14 +1387,14 @@ export default function AdminPage() {
                       <button
                         disabled={ticketsPage === 1}
                         onClick={() => setTicketsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
                         onClick={() => setTicketsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1434,7 +1434,7 @@ export default function AdminPage() {
                                 {chat.customerName && chat.customerEmail ? `${chat.customerName} (${chat.customerEmail})` : chat.customerName ? chat.customerName : chat.customerEmail ? chat.customerEmail : 'Guest User'}
                               </span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
                               ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
                               : 'bg-slate-100 text-slate-450 border-slate-200/60'
                               }`}>
@@ -1442,7 +1442,7 @@ export default function AdminPage() {
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
                             &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
                           </p>
                         </div>
@@ -1469,14 +1469,14 @@ export default function AdminPage() {
                       <button
                         disabled={chatsPage === 1}
                         onClick={() => setChatsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={chatsPage * chatsPerPage >= chats.length}
                         onClick={() => setChatsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1518,7 +1518,7 @@ export default function AdminPage() {
                                 {log.customerName && log.customerEmail ? `${log.customerName} (${log.customerEmail})` : log.customerName ? log.customerName : log.customerEmail ? log.customerEmail : 'Guest User'}
                               </span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
                               ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                               : 'bg-slate-100 text-slate-450 border-slate-200/60'
                               }`}>
@@ -1526,7 +1526,7 @@ export default function AdminPage() {
                             </span>
                           </div>
 
-                          <p className="text-xs text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
+                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
                             &quot;{log.transcript}&quot;
                           </p>
                         </div>
@@ -1553,14 +1553,14 @@ export default function AdminPage() {
                       <button
                         disabled={voicePage === 1}
                         onClick={() => setVoicePage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={voicePage * voicePerPage >= voiceLogs.length}
                         onClick={() => setVoicePage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1598,7 +1598,7 @@ export default function AdminPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                           <th className="py-3 px-4">Caller</th>
                           <th className="py-3 px-4">Date & Time</th>
                           <th className="py-3 px-4">Duration</th>
@@ -1645,14 +1645,14 @@ export default function AdminPage() {
                         <button
                           disabled={callLogsPage === 1}
                           onClick={() => setCallLogsPage(prev => prev - 1)}
-                          className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                         >
                           Previous
                         </button>
                         <button
                           disabled={callLogsPage * callLogsPerPage >= callLogs.length}
                           onClick={() => setCallLogsPage(prev => prev + 1)}
-                          className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                         >
                           Next
                         </button>
@@ -1670,7 +1670,7 @@ export default function AdminPage() {
       {/* DISCUSSION MODAL THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
@@ -1678,7 +1678,7 @@ export default function AdminPage() {
                 <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                   {selectedTicket.id}
                 </span>
-                <h3 className="font-extrabold text-slate-800 text-lg">
+                <h3 className="text-base font-bold text-slate-900">
                   Agent Dispatch Hub
                 </h3>
                 <span className="text-slate-300 text-sm font-semibold hidden sm:inline">•</span>
@@ -1705,8 +1705,8 @@ export default function AdminPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Original Inquiry Description */}
-                  <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner">
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Original Inquiry</p>
+                  <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner">
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Original Inquiry</p>
                     <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
                       <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed font-normal">
                         {selectedTicket.description}
@@ -1721,8 +1721,8 @@ export default function AdminPage() {
 
                   {/* Ticket Attachments */}
                   {selectedTicket.attachmentUrl && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
+                    <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Ticket Attachments</p>
                       <div className="flex flex-wrap gap-2.5">
                         <a
                           href={selectedTicket.attachmentUrl}
@@ -1738,8 +1738,8 @@ export default function AdminPage() {
                   )}
 
                   {selectedTicket.mergedTickets && selectedTicket.mergedTickets.length > 0 && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                      <span className="text-xs font-black uppercase tracking-widest text-slate-400">Merged Tickets</span>
+                    <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
+                      <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Merged Tickets</span>
                       <button
                         onClick={() => {
                           setMergedTicketsList(selectedTicket.mergedTickets || []);
@@ -1753,10 +1753,10 @@ export default function AdminPage() {
                   )}
 
                   {/* Status Indicator & Resolve Action */}
-                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-xl bg-slate-50/50 shadow-inner">
+                  <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50/50">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${selectedTicket.status === 'Open'
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${selectedTicket.status === 'Open'
                         ? 'bg-slate-50 text-slate-700 border-slate-200'
                         : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
                           ? 'bg-amber-50 text-amber-700 border-amber-200'
@@ -1776,7 +1776,7 @@ export default function AdminPage() {
                       {user?.role === 'Admin' ? (
                         <span
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${selectedTicket.priority === 'HIGH'
-                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                             : selectedTicket.priority === 'LOW'
                               ? 'bg-slate-50 border-slate-200 text-slate-600'
                               : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1789,7 +1789,7 @@ export default function AdminPage() {
                           value={selectedTicket.priority || 'MEDIUM'}
                           onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
                           className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${selectedTicket.priority === 'HIGH'
-                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-black'
+                            ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                             : selectedTicket.priority === 'LOW'
                               ? 'bg-slate-50 border-slate-200 text-slate-600'
                               : 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1817,7 +1817,7 @@ export default function AdminPage() {
                       </span>
                       Conversation Thread
                     </h4>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
                       Live responses
                     </span>
                   </div>
@@ -1978,20 +1978,20 @@ export default function AdminPage() {
       {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
                   <MessageCircle className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-[15px] select-text">
+                  <h3 className="text-base font-bold text-slate-900">
                     {selectedChat.customerName ? `Chat with ${selectedChat.customerName}` : selectedChat.customerEmail ? `Chat with ${selectedChat.customerEmail}` : 'Chat with Guest User'}
                   </h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className={`w-1.5 h-1.5 rounded-full ${selectedChat.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                    <span className="text-xs text-slate-500 mt-0.5">
                       {selectedChat.status} Session Transcript
                     </span>
                   </div>
@@ -2046,17 +2046,17 @@ export default function AdminPage() {
       {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
                   <Mic className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-base select-text">AI Voice Session Details</h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                  <h3 className="text-base font-bold text-slate-900">AI Voice Session Details</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     {selectedVoiceLog.customerName ? `Customer: ${selectedVoiceLog.customerName}` : selectedVoiceLog.customerEmail ? `Customer: ${selectedVoiceLog.customerEmail}` : 'Guest User'} • ID: {selectedVoiceLog.id.slice(0, 8)} • Called: {selectedVoiceLog.createdAt}
                   </p>
                 </div>
@@ -2078,8 +2078,8 @@ export default function AdminPage() {
 
                   {/* Status Indicator */}
                   <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex items-center justify-between">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Session Status</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
                       ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
                       : 'bg-slate-105 text-slate-455 border-slate-200/60'
                       }`}>
@@ -2090,19 +2090,19 @@ export default function AdminPage() {
                   {/* Call Stats Grid */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
-                      <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Call Duration</span>
+                      <span className="text-base font-bold text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
                     </div>
                     <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                      <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
-                      <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Confidence Score</span>
+                      <span className="text-base font-bold mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
                     </div>
                   </div>
 
                   {/* Audio Recording Player */}
                   <div className="bg-white border border-slate-200 p-5 rounded-xl space-y-3.5 shadow-sm">
                     <div className="flex items-center justify-between">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Call Recording</p>
                       {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
                     </div>
 
@@ -2148,7 +2148,7 @@ export default function AdminPage() {
                       </span>
                       Call Transcript Thread
                     </h4>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
                       Speech-To-Text Log
                     </span>
                   </div>
@@ -2168,7 +2168,7 @@ export default function AdminPage() {
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
-                                <span className={`block text-[9px] font-black uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
+                                <span className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
                                   }`}>
                                   {isUser ? 'Customer' : 'AI Assistant'}
                                 </span>
@@ -2201,16 +2201,16 @@ export default function AdminPage() {
       {/* MODAL: CALL LOG TRANSCRIPT */}
       {selectedCallLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
                   <PhoneCall className="w-5.5 h-5.5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg select-text">Call Log Details</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                  <h3 className="text-base font-bold text-slate-900">Call Log Details</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     {selectedCallLog.callerNumber} • {new Date(selectedCallLog.createdAt).toLocaleString()}
                   </p>
                 </div>
@@ -2230,7 +2230,7 @@ export default function AdminPage() {
               <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-3">
                 <div className="flex items-center gap-2">
                   <Volume2 className="w-4 h-4 text-primary-500" />
-                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Call Recording</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Call Recording</span>
                 </div>
                 {selectedCallLog.audioUrl ? (
                   <audio controls src={selectedCallLog.audioUrl} className="w-full h-10 rounded-lg outline-none" />
@@ -2245,7 +2245,7 @@ export default function AdminPage() {
               <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col min-h-0">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageSquare className="w-4 h-4 text-slate-400" />
-                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Full Transcript</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Full Transcript</span>
                 </div>
                 
                 {(!selectedCallLog.transcript || selectedCallLog.transcript.startsWith("Call in") || selectedCallLog.transcript ==="Call completed.") ? (
@@ -2286,7 +2286,7 @@ export default function AdminPage() {
                         return (
                           <div key={i} className={`flex w-full ${isCustomer ? 'justify-end' : 'justify-start'}`}>
                             <div className={`max-w-[85%] rounded-xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
-                              <div className={`text-[10px] font-black uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
+                              <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
                                 {isCustomer ? 'Customer' : 'AI Agent'}
                               </div>
                               <div className="leading-relaxed whitespace-pre-wrap">
@@ -2309,16 +2309,16 @@ export default function AdminPage() {
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
               <div className="flex items-center gap-3.5">
-                <span className="p-2.5 rounded-xl bg-indigo-50 text-indigo-650 border border-indigo-100 shadow-sm">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-50 text-indigo-650 border border-indigo-100 shadow-sm">
                   <PlusCircle className="w-5.5 h-5.5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg">Create Custom Ticket</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                  <h3 className="text-base font-bold text-slate-900">Create Custom Ticket</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Log a direct client issue or phone request
                   </p>
                 </div>
@@ -2328,7 +2328,7 @@ export default function AdminPage() {
                   setShowCreateModal(false);
                   setNewTicketAttachment(null);
                 }}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-455 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2337,48 +2337,48 @@ export default function AdminPage() {
             <form onSubmit={handleCreateTicket} className="flex-1 p-8 space-y-6">
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">First Name</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">First Name</label>
                   <input
                     type="text"
                     required
                     value={newTicketFirstName}
                     onChange={(e) => setNewTicketFirstName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
                     placeholder="e.g. John"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Last Name</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Last Name</label>
                   <input
                     type="text"
                     required
                     value={newTicketLastName}
                     onChange={(e) => setNewTicketLastName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
                     placeholder="e.g. Doe"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Customer Email Address</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Customer Email Address</label>
                 <input
                   type="email"
                   required
                   value={newTicketEmail}
                   onChange={(e) => setNewTicketEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400"
                   placeholder="e.g. client@domain.com"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Inquiry Category</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Inquiry Category</label>
                   <select
                     value={newTicketCategory}
                     onChange={(e) => setNewTicketCategory(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
                   >
                     {TOPICS.map(topic => (
                       <option key={topic.slug} value={topic.label}>{topic.label}</option>
@@ -2386,11 +2386,11 @@ export default function AdminPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ticket Urgency</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Ticket Urgency</label>
                   <select
                     value={newTicketPriority}
                     onChange={(e) => setNewTicketPriority(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
                   >
                     <option value="LOW">Low Priority</option>
                     <option value="MEDIUM">Medium Priority</option>
@@ -2400,20 +2400,20 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Problem Description</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Problem Description</label>
                 <textarea
                   required
                   rows={5}
                   value={newTicketDescription}
                   onChange={(e) => setNewTicketDescription(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 resize-none leading-relaxed"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 resize-none leading-relaxed"
                   placeholder="Summarize the support call or issue details here..."
                 />
               </div>
 
               {/* Attachments Upload */}
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4.5 space-y-3">
-                <label className="block text-xs font-semibold text-slate-500">Ticket Attachments (Optional)</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Ticket Attachments (Optional)</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="file"
@@ -2458,7 +2458,7 @@ export default function AdminPage() {
                     setShowCreateModal(false);
                     setNewTicketAttachment(null);
                   }}
-                  className="px-5 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                 >
                   Cancel
                 </button>
@@ -2486,15 +2486,15 @@ export default function AdminPage() {
       {/* MODAL: VIEW MERGED TICKETS */}
       {showMergedTicketsModal && (
         <div className="fixed inset-0 z-[60] bg-slate-900/80  flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="p-2.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
+                <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
                   <History className="w-5.5 h-5.5" />
                 </span>
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg">Merged Tickets History</h3>
-                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
+                  <h3 className="text-base font-bold text-slate-900">Merged Tickets History</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
                 </div>
               </div>
               <button onClick={() => setShowMergedTicketsModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
@@ -2510,19 +2510,19 @@ export default function AdminPage() {
                       <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
                       <p className="text-[10px] text-slate-400  mt-1">{mt.createdAt}</p>
                     </div>
-                    <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                    <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-slate-200">
                       Merged
                     </span>
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Original Inquiry</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Original Inquiry</p>
                     <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
                       {mt.description}
                     </p>
                   </div>
                   {mt.messages && mt.messages.length > 0 && (
                     <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Prior Thread</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Prior Thread</p>
                       <div className="space-y-3">
                         {mt.messages.filter((m: any) => !m.text.startsWith('[SYSTEM]')).map((msg: any, mIdx: number) => (
                           <div key={mIdx} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
@@ -2560,7 +2560,7 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900">Add New Agent</h3>
-                  <p className="text-xs text-slate-500">Register a new support agent profile</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Register a new support agent profile</p>
                 </div>
               </div>
               <button onClick={() => setShowAddAgentModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
@@ -2571,33 +2571,33 @@ export default function AdminPage() {
             <form onSubmit={handleCreateAgent} className="p-6 space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">First Name</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">First Name</label>
                   <input required value={newAgentFirstName} onChange={e => setNewAgentFirstName(e.target.value)} type="text" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="Agent" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Last Name</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Last Name</label>
                   <input required value={newAgentLastName} onChange={e => setNewAgentLastName(e.target.value)} type="text" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="Name" />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Email Address *</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Email Address *</label>
                 <input required value={newAgentEmail} onChange={e => setNewAgentEmail(e.target.value)} type="email" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="agent@ticket-it.com" />
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Login ID *</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Login ID *</label>
                   <input required value={newAgentLogin} onChange={e => setNewAgentLogin(e.target.value)} type="text" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="agent123" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Password *</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Password *</label>
                   <input required value={newAgentPassword} onChange={e => setNewAgentPassword(e.target.value)} type="password" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="••••••••" />
                 </div>
               </div>
 
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-2">
-                <button type="button" onClick={() => setShowAddAgentModal(false)} className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none">
+                <button type="button" onClick={() => setShowAddAgentModal(false)} className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none">
                   Cancel
                 </button>
                 <button type="submit" disabled={newAgentSubmitting} className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
