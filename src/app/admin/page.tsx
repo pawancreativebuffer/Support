@@ -30,6 +30,7 @@ import {
 import Link from 'next/link';
 import { useUploadThing } from '@/lib/uploadthing';
 import ReportModal from '@/components/ReportModal';
+import { TOPICS } from '@/data/topics';
 
 interface ChatItem {
   id: string;
@@ -2430,10 +2431,9 @@ export default function AdminPage() {
                     onChange={(e) => setNewTicketCategory(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4.5 py-3 text-sm font-semibold focus:border-primary-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
                   >
-                    <option value="API & Developer Tools">API & Developer Tools</option>
-                    <option value="Billing & Invoices">Billing & Invoices</option>
-                    <option value="System Status & Uptime">System Status & Uptime</option>
-                    <option value="General Support">General Support</option>
+                    {TOPICS.map(topic => (
+                      <option key={topic.slug} value={topic.label}>{topic.label}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
