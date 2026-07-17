@@ -1024,10 +1024,10 @@ export default function AdminPage() {
                     {activities.slice(0, visibleActivities).map((act, index) => {
                       const requiresReply = needsReply(act.rawItem);
                       const dotColor = act.rawItem.status === 'Resolved'
-                        ? "bg-emerald-500 ring-emerald-100"
+                        ?"bg-emerald-500 ring-emerald-100"
                         : requiresReply
-                          ? "bg-amber-500 ring-amber-100 animate-pulse"
-                          : "bg-blue-500 ring-blue-100";
+                          ?"bg-amber-500 ring-amber-100 animate-pulse"
+                          :"bg-blue-500 ring-blue-100";
 
                       return (
                         <div key={index} className="relative group">
@@ -1060,7 +1060,7 @@ export default function AdminPage() {
                                     {act.rawItem.category}
                                   </span>
                                 </div>
-                                <span className="font-mono text-slate-450 font-bold select-all">{act.rawItem.email}</span>
+                                <span className="text-slate-450 font-bold select-all">{act.rawItem.email}</span>
                               </div>
 
                               <p className="text-sm text-slate-600 leading-relaxed font-medium select-text pt-1">
@@ -1068,7 +1068,7 @@ export default function AdminPage() {
                               </p>
 
                               <div className="flex items-center justify-between border-t border-slate-100 mt-3 pt-3 text-xs">
-                                <span className="font-mono font-bold text-slate-400">{act.subtitle}</span>
+                                <span className="font-bold text-slate-400">{act.subtitle}</span>
 
                                 <button
                                   onClick={() => setSelectedTicket(act.rawItem)}
@@ -1149,7 +1149,7 @@ export default function AdminPage() {
                       <>
                         <div className="flex gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
-                          <p>Check "Chronological Ticket Activity" to track the latest customer responses.</p>
+                          <p>Check"Chronological Ticket Activity" to track the latest customer responses.</p>
                         </div>
                         <div className="flex gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
@@ -1157,7 +1157,7 @@ export default function AdminPage() {
                         </div>
                         <div className="flex gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
-                          <p>Mark tickets as "Resolved" when issues are solved to keep queues clear.</p>
+                          <p>Mark tickets as"Resolved" when issues are solved to keep queues clear.</p>
                         </div>
                       </>
                     )}
@@ -1288,7 +1288,7 @@ export default function AdminPage() {
                           return (
                             <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group ${isChecked ? 'bg-primary-50/10' : ''}`}>
 
-                              <td className="py-4 px-4 font-mono text-xs font-bold text-slate-500">
+                              <td className="py-4 px-4  text-xs font-bold text-slate-500">
                                 <span className="flex items-center gap-2">
                                   {requiresReply && (
                                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Requires Attention" />
@@ -1298,7 +1298,7 @@ export default function AdminPage() {
                               </td>
                               <td className="py-4 px-4">
                                 <div className="text-xs font-bold text-slate-800">{ticket.firstName} {ticket.lastName}</div>
-                                <div className="text-[10px] text-slate-400 font-mono mt-0.5">{ticket.email}</div>
+                                <div className="text-[10px] text-slate-400  mt-0.5">{ticket.email}</div>
                               </td>
                               <td className="py-4 px-4 text-xs font-bold text-slate-700">
                                 {ticket.category}
@@ -1365,7 +1365,7 @@ export default function AdminPage() {
                                 <div className="flex items-center justify-end gap-2">
                                   <button
                                     onClick={() => setSelectedTicket(ticket)}
-                                    className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                   >
                                     {user?.role === 'Admin' ? 'View' : 'Manage'} <ChevronRight className="w-3.5 h-3.5" />
                                   </button>
@@ -1611,7 +1611,7 @@ export default function AdminPage() {
                             <td className="py-4 px-4">
                               <div className="text-xs font-bold text-slate-800">{log.callerNumber}</div>
                               {log.customer && (
-                                <div className="text-[10px] text-slate-400 font-mono mt-0.5">{log.customer.name} ({log.customer.email})</div>
+                                <div className="text-[10px] text-slate-400  mt-0.5">{log.customer.name} ({log.customer.email})</div>
                               )}
                             </td>
                             <td className="py-4 px-4 text-xs text-slate-400 font-semibold">
@@ -1624,7 +1624,7 @@ export default function AdminPage() {
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => setSelectedCallLog(log)}
-                                  className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                                  className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                 >
                                   View <ChevronRight className="w-3.5 h-3.5" />
                                 </button>
@@ -1675,7 +1675,7 @@ export default function AdminPage() {
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
+                <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                   {selectedTicket.id}
                 </span>
                 <h3 className="font-extrabold text-slate-800 text-lg">
@@ -1714,8 +1714,8 @@ export default function AdminPage() {
                     </div>
                     <div className="pt-3 border-t border-slate-200/60 space-y-1">
                       <p className="text-xs text-slate-500 font-bold">Submitter: {selectedTicket.firstName} {selectedTicket.lastName}</p>
-                      <p className="text-[11px] text-slate-400 font-mono select-all">{selectedTicket.email}</p>
-                      <p className="text-[10px] text-slate-400 font-mono pt-1">Raised: {selectedTicket.createdAt}</p>
+                      <p className="text-[11px] text-slate-400  select-all">{selectedTicket.email}</p>
+                      <p className="text-[10px] text-slate-400  pt-1">Raised: {selectedTicket.createdAt}</p>
                     </div>
                   </div>
 
@@ -2248,7 +2248,7 @@ export default function AdminPage() {
                   <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Full Transcript</span>
                 </div>
                 
-                {(!selectedCallLog.transcript || selectedCallLog.transcript.startsWith("Call in") || selectedCallLog.transcript === "Call completed.") ? (
+                {(!selectedCallLog.transcript || selectedCallLog.transcript.startsWith("Call in") || selectedCallLog.transcript ==="Call completed.") ? (
                   <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin">
                     {selectedCallLog.transcript || <span className="italic text-slate-400">No transcript available.</span>}
                   </div>
@@ -2506,9 +2506,9 @@ export default function AdminPage() {
                 <div key={idx} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
                   <div className="flex justify-between items-start border-b border-slate-100 pb-3">
                     <div>
-                      <span className="font-mono text-xs font-bold text-primary-700">{mt.id}</span>
+                      <span className="text-xs font-bold text-primary-700">{mt.id}</span>
                       <h4 className="font-bold text-slate-800 text-sm mt-1">Raised by {mt.customerName}</h4>
-                      <p className="text-[10px] text-slate-400 font-mono mt-1">{mt.createdAt}</p>
+                      <p className="text-[10px] text-slate-400  mt-1">{mt.createdAt}</p>
                     </div>
                     <span className="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200">
                       Merged

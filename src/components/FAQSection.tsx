@@ -127,7 +127,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
 
                       {/* Developer Mock Code Block */}
                       {faq.isCode && (
-                        <pre className="bg-slate-900 rounded-xl p-4 overflow-x-auto border border-slate-800 shadow-inner font-mono text-xs text-slate-300 whitespace-pre">
+                        <pre className="bg-slate-900 rounded-xl p-4 overflow-x-auto border border-slate-800 shadow-inner  text-xs text-slate-300 whitespace-pre">
                           {`fetch('https://api.ticket-it.com/v1/user', {
   headers: {
     'Authorization': 'Bearer <YOUR_API_KEY>'

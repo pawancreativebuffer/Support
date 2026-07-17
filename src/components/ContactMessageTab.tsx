@@ -154,7 +154,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   type="text"
                   readOnly
                   value={typeof window !== 'undefined' ? `${window.location.origin}${magicLink}` : magicLink}
-                  className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-[11px] font-mono text-slate-600 focus:outline-none select-all"
+                  className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-[11px]  text-slate-600 focus:outline-none select-all"
                 />
                 <button
                   type="button"
@@ -286,7 +286,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="block text-sm font-medium capitalize text-slate-700">Your question or comment:</label>
-                <span className="text-xs text-slate-400 font-mono">{comment.length} / 1000 characters</span>
+                <span className="text-xs text-slate-400">{comment.length} / 1000 characters</span>
               </div>
               <textarea
                 required

@@ -27,7 +27,7 @@ export const InteractivePaymentForm: React.FC<InteractivePaymentFormProps> = ({ 
           <CheckCircle className="w-10 h-10 text-green-500 mx-auto" />
           <h5 className="font-bold text-green-900">Widget Connection Success!</h5>
           <p className="text-sm text-green-700">
-            The Ticket-it widget successfully authenticated with App ID <code className="bg-green-100 px-1.5 py-0.5 rounded font-mono text-xs">{appId}</code> and identified visitor <code className="bg-green-100 px-1.5 py-0.5 rounded font-mono text-xs">{userEmail}</code>.
+            The Ticket-it widget successfully authenticated with App ID <code className="bg-green-100 px-1.5 py-0.5 rounded  text-xs">{appId}</code> and identified visitor <code className="bg-green-100 px-1.5 py-0.5 rounded  text-xs">{userEmail}</code>.
           </p>
           <button
             type="button"
@@ -50,7 +50,7 @@ export const InteractivePaymentForm: React.FC<InteractivePaymentFormProps> = ({ 
               value={appId}
               onChange={(e) => setAppId(e.target.value)}
               placeholder="e.g. tkt_live_987654"
-              className="w-full h-[46px] px-3 bg-white border border-slate-200 rounded-[8px] text-sm text-slate-900 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all font-mono"
+              className="w-full h-[46px] px-3 bg-white border border-slate-200 rounded-[8px] text-sm text-slate-900 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all"
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

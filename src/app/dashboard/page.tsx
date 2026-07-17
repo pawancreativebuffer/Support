@@ -736,18 +736,18 @@ export default function DashboardPage() {
                   ) : (
                     <div className="relative pl-6 border-l border-slate-200 space-y-8 ml-2 py-2">
                       {activities.slice(0, visibleActivities).map((act, index) => {
-                        let dotColor = "bg-primary-500 ring-primary-100";
-                        let typeLabel = "Ticket";
-                        let typeColor = "text-primary-650 bg-primary-50 border-primary-100";
+                        let dotColor ="bg-primary-500 ring-primary-100";
+                        let typeLabel ="Ticket";
+                        let typeColor ="text-primary-650 bg-primary-50 border-primary-100";
 
                         if (act.type === 'chat') {
-                          dotColor = "bg-sky-500 ring-sky-100";
-                          typeLabel = "Live Chat";
-                          typeColor = "text-sky-600 bg-sky-50 border-sky-100";
+                          dotColor ="bg-sky-500 ring-sky-100";
+                          typeLabel ="Live Chat";
+                          typeColor ="text-sky-600 bg-sky-50 border-sky-100";
                         } else if (act.type === 'voice') {
-                          dotColor = "bg-blue-500 ring-blue-100";
-                          typeLabel = "Voice AI";
-                          typeColor = "text-blue-650 bg-blue-50 border-blue-100";
+                          dotColor ="bg-blue-500 ring-blue-100";
+                          typeLabel ="Voice AI";
+                          typeColor ="text-blue-650 bg-blue-50 border-blue-100";
                         }
 
                         return (
@@ -786,7 +786,7 @@ export default function DashboardPage() {
                                   {act.description}
                                 </p>
                                 <div className="flex items-center justify-between border-t border-slate-100 mt-3 pt-3 text-xs">
-                                  <span className="font-mono font-bold text-slate-400">{act.subtitle}</span>
+                                  <span className="font-bold text-slate-400">{act.subtitle}</span>
 
                                   <button
                                     onClick={() => {
@@ -834,7 +834,7 @@ export default function DashboardPage() {
                     </p>
                     <Link
                       href="/contact?tab=voice-assistant"
-                      className="inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-xs transition-all shadow-lg shadow-primary-600/20 cursor-pointer border border-primary-500/30"
+                      className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm w-full"
                     >
                       <Mic className="w-4 h-4" /> Start Voice Consultation
                     </Link>
@@ -929,7 +929,7 @@ export default function DashboardPage() {
                     >
                       <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2.5 py-0.5 rounded">
+                          <span className="text-xs font-bold text-primary-700 bg-primary-50 border border-primary-100 px-2.5 py-0.5 rounded">
                             {ticket.id}
                           </span>
                           <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${ticket.type === 'Voice'
@@ -1186,7 +1186,7 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
+                <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                   {selectedTicket.id}
                 </span>
                 <h3 className="font-extrabold text-slate-800 text-lg select-text">
@@ -1223,7 +1223,7 @@ export default function DashboardPage() {
                         {selectedTicket.description}
                       </p>
                     </div>
-                    <p className="text-xs text-slate-400 pt-2 font-mono border-t border-slate-200/60">
+                    <p className="text-xs text-slate-400 pt-2  border-t border-slate-200/60">
                       Raised on: {selectedTicket.createdAt}
                     </p>
                   </div>

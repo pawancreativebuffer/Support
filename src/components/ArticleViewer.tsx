@@ -13,13 +13,7 @@ interface ArticleViewerProps {
   setFeedbackSubmitted: (val: boolean) => void;
 }
 
-const FAQ_MAPPINGS: Record<string, string[]> = {
-  "ticketing-helpdesk": ["Account", "Usage"],
-  "live-chat-widgets": ["Developers", "Usage"],
-  "agent-team-routing": ["Account"],
-  "api-integrations": ["Developers"],
-  "status-performance": ["System"],
-  "security-compliance": ["Security"]
+const FAQ_MAPPINGS: Record<string, string[]> = {"ticketing-helpdesk": ["Account","Usage"],"live-chat-widgets": ["Developers","Usage"],"agent-team-routing": ["Account"],"api-integrations": ["Developers"],"status-performance": ["System"],"security-compliance": ["Security"]
 };
 
 export const ArticleViewer: React.FC<ArticleViewerProps> = ({
@@ -179,7 +173,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                 <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                <div className="text-xs text-slate-400 font-mono ml-2 truncate">https://console.ticket-it.com/portal</div>
+                <div className="text-xs text-slate-400  ml-2 truncate">https://console.ticket-it.com/portal</div>
               </div>
               <div className="relative w-full h-[350px]">
                 <Image
@@ -268,7 +262,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
                     {Object.entries(activeArticle.sample.data as ReceivingAccountData).map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center text-sm">
                         <span className="text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                        <span className="font-mono text-slate-800 font-semibold">{String(value)}</span>
+                        <span className="text-slate-800 font-semibold">{String(value)}</span>
                       </div>
                     ))}
                   </div>
@@ -277,11 +271,11 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
 
               {activeArticle.sample.type === 'json' && activeArticle.sample.data && (
                 <div className="bg-slate-900 rounded-2xl p-5 overflow-hidden">
-                  <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800 text-sm font-mono text-slate-500">
+                  <div className="flex justify-between items-center mb-3 pb-3 border-b border-slate-800 text-sm  text-slate-500">
                     <span>{activeArticle.sample.title}</span>
                     <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded">JSON</span>
                   </div>
-                  <pre className="text-slate-300 text-sm font-mono overflow-x-auto m-0">
+                  <pre className="text-slate-300 text-sm  overflow-x-auto m-0">
                     <code>{JSON.stringify(activeArticle.sample.data, null, 2)}</code>
                   </pre>
                 </div>
@@ -293,7 +287,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
           {activeArticle.codeBlock && (
             <div className="bg-slate-900 rounded-xl p-5 mb-8 relative group overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 to-primary-600"></div>
-              <pre className="text-slate-300 text-sm font-mono overflow-x-auto m-0">
+              <pre className="text-slate-300 text-sm  overflow-x-auto m-0">
                 <code>{activeArticle.codeBlock}</code>
               </pre>
             </div>

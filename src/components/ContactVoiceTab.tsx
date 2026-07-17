@@ -120,7 +120,7 @@ export const ContactVoiceTab: React.FC = () => {
         {
           id: 'welcome',
           sender: 'assistant',
-          text: "Hello! I am your Ticket-it AI Voice Assistant. Click the microphone button to start our conversation.",
+          text:"Hello! I am your Ticket-it AI Voice Assistant. Click the microphone button to start our conversation.",
           timestamp: getCurrentTime()
         }
       ]);
@@ -277,7 +277,7 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
         },
         onError: (error: any) => {
           console.error("ElevenLabs Error:", error);
-          setErrorMessage(String(error?.message || error || "Connection failed."));
+          setErrorMessage(String(error?.message || error ||"Connection failed."));
           setStatus('error');
           stopAudioAnalysis();
         },
@@ -304,7 +304,7 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
       conversationRef.current = conversation;
     } catch (err: any) {
       console.error("Failed to start ElevenLabs session:", err);
-      setErrorMessage(err?.message || String(err) || "Microphone access denied or connection failed.");
+      setErrorMessage(err?.message || String(err) ||"Microphone access denied or connection failed.");
       setStatus('error');
       stopAudioAnalysis();
     }
@@ -508,7 +508,7 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
             <button
               onClick={toggleMute}
               className="absolute top-4 right-6 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-900 border border-slate-800 transition-colors z-10 cursor-pointer"
-              title={isMuted ? "Unmute Mic" : "Mute Mic"}
+              title={isMuted ?"Unmute Mic" :"Mute Mic"}
             >
               {isMuted ? <VolumeX className="w-4.5 h-4.5 text-red-500" /> : <Volume2 className="w-4.5 h-4.5 text-green-400" />}
             </button>
@@ -530,7 +530,7 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
                 />
 
                 {/* Status Indicator Text */}
-                <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-2">
+                <span className="text-[10px] text-slate-500  tracking-widest uppercase mt-2">
                   {status === 'listening' ? 'LISTENING NOW' :
                     status === 'speaking' ? 'SPEAKING' :
                       status === 'processing' ? 'CONNECTING...' : 'READY'}
@@ -552,7 +552,7 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
               </button>
 
               <p className="text-[12px] text-slate-400 text-center max-w-[280px]">
-                {status === 'listening' || status === 'speaking' || status === 'processing' ? "Conversation active. Click to end call." : "Click microphone to start call."}
+                {status === 'listening' || status === 'speaking' || status === 'processing' ?"Conversation active. Click to end call." :"Click microphone to start call."}
               </p>
             </div>
 

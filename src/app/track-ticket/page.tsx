@@ -223,7 +223,7 @@ function TicketTrackerContent() {
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-slate-800">Access Denied</h2>
             <p className="text-sm text-slate-500 leading-relaxed">
-              {error || "The tracking token is invalid or has expired. Make sure you copy-pasted the complete URL."}
+              {error ||"The tracking token is invalid or has expired. Make sure you copy-pasted the complete URL."}
             </p>
           </div>
           <div className="pt-2">
@@ -247,7 +247,7 @@ function TicketTrackerContent() {
         <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
-              <span className="font-mono text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
+              <span className="text-xs font-bold text-primary-700 bg-primary-50 px-2.5 py-1 rounded border border-primary-100 shadow-sm">
                 {ticket.id}
               </span>
               <span className="text-xs font-black uppercase text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
@@ -276,7 +276,7 @@ function TicketTrackerContent() {
               <p className="text-sm text-slate-650 leading-relaxed select-text font-normal">
                 {ticket.description}
               </p>
-              <div className="text-[11px] text-slate-400 pt-2 font-mono border-t border-slate-100">
+              <div className="text-[11px] text-slate-400 pt-2  border-t border-slate-100">
                 Created: {ticket.createdAt}
               </div>
             </div>
