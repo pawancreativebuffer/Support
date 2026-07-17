@@ -23,34 +23,41 @@ function ContactFormContent() {
   const initialTopic = matched ? matched.label : '';
 
   return (
-    <div className="bg-slate-50/50 pb-10">
+    <div className="bg-white pb-12">
       {/* Dynamic Sub-header Banner */}
-      <div className="relative w-full bg-slate-50 border-b border-slate-200 py-10 mb-10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/40 via-slate-50 to-slate-50 pointer-events-none" />
+      <div className="relative w-full border-b border-primary-900/50 py-12 md:py-16 mb-10 overflow-hidden bg-slate-950">
+        {/* Deep Theme-Colored Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-slate-950 to-blue-950" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-900/40 via-transparent to-transparent" />
+        
+        {/* Elegant Grid Texture */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] pointer-events-none" />
+        
+        {/* Dynamic Theme Glows */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] rounded-full bg-primary-600/25 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none" />
+        <div className="absolute top-[30%] left-[30%] w-[20%] h-[20%] rounded-full bg-primary-400/10 blur-[80px] pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
+        <div className="relative z-10 max-w-[1400px] mx-auto px-[15px]">
           {/* Breadcrumbs */}
-          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs md:text-sm text-slate-500 font-medium mb-3">
-            <Link href="/" className="hover:text-primary-600 transition-colors whitespace-nowrap">
+          <nav className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs md:text-sm text-slate-400 font-medium mb-4">
+            <Link href="/" className="hover:text-primary-400 transition-colors whitespace-nowrap">
               Support Center
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-            <span className="text-slate-950 font-semibold whitespace-nowrap">Contact Us</span>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+            <span className="text-white font-semibold whitespace-nowrap">Contact Us</span>
           </nav>
 
           {/* Banner Title */}
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 leading-none">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
             Contact Customer Care
           </h1>
-          <p className="text-slate-500 text-sm md:text-base mt-2 max-w-2xl">
-            Choose your preferred channel below. Our systems and agents are live and secure.
-          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-[1400px] mx-auto px-[15px]">
         {/* Sleek Tab Container */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-md shadow-slate-100/50 overflow-hidden">
+        <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
           {/* Advanced styled headers with mobile horizontal scrolling */}
           <div className="flex overflow-x-auto md:overflow-visible scrollbar-none border-b border-slate-200 bg-slate-50/30 p-2 gap-2">
             <button
