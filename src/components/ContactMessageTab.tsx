@@ -190,7 +190,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
               setAttachment(null);
               setMagicLink(null);
             }}
-            className="mt-6 px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-colors cursor-pointer"
+            className="mt-6 bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] inline-flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer"
           >
             Send Another Message
           </button>
@@ -206,7 +206,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
             {/* First Name & Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-slate-600 mb-2">First Name (letters only)</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">First Name (letters only)</label>
                 <input
                   type="text"
                   required
@@ -215,16 +215,16 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="e.g. Jane"
-                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none transition-colors ${
+                  className={`w-full h-[46px] border border-slate-300 rounded-[8px] px-4 text-sm focus:bg-white focus:ring-1 focus:ring-primary-500 focus:border-primary-500 focus:outline-none transition-colors ${
                     isLoggedIn 
-                      ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed font-medium' 
-                      : 'bg-slate-50 border-slate-200 focus:border-primary-500'
+                      ? 'bg-slate-100 text-slate-500 cursor-not-allowed font-medium' 
+                      : 'bg-slate-50'
                   }`}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-600 mb-2">Last Name (letters only)</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Last Name (letters only)</label>
                 <input
                   type="text"
                   required
@@ -233,10 +233,10 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="e.g. Doe"
-                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none transition-colors ${
+                  className={`w-full h-[46px] border border-slate-300 rounded-[8px] px-4 text-sm focus:bg-white focus:ring-1 focus:ring-primary-500 focus:border-primary-500 focus:outline-none transition-colors ${
                     isLoggedIn 
-                      ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed font-medium' 
-                      : 'bg-slate-50 border-slate-200 focus:border-primary-500'
+                      ? 'bg-slate-100 text-slate-500 cursor-not-allowed font-medium' 
+                      : 'bg-slate-50'
                   }`}
                 />
               </div>
@@ -245,7 +245,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
             {/* Email Address & Topic Selector */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-slate-600 mb-2">Email Address</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Email Address</label>
                 <input
                   type="email"
                   required
@@ -253,10 +253,10 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. customer@example.com"
-                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none transition-colors ${
+                  className={`w-full h-[46px] border border-slate-300 rounded-[8px] px-4 text-sm focus:bg-white focus:ring-1 focus:ring-primary-500 focus:border-primary-500 focus:outline-none transition-colors ${
                     isLoggedIn 
-                      ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed font-medium' 
-                      : 'bg-slate-50 border-slate-200 focus:border-primary-500'
+                      ? 'bg-slate-100 text-slate-500 cursor-not-allowed font-medium' 
+                      : 'bg-slate-50'
                   }`}
                 />
                 {isLoggedIn && (
@@ -267,12 +267,12 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-600 mb-2">Relevant Topic / Category</label>
+                <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Relevant Topic / Category</label>
                 <select
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-colors"
+                  className="w-full h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] px-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                 >
                   <option value="">-- Choose a Category --</option>
                   {topics.map((t) => (
@@ -285,7 +285,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
             {/* Comment Area */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-bold text-slate-600">Your question or comment:</label>
+                <label className="block text-sm font-medium capitalize text-slate-700">Your question or comment:</label>
                 <span className="text-xs text-slate-400 font-mono">{comment.length} / 1000 characters</span>
               </div>
               <textarea
@@ -295,7 +295,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Please detail your inquiry here..."
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-primary-500 focus:bg-white focus:outline-none resize-none transition-colors"
+                className="w-full bg-slate-50 border border-slate-300 rounded-[8px] px-4 py-3 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none resize-none transition-colors"
               />
             </div>
 
@@ -356,7 +356,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
             <button
               type="submit"
               disabled={formStatus === 'loading'}
-              className="w-full sm:w-auto px-8 py-3.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-all cursor-pointer disabled:bg-primary-400 flex items-center justify-center gap-2 shadow-sm"
+              className="bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] flex items-center justify-center gap-2 rounded-[8px] transition-all duration-300 cursor-pointer w-full sm:w-auto"
             >
               {formStatus === 'loading' ? 'Submitting...' : (
                 <>

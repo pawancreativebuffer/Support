@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, Lock, Mail, ArrowRight, Eye, EyeOff, MessageSquare, FileText, ShieldAlert, LogIn } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
@@ -172,7 +172,7 @@ export default function AdminLoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Username / Login ID</label>
+                  <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Username / Login ID</label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
                       <Mail className="w-4.5 h-4.5" />
@@ -182,7 +182,7 @@ export default function AdminLoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] pl-11 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none transition-all"
                       placeholder="Enter your login username"
                     />
                   </div>
@@ -190,7 +190,7 @@ export default function AdminLoginPage() {
 
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+                    <label className="block text-sm font-medium capitalize text-slate-700">Password</label>
                   </div>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
@@ -201,7 +201,7 @@ export default function AdminLoginPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-11 py-3.5 text-sm focus:border-primary-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] pl-11 pr-11 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none transition-all"
                       placeholder="••••••••"
                     />
                     <button
@@ -218,11 +218,11 @@ export default function AdminLoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm rounded-full transition-all shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2 cursor-pointer focus:outline-none"
+                className="w-full bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] flex items-center justify-center gap-2 rounded-[8px] transition-all duration-300 cursor-pointer focus:outline-none"
               >
                 {loading ? 'Securing Session...' : (
                   <>
-                    Sign In <ArrowRight className="w-4 h-4" />
+                    <LogIn className="w-4 h-4" /> Sign In
                   </>
                 )}
               </button>

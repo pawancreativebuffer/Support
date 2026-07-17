@@ -96,11 +96,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                         onSearch();
                       }
                     }}
-                    className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg md:text-xl py-6 px-4 outline-none border-none font-medium"
+                    className="no-global-style w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg md:text-xl py-6 px-4 outline-none border-none font-medium"
                   />
                   <button
                     onClick={onSearch}
-                    className="mr-3 px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-transform active:scale-95 shadow-lg shadow-primary-600/30 cursor-pointer"
+                    className="mr-2 bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer"
                   >
                     Search
                   </button>

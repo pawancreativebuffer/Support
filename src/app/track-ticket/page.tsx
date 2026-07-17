@@ -468,7 +468,7 @@ function TicketTrackerContent() {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder="Type your message update to the support agent..."
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs md:text-sm focus:border-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
+                    className="flex-1 h-[46px] bg-slate-50 border border-slate-300 rounded-[8px] px-4 text-xs md:text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:bg-white focus:outline-none text-slate-800 placeholder-slate-400 transition-colors"
                   />
                   <button
                     type="submit"
