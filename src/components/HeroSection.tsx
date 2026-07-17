@@ -73,7 +73,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         {/* Right: Glassmorphism Search Console */}
         <div className="relative w-full max-w-2xl lg:max-w-full mx-auto lg:ml-auto">
-          {/* Removed glowing pulse effect per request */}
           <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 md:p-8 shadow-2xl shadow-black/50">
             <div className="flex flex-col gap-6">
               <div
