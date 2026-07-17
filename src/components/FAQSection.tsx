@@ -39,7 +39,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
   });
 
   return (
-    <div id="faq-section" className="w-full max-w-7xl scroll-mt-24">
+    <div id="faq-section" className="w-full scroll-mt-24">
       <div className="flex flex-col items-center mb-10 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider mb-3">
           <HelpCircle className="w-3 h-3 text-primary-500" /> FAQ Desk

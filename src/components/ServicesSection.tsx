@@ -73,7 +73,7 @@ export const ServicesSection: React.FC = () => {
   ];
 
   return (
-    <div id="solutions" className="w-full max-w-7xl mb-32 scroll-mt-24">
+    <div id="solutions" className="w-full mb-32 scroll-mt-24">
       <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider mb-3">

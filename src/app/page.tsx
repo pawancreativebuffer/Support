@@ -92,7 +92,7 @@ export default function SupportPage() {
       />
 
       {/* Main Content Area */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] py-20 md:py-24 flex flex-col items-center">
         {/* Services Bento Grid */}
         <ServicesSection />
 

@@ -20,7 +20,7 @@ export const VideoSection: React.FC = () => {
   const [activeVideo, setActiveVideo] = useState<TutorialVideo>(tutorialVideos[0]);
 
   return (
-    <div className="w-full max-w-7xl mb-24">
+    <div className="w-full mb-24">
       <div className="flex flex-col items-center mb-10 text-center">
         <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 flex items-center justify-center gap-3">
           <Video className="text-primary-500 w-13 h-13" />

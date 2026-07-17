@@ -49,7 +49,7 @@ export default function RootLayout({
           <div className="absolute top-[-50%] left-[-10%] w-[40%] h-[150%] rounded-full bg-primary-600/20 blur-[120px] pointer-events-none" />
           <div className="absolute bottom-[-50%] right-[-10%] w-[40%] h-[150%] rounded-full bg-blue-600/15 blur-[120px] pointer-events-none" />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 md:gap-6">
+          <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] flex flex-col md:flex-row justify-between items-center gap-8 md:gap-6">
             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-2 text-slate-200 font-medium text-center">
               <div className="w-8 h-8 sm:w-6 sm:h-6 rounded-md bg-white/10 flex items-center justify-center text-white backdrop-blur-sm border border-white/10">
                 <LayoutDashboard className="w-4 h-4 sm:w-3 sm:h-3" />
