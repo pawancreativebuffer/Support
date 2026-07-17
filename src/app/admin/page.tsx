@@ -753,16 +753,26 @@ export default function AdminPage() {
   return (
     <div className="bg-slate-50/50 text-slate-800 min-h-screen font-sans selection:bg-primary-600 selection:text-white flex relative">
       {/* Left Sidebar */}
-      <aside className="hidden lg:flex w-[280px] bg-white border-r border-slate-200 flex-col items-center p-8 fixed top-[77px] bottom-0 left-0 overflow-y-auto shadow-sm z-20">
-        <div className="flex flex-col items-center text-center mt-6 w-full">
-          <div className="w-20 h-20 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 mb-4 shadow-sm">
+      <aside className="hidden lg:flex w-[280px] bg-white border-r border-slate-200 flex-col items-center p-[20px] fixed top-[77px] bottom-0 left-0 overflow-y-auto shadow-sm z-20">
+        <div className="flex flex-col items-center text-center mt-4 w-full">
+          <div className="w-20 h-20 rounded-full bg-primary-600 text-white flex items-center justify-center border border-primary-700 mb-4 shadow-sm">
             <User className="w-10 h-10" />
           </div>
-          <span className="text-[10px] font-black tracking-widest text-primary-600 uppercase mb-2 text-center">Admin Console</span>
+          <span className="text-[10px] font-semibold tracking-widest text-primary-500 uppercase mb-2 text-center">Admin Console</span>
           <h2 className="text-xl font-bold text-slate-800 leading-tight">Welcome, <br/> {user.name}</h2>
           <div className="mt-5 w-full bg-slate-50 border border-slate-200 py-2.5 px-3 rounded-xl flex items-center justify-center overflow-hidden">
-            <span className="text-[11px] font-semibold text-slate-600 truncate w-full" title={user.email}>{user.email}</span>
+            <span className="text-[11px] font-normal text-slate-500 truncate w-full text-center" title={user.email}>{user.email}</span>
           </div>
+        </div>
+
+        {/* Navigation Placeholder */}
+        <nav className="flex-1 w-full mt-8 flex flex-col gap-2">
+          {/* Navigation links will go here */}
+        </nav>
+
+        {/* Sidebar Footer */}
+        <div className="mt-auto py-4 -mx-[20px] -mb-[20px] bg-slate-50 border-t border-slate-200 w-[calc(100%+40px)] text-center text-sm text-slate-500 font-normal">
+          © 2026 All rights reserved.
         </div>
       </aside>
 
