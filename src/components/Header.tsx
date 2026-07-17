@@ -63,6 +63,13 @@ export function Header() {
           </Link>
           <Link 
             href="/#solutions" 
+            onClick={(e) => {
+              if (pathname === '/') {
+                e.preventDefault();
+                document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, '', '/#solutions');
+              }
+            }}
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
             after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
             ${pathname === '/#solutions' ? 'text-primary-600 after:w-full' : 'after:w-0 hover:after:w-full'}`}
@@ -139,7 +146,14 @@ export function Header() {
             </Link>
             <Link 
               href="/#solutions" 
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => {
+                setIsOpen(false);
+                if (pathname === '/') {
+                  e.preventDefault();
+                  document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' });
+                  window.history.pushState(null, '', '/#solutions');
+                }
+              }}
               className="hover:text-primary-600 py-1.5 transition-colors cursor-pointer block w-full"
             >
               Solutions
