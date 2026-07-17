@@ -573,8 +573,8 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-20">
       {/* Welcome Banner */}
-      <div className="max-w-[1600px] mx-auto px-6 pt-10">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 md:p-10 shadow-sm">
+      <div className="w-full px-6 pt-6">
+        <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary-50/40 rounded-full blur-[80px] pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -586,15 +586,12 @@ export default function DashboardPage() {
               <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
                 Monitor Your Support Operations
               </h1>
-              <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">
-                Review your registered tickets, read full conversations from live chat sessions, or view audio logs recorded from call consultations.
-              </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => loadDatabaseData(user.email)}
-                className="px-5 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
                 disabled={isRefreshing}
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -602,9 +599,9 @@ export default function DashboardPage() {
               </button>
               <Link
                 href="/contact?tab=send-message"
-                className="px-6 py-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-md shadow-primary-600/10 flex items-center gap-2 border border-primary-500/20 cursor-pointer"
+                className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
               >
-                <Plus className="w-4.5 h-4.5" /> File New Ticket
+                <Plus className="w-4 h-4" /> File New Ticket
               </Link>
             </div>
           </div>
@@ -612,7 +609,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="max-w-[1600px] mx-auto px-6 mt-10 space-y-10">
+      <div className="w-full px-6 mt-6 space-y-6">
 
         <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
