@@ -76,8 +76,8 @@ export const ServicesSection: React.FC = () => {
     <div id="solutions" className="w-full mb-32 scroll-mt-24">
       <div className="flex flex-col lg:flex-row justify-between items-end mb-12 gap-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider mb-3">
-            <Layers className="w-3 h-3 text-primary-500" /> Solutions
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-normal shadow-sm mb-3">
+            <Layers className="w-4 h-4 fill-primary-50 text-primary-500" /> Solutions
           </div>
           <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
             Explore specialized teams.
