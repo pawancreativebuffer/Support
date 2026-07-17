@@ -41,16 +41,13 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
   return (
     <div id="faq-section" className="w-full scroll-mt-24">
       <div className="flex flex-col items-center mb-10 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider mb-3">
-          <HelpCircle className="w-3 h-3 text-primary-500" /> FAQ Desk
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-normal shadow-sm mb-4">
+          <HelpCircle className="w-4 h-4 fill-primary-50 text-primary-500" /> FAQ Desk
         </div>
-        <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-3 flex items-center justify-center gap-3 text-slate-900">
-          <MessageCircle className="text-primary-500 w-12 h-12" />
+        <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-5">
+          <MessageCircle className="text-primary-500 w-13 h-13" />
           Frequently Asked Questions
         </h2>
-        <p className="text-slate-600 max-w-2xl text-base">
-          Find answers to commonly asked questions about account settings, billing, API usage, limits, and service status.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12 w-full">
