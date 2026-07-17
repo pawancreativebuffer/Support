@@ -81,7 +81,7 @@ export const VideoSection: React.FC = () => {
           <div className="relative group/slider w-full">
             <button 
               onClick={scrollLeft} 
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-primary-600 transition-colors cursor-pointer"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-primary-600 border border-primary-500 flex items-center justify-center text-white hover:bg-primary-700 hover:scale-105 transition-all shadow-md shadow-primary-600/30 cursor-pointer"
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -131,7 +131,7 @@ export const VideoSection: React.FC = () => {
           </div>
             <button 
               onClick={scrollRight} 
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-primary-600 transition-colors cursor-pointer"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-10 h-10 rounded-full bg-primary-600 border border-primary-500 flex items-center justify-center text-white hover:bg-primary-700 hover:scale-105 transition-all shadow-md shadow-primary-600/30 cursor-pointer"
               aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5" />
