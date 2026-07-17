@@ -53,9 +53,11 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-12 w-full">
         {/* Left Panel: Category List */}
         <div className="lg:col-span-1">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 sticky top-28">
-            <h3 className="text-lg font-bold text-slate-900">Categories</h3>
-            <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm sticky top-28 overflow-hidden">
+            <div className="bg-slate-100 px-6 py-5 border-b border-slate-200">
+              <h3 className="text-lg font-bold text-slate-900">Categories</h3>
+            </div>
+            <div className="p-5 flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-x-visible scrollbar-none">
               {categories.map((cat) => {
                 const isActive = faqCategory === cat;
                 const count = getFaqCount(cat);
@@ -66,13 +68,13 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                       setFaqCategory(cat);
                       setOpenFaq(null); // Close active FAQ when changing categories
                     }}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold whitespace-nowrap cursor-pointer transition-all duration-200 ${isActive
+                    className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-semibold whitespace-nowrap cursor-pointer transition-all duration-200 ${isActive
                       ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20'
                       : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                       }`}
                   >
                     <span>{cat}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200/60 text-slate-500'
+                    <span className={`text-xs px-2 py-0.5 rounded-md font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200/60 text-slate-500'
                       }`}>
                       {count}
                     </span>
@@ -84,7 +86,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
         </div>
 
         {/* Right Panel: Accordions */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-2">
           {filteredFaqs.map((faq, i) => {
             const isOpen = openFaq === faq.question;
             const feedback = helpfulFeedback[faq.question];
@@ -93,13 +95,13 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
                 key={i}
                 className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
                   ? 'border-primary-400 shadow-md shadow-primary-500/5'
-                  : 'border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md'
+                  : 'border-slate-200 hover:border-slate-300 hover:shadow-sm'
                   }`}
               >
                 {/* Question Header Button */}
                 <button
                   onClick={() => setOpenFaq(isOpen ? null : faq.question)}
-                  className="w-full flex items-center justify-between p-6 cursor-pointer text-left focus:outline-none"
+                  className="w-full flex items-center justify-between px-6 py-[18px] cursor-pointer text-left focus:outline-none"
                 >
                   <div className="flex items-center gap-3 pr-4">
                     <h3 className={`text-base md:text-lg font-bold transition-colors ${isOpen ? 'text-primary-700' : 'text-slate-800'
