@@ -135,7 +135,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
   };
 
   return (
-    <div className="py-2">
+    <div>
       {formStatus === 'success' ? (
         <div className="text-center py-12 space-y-4 animate-fade-in">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
@@ -196,7 +196,7 @@ export const ContactMessageTab: React.FC<ContactMessageTabProps> = ({ topics, in
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Form */}
           <form onSubmit={handleFormSubmit} className="lg:col-span-8 space-y-6">
             <div className="border-b border-slate-100 pb-3">

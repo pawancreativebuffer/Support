@@ -3,12 +3,11 @@ import { Clock, Shield, Sparkles, MessageCircle } from 'lucide-react';
 
 export const ContactChatTab: React.FC = () => {
   return (
-    <div className="py-2">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+    <div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* Left Column: Glassmorphic Visual Console */}
         <div className="lg:col-span-5 relative">
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-3xl blur opacity-25"></div>
-          <div className="relative bg-slate-950 border border-slate-800 rounded-3xl p-6 shadow-2xl overflow-hidden font-sans text-[12px] text-slate-300 space-y-4">
+          <div className="relative bg-slate-950 border border-slate-800 rounded-[8px] p-6 overflow-hidden font-sans text-[12px] text-slate-300 space-y-4">
             {/* Grid overlay styling */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none"></div>
 
@@ -73,7 +72,7 @@ export const ContactChatTab: React.FC = () => {
             </p>
           </div>
 
-          <ul className="space-y-2 text-sm text-slate-600 font-semibold">
+          <ul className="space-y-2 text-base text-slate-600 font-normal">
             <li className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center border border-green-200 flex-shrink-0">
                 <span className="text-green-600">✓</span>
@@ -100,7 +99,7 @@ export const ContactChatTab: React.FC = () => {
               onClick={() => {
                 window.dispatchEvent(new CustomEvent('open-chat-widget'));
               }}
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 text-white font-bold text-sm rounded-2xl transition-all hover:shadow-lg hover:shadow-primary-500/25 flex items-center justify-center gap-2.5 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+              className="w-full sm:w-auto px-8 h-[46px] bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm flex items-center justify-center gap-2"
             >
               <MessageCircle className="w-4.5 h-4.5" />
               Initialize Live Chat Window

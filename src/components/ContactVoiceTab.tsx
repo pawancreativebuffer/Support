@@ -487,16 +487,14 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
   };
 
   return (
-    <div className="py-2 space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
         {/* Left Visual Voice Assistant Panel */}
         <div className="lg:col-span-6 relative flex flex-col">
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-3xl blur opacity-25"></div>
-
-          <div className="relative bg-slate-950 border border-slate-900 rounded-3xl p-8 shadow-2xl flex flex-col items-center justify-center overflow-hidden flex-1 h-[460px] w-full">
+          <div className="relative bg-slate-950 border border-slate-900 rounded-[8px] p-8 flex flex-col items-center justify-center overflow-hidden flex-1 h-[460px] w-full">
             {/* Grid overlay */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:16px_28px] pointer-events-none"></div>
 
@@ -568,7 +566,7 @@ RULE: You MUST NOT disclose any personal details. Tell them to sign in if they n
         </div>
 
         {/* Right Voice Log Console */}
-        <div className="lg:col-span-6 flex flex-col h-[460px] bg-white border border-slate-200 rounded-3xl shadow-md overflow-hidden">
+        <div className="lg:col-span-6 flex flex-col h-[460px] bg-white border border-slate-200 rounded-[8px] overflow-hidden">
           {/* Header */}
           <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
