@@ -57,8 +57,8 @@ export async function GET(req: NextRequest) {
     // Format response matching dashboard schema
     const formattedTicket = {
       id: `TK-${ticket.id}`,
-      firstName: ticket.customer.name.split(' ')[0] || 'Client',
-      lastName: ticket.customer.name.split(' ').slice(1).join(' ') || 'User',
+      firstName: ticket.customer.firstName || 'Client',
+      lastName: ticket.customer.lastName || 'User',
       email: ticket.customer.email,
       category: ticket.title,
       description: ticket.description,

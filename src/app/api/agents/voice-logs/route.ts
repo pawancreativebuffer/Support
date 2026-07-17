@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       id: v.conversationId,
       title: `Voice Session: ${v.conversationId.slice(0, 10)}...`,
       status: 'Completed',
-      customerName: v.customer ? v.customer.name : null,
+      customerName: v.customer ? `${v.customer.firstName || ''} ${v.customer.lastName || ''}`.trim() : null,
       customerEmail: v.customer ? v.customer.email : null,
       createdAt: v.createdAt.toLocaleString('en-US', {
         month: 'short',
