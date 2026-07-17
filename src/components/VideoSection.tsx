@@ -11,16 +11,16 @@ interface TutorialVideo {
 
 export const VideoSection: React.FC = () => {
   const tutorialVideos: TutorialVideo[] = [
-    { id: 'M7lc1UVf-VE', title: "Getting Started with Ticket-it Platform", duration: "4:20", desc: "Learn the basics of setting up your Ticket-it account and navigating the support dashboard." },
-    { id: 'tgbNymZ7vqY', title: "API Integration Masterclass", duration: "12:15", desc: "A deep dive into connecting our endpoints with your existing architecture." },
-    { id: 'JGwWNGJdvx8', title: "Advanced Billing Setup", duration: "6:10", desc: "How to manage invoices, configure usage alerts, and add payment methods." },
-    { id: 'dQw4w9WgXcQ', title: "Team Roles & Permissions", duration: "3:45", desc: "Set up role-based access control for your organization members securely." },
-    { id: 'jNQXAC9IVRw', title: "Customizing User Profiles", duration: "2:30", desc: "How to personalize user avatars and preferences." },
-    { id: '3JZ_D3ELwOQ', title: "Setting up Automated Workflows", duration: "8:45", desc: "A guide to building custom automated triggers and actions." },
-    { id: 'LXb3EKWsInQ', title: "Understanding Analytics", duration: "5:15", desc: "How to read and export your support metrics." },
-    { id: 'V-_O7nl0Ii0', title: "Live Chat Integration", duration: "11:20", desc: "Embed our widget into your customer-facing website." },
-    { id: 'aqz-KE-bpKQ', title: "Security Best Practices", duration: "7:10", desc: "Ensuring compliance and protecting customer data." },
-    { id: 'y8Yv4pnO7qc', title: "Mobile App Overview", duration: "4:05", desc: "Taking your support on the go with our iOS and Android apps." },
+    { id: 'M7lc1UVf-VE', title: "Getting Started with Ticket-it Platform", duration: "4:20", desc: "Learn the fundamentals of setting up your Ticket-it account. This comprehensive guide covers workspace creation, profile setup, and navigating the main support dashboard to get your team up and running in minutes." },
+    { id: 'tgbNymZ7vqY', title: "API Integration Masterclass", duration: "12:15", desc: "A deep dive into connecting our secure REST endpoints with your existing architecture. We will cover authentication protocols, webhook configuration, and handling rate limits to ensure a seamless two-way data sync." },
+    { id: 'JGwWNGJdvx8', title: "Advanced Billing Setup", duration: "6:10", desc: "Take control of your organization's finances. Discover how to manage monthly invoices, configure automated usage alerts to prevent overages, and add multiple payment methods for backup billing." },
+    { id: 'dQw4w9WgXcQ', title: "Team Roles & Permissions", duration: "3:45", desc: "Set up granular, role-based access control for your organization. Learn how to assign admin, agent, and viewer roles to securely manage who can view, edit, or delete sensitive customer support tickets." },
+    { id: 'jNQXAC9IVRw', title: "Customizing User Profiles", duration: "2:30", desc: "Enhance your team's presence by personalizing user avatars, updating display names, and configuring individual timezone preferences so your support hours are always accurately reflected." },
+    { id: '3JZ_D3ELwOQ', title: "Setting up Automated Workflows", duration: "8:45", desc: "Save hours of manual work by building custom automated triggers and actions. We walk through setting up auto-replies, ticket routing based on keywords, and SLA breach escalations." },
+    { id: 'LXb3EKWsInQ', title: "Understanding Analytics", duration: "5:15", desc: "Unlock the power of your data. Learn how to read your primary support metrics, generate custom performance reports, and export your dashboard data to CSV for external stakeholder review." },
+    { id: 'V-_O7nl0Ii0', title: "Live Chat Integration", duration: "11:20", desc: "Embed our highly responsive live chat widget directly into your customer-facing website. We cover styling the widget to match your brand and setting up pre-chat forms to gather user context." },
+    { id: 'aqz-KE-bpKQ', title: "Security Best Practices", duration: "7:10", desc: "Ensure your workspace remains compliant while protecting sensitive customer data. This video covers enabling Two-Factor Authentication (2FA), setting IP whitelists, and managing API key rotation." },
+    { id: 'y8Yv4pnO7qc', title: "Mobile App Overview", duration: "4:05", desc: "Take your support operations on the go with our dedicated iOS and Android apps. Learn how to handle incoming tickets, receive push notifications for critical alerts, and collaborate with your team remotely." },
   ];
 
   const [activeVideo, setActiveVideo] = useState<TutorialVideo>(tutorialVideos[0]);
@@ -49,7 +49,7 @@ export const VideoSection: React.FC = () => {
 
       <div className="flex flex-col gap-10 bg-white p-4 md:p-8 rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/40">
         {/* Main Video Player (Left: Video, Right: Details) */}
-        <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
+        <div className="w-full flex flex-col lg:flex-row gap-6 items-start">
           <div className="relative w-full lg:w-[60%] aspect-video rounded-[1.5rem] overflow-hidden bg-slate-900 shadow-inner ring-1 ring-slate-200 flex-shrink-0">
             <iframe
               className="absolute inset-0 w-full h-full"
@@ -60,8 +60,8 @@ export const VideoSection: React.FC = () => {
             ></iframe>
           </div>
           <div className="w-full lg:w-[40%] flex flex-col justify-center px-2 py-4">
-            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">{activeVideo.title}</h3>
-            <p className="text-slate-600 mt-4 text-base md:text-lg leading-relaxed">{activeVideo.desc}</p>
+            <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight">{activeVideo.title}</h3>
+            <p className="text-slate-600 mt-3 text-base leading-relaxed">{activeVideo.desc}</p>
           </div>
         </div>
 

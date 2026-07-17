@@ -89,11 +89,11 @@ export const ServicesSection: React.FC = () => {
               {service.title}
             </h3>
 
-            <p className="leading-relaxed text-sm text-slate-500 mb-6 flex-grow">
+            <p className="leading-relaxed text-base text-slate-500 mb-6 flex-grow">
               {service.description}
             </p>
 
-            <div className="mt-auto flex items-center gap-1.5 text-sm font-medium text-slate-900 transition-all duration-300 group-hover:gap-2 group-hover:text-black">
+            <div className="mt-auto flex items-center gap-1.5 text-base font-medium text-slate-900 transition-all duration-300 group-hover:gap-2 group-hover:text-black">
               Read more <ArrowRight className="w-4 h-4" />
             </div>
           </Link>
