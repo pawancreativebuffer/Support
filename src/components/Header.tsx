@@ -56,7 +56,7 @@ export function Header() {
           <Link 
             href="/" 
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
-            after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
+            after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
             ${pathname === '/' ? 'text-primary-600 after:w-full' : 'after:w-0 hover:after:w-full'}`}
           >
             Home
@@ -64,7 +64,7 @@ export function Header() {
           <Link 
             href="/#solutions" 
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
-            after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
+            after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
             ${pathname === '/#solutions' ? 'text-primary-600 after:w-full' : 'after:w-0 hover:after:w-full'}`}
           >
             Solutions
@@ -72,7 +72,7 @@ export function Header() {
           <Link 
             href="/article/request-a-payment" 
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
-            after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
+            after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
             ${pathname === '/article/request-a-payment' ? 'text-primary-600 after:w-full' : 'after:w-0 hover:after:w-full'}`}
           >
             Resources
@@ -81,7 +81,7 @@ export function Header() {
             <Link 
               href={user.role === 'Admin' ? "/admin" : user.role === 'Agent' ? "/agent" : "/dashboard"} 
               className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
-              after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
+              after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
               ${['/admin', '/agent', '/dashboard'].includes(pathname || '') ? 'text-primary-600 after:w-full' : 'text-slate-600 after:w-0 hover:after:w-full'}`}
             >
               My Dashboard
