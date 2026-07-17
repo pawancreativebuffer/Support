@@ -612,34 +612,54 @@ export default function DashboardPage() {
       <div className="w-full px-6 mt-6 space-y-6">
 
         <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-            <Ticket className="w-5 h-5 text-primary-600" />
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Total Cases</h4>
-            <div className="text-2xl font-extrabold text-slate-800 mt-1">{totalTickets}</div>
+          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
+              <Ticket className="w-5 h-5 text-primary-600" />
+            </div>
+            <div>
+              <h4 className="text-slate-500 text-sm font-medium">Total Cases</h4>
+              <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
+            </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-            <Clock className="w-5 h-5 text-amber-500" />
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Active / Open</h4>
-            <div className="text-2xl font-extrabold text-slate-800 mt-1">{openTickets}</div>
+          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
+              <Clock className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <h4 className="text-slate-500 text-sm font-medium">Active / Open</h4>
+              <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{openTickets}</div>
+            </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-            <CheckCircle className="w-5 h-5 text-emerald-500" />
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Resolved</h4>
-            <div className="text-2xl font-extrabold text-slate-800 mt-1">{resolvedTickets}</div>
+          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
+              <CheckCircle className="w-5 h-5 text-emerald-500" />
+            </div>
+            <div>
+              <h4 className="text-slate-500 text-sm font-medium">Resolved</h4>
+              <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTickets}</div>
+            </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-            <MessageCircle className="w-5 h-5 text-sky-500" />
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Chats Recorded</h4>
-            <div className="text-2xl font-extrabold text-slate-800 mt-1">{chatSessionsCount}</div>
+          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center flex-shrink-0 border border-sky-100/50">
+              <MessageCircle className="w-5 h-5 text-sky-500" />
+            </div>
+            <div>
+              <h4 className="text-slate-500 text-sm font-medium">Chats Recorded</h4>
+              <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{chatSessionsCount}</div>
+            </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all col-span-2 md:col-span-1">
-            <Mic className="w-5 h-5 text-primary-500" />
-            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Voice Sessions</h4>
-            <div className="text-2xl font-extrabold text-slate-800 mt-1">{voiceSessionsCount}</div>
+          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all col-span-2 md:col-span-1 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
+              <Mic className="w-5 h-5 text-primary-500" />
+            </div>
+            <div>
+              <h4 className="text-slate-500 text-sm font-medium">Voice Sessions</h4>
+              <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{voiceSessionsCount}</div>
+            </div>
           </div>
         </section>
 

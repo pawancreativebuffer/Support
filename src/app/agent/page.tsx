@@ -857,62 +857,92 @@ export default function AgentPage() {
           {user.role === 'Admin' ? (
             <>
               {/* Total Cases */}
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                <Ticket className="w-5 h-5 text-primary-600" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Total Tickets Raised</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{totalTickets}</div>
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
+                  <Ticket className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Total Tickets Raised</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
+                </div>
               </div>
 
               {/* Open Tickets */}
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border-l-4 border-l-blue-500">
-                <Clock className="w-5 h-5 text-blue-500" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Open Status</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{openTicketsCount}</div>
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
+                  <Clock className="w-5 h-5 text-blue-500" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Open Status</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{openTicketsCount}</div>
+                </div>
               </div>
 
               {/* Active Cases */}
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border-l-4 border-l-amber-500">
-                <AlertCircle className="w-5 h-5 text-amber-500" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Active Cases</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{activeTicketsCount}</div>
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
+                  <AlertCircle className="w-5 h-5 text-amber-500" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Active Cases</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{activeTicketsCount}</div>
+                </div>
               </div>
 
               {/* Resolved */}
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border-l-4 border-l-emerald-500">
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Resolved Status</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{resolvedTicketsCount}</div>
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
+                  <CheckCircle className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Resolved Status</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTicketsCount}</div>
+                </div>
               </div>
             </>
           ) : (
             <>
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                <Ticket className="w-5 h-5 text-primary-600" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Total Cases</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{totalTickets}</div>
-              </div>
-
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                <Clock className="w-5 h-5 text-blue-500" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Active Tickets</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{activeTicketsCount}</div>
-              </div>
-
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border-l-4 border-l-amber-500">
-                <div className="flex items-center justify-between">
-                  <AlertCircle className="w-5 h-5 text-amber-500" />
-                  {pendingResponseCount > 0 && (
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                  )}
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
+                  <Ticket className="w-5 h-5 text-primary-600" />
                 </div>
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Needs Response</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{pendingResponseCount}</div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Total Cases</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
+                </div>
               </div>
 
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
-                <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-4">Resolved</h4>
-                <div className="text-2xl font-extrabold text-slate-800 mt-1">{resolvedTicketsCount}</div>
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
+                  <Clock className="w-5 h-5 text-blue-500" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Active Tickets</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{activeTicketsCount}</div>
+                </div>
+              </div>
+
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4 relative">
+                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
+                  <AlertCircle className="w-5 h-5 text-amber-500" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Needs Response</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{pendingResponseCount}</div>
+                </div>
+                {pendingResponseCount > 0 && (
+                  <span className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                )}
+              </div>
+
+              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
+                  <CheckCircle className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div>
+                  <h4 className="text-slate-500 text-sm font-medium">Resolved</h4>
+                  <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTicketsCount}</div>
+                </div>
               </div>
             </>
           )}
