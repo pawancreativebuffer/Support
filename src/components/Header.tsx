@@ -41,7 +41,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-100">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-100">
       <div className="max-w-[1400px] mx-auto px-[15px] h-[76px] flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-slate-900 font-bold text-xl tracking-tight cursor-pointer uppercase hover:opacity-90 transition-opacity">
@@ -52,7 +52,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-[15px] text-sm font-medium text-slate-600">
+        <nav className="hidden md:flex items-center gap-10 text-sm font-medium text-slate-600">
           <Link 
             href="/" 
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
