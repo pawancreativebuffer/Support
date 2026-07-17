@@ -1100,10 +1100,10 @@ export default function AgentPage() {
 
                   <div className="space-y-4">
                     <Sparkles className="w-8 h-8 text-primary-400 animate-pulse" />
-                    <h3 className="font-bold text-white text-sm">
+                    <h3 className="font-bold text-white text-base sm:text-lg">
                       {user.role === 'Admin' ? 'Admin Control Console' : 'Agent Dispatch Console'}
                     </h3>
-                    <p className="text-xs text-slate-350 leading-relaxed">
+                    <p className="text-sm text-slate-300 leading-relaxed">
                       {user.role === 'Admin'
                         ? 'You are logged in as a support administrator. Monitor all tickets, analyze team performance metrics, and oversee system resolutions.'
                         : 'You are logged in as a support agent. Manage ticket queues, answer customer inquiries with attachments, and track active cases.'}
@@ -1118,14 +1118,14 @@ export default function AgentPage() {
                 </div>
 
                 {/* Guidelines Card */}
-                <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
-                  <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-6 shadow-sm">
+                  <div className="flex items-center gap-2 border-b border-slate-100 pb-6">
                     <Info className="w-4 h-4 text-primary-600" />
-                    <h4 className="text-xs font-black uppercase text-slate-700 tracking-widest">
+                    <h4 className="font-bold text-slate-800 text-base sm:text-lg">
                       {user.role === 'Admin' ? 'Admin Guidelines' : 'Agent Guidelines'}
                     </h4>
                   </div>
-                  <div className="space-y-3.5 text-xs text-slate-650 leading-relaxed">
+                  <div className="space-y-3.5 text-sm text-slate-650 leading-relaxed">
                     {user.role === 'Admin' ? (
                       <>
                         <div className="flex gap-2">

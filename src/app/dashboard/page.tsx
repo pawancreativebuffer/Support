@@ -828,8 +828,8 @@ export default function DashboardPage() {
 
                   <div className="space-y-4">
                     <Sparkles className="w-8 h-8 text-primary-400 animate-pulse" />
-                    <h3 className="font-bold text-white text-sm">Need instant assistance?</h3>
-                    <p className="text-xs text-slate-350 leading-relaxed">
+                    <h3 className="font-bold text-white text-base sm:text-lg">Need instant assistance?</h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">
                       Consult Sarah, our AI Voice Assistant. Speak directly about store layouts, orders, or support queries.
                     </p>
                     <Link
@@ -842,12 +842,12 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Customer Support Info Guide Card */}
-                <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
-                  <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-6 shadow-sm">
+                  <div className="flex items-center gap-2 border-b border-slate-100 pb-6">
                     <Info className="w-4 h-4 text-primary-600" />
-                    <h4 className="text-xs font-black uppercase text-slate-700 tracking-widest">Portal Guidelines</h4>
+                    <h4 className="font-bold text-slate-800 text-base sm:text-lg">Portal Guidelines</h4>
                   </div>
-                  <div className="space-y-3.5 text-xs text-slate-600 leading-relaxed">
+                  <div className="space-y-3.5 text-sm text-slate-600 leading-relaxed">
                     <div className="flex gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary-600 mt-1.5 flex-shrink-0" />
                       <p>Click on any activity item in your timeline or ticket row to see full transcripts and updates.</p>
