@@ -37,7 +37,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     router.push(`/article/${article.slug}`);
   };
 
-  const borderClass = isFocused ? 'border-primary-500' : 'border-primary-100';
+  const borderClass = isFocused ? 'border-primary-500' : 'border-slate-200';
   const isDropdownVisible = showDropdown && heroSearch.trim() !== '';
 
   return (
@@ -56,13 +56,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         {/* Left: Text */}
-        <div className="flex flex-col items-start text-left space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-sm font-bold shadow-sm shadow-slate-900 cursor-pointer backdrop-blur-sm">
+        <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-sm font-normal shadow-sm shadow-slate-900 cursor-pointer backdrop-blur-sm">
             <Zap className="w-4 h-4 fill-primary-400 text-primary-400" /> Fast & Intelligent Support
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
             Find answers. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-300">
+            <span className="text-primary-500">
               Fix problems.
             </span>
           </h1>
@@ -72,18 +72,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </div>
 
         {/* Right: Glassmorphism Search Console */}
-        <div className="relative w-full max-w-xl mx-auto lg:ml-auto">
-          <div className="absolute -inset-4 bg-gradient-to-r from-primary-400 to-primary-200 rounded-[2.5rem] blur-2xl opacity-30 animate-pulse"></div>
-          <div className="relative bg-white/60 backdrop-blur-2xl border border-white rounded-[2rem] p-6 md:p-8 shadow-2xl shadow-primary-900/10">
+        <div className="relative w-full max-w-2xl lg:max-w-full mx-auto lg:ml-auto">
+          {/* Removed glowing pulse effect per request */}
+          <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 md:p-8 shadow-2xl shadow-black/50">
             <div className="flex flex-col gap-6">
               <div 
-                className={`relative w-full bg-white border-2 transition-all duration-200 z-20 ${borderClass} ${
+                className={`relative w-full bg-white border-2 transition-all duration-200 z-20 p-2.5 sm:p-3 ${borderClass} ${
                   isDropdownVisible ? 'rounded-t-2xl' : 'rounded-2xl shadow-inner'
                 }`}
               >
                 {/* Input Wrapper */}
                 <div className="relative flex items-center w-full bg-transparent">
-                  <Search className="w-7 h-7 text-primary-500 ml-6" />
+                  <Search className="w-7 h-7 text-slate-400 ml-3 mr-2 shrink-0" />
                   <input
                     type="text"
                     placeholder="Ask anything (e.g. API keys)..."
@@ -105,11 +105,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                         onSearch();
                       }
                     }}
-                    className="no-global-style w-full bg-transparent text-slate-900 placeholder-slate-400 text-lg md:text-xl py-6 px-4 outline-none border-none font-medium"
+                    className="no-global-style flex-1 bg-transparent text-slate-900 placeholder-slate-400 text-lg md:text-xl py-2 px-2 outline-none border-none font-medium min-w-0"
                   />
                   <button
                     onClick={onSearch}
-                    className="mr-2 bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer"
+                    className="bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-8 h-[48px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer shadow-md shrink-0"
                   >
                     Search
                   </button>
@@ -118,7 +118,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 {/* Suggestions Dropdown */}
                 {isDropdownVisible && (
                   <div 
-                    className={`absolute left-[-2px] right-[-2px] top-full bg-white border-2 border-t-0 rounded-b-2xl shadow-2xl z-50 overflow-hidden transition-all duration-200 ${borderClass}`}
+                    className={`absolute left-[-2px] right-[-2px] top-full bg-white border-2 border-t-0 ${borderClass} rounded-b-2xl shadow-2xl z-50 overflow-hidden transition-all duration-200`}
                   >
                     <div className="max-h-60 overflow-y-auto">
                       {filteredArticles.length > 0 ? (
@@ -126,10 +126,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                           <button
                             key={article.slug}
                             onMouseDown={() => handleArticleSelect(article)}
-                            className="w-full text-left px-5 py-4 hover:bg-primary-50 hover:text-primary-700 transition-colors border-b border-slate-100 last:border-0 flex flex-col gap-1 cursor-pointer"
+                            className="w-full text-left px-5 py-4 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0 flex flex-col gap-1 cursor-pointer"
                           >
                             <span className="font-semibold text-slate-800">{article.title}</span>
-                            <span className="text-xs text-slate-400 line-clamp-1">{article.description}</span>
+                            <span className="text-xs text-slate-500 line-clamp-1">{article.description}</span>
                           </button>
                         ))
                       ) : (
@@ -143,13 +143,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-slate-500 mb-3 uppercase tracking-wider">Trending searches</p>
+                <p className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Trending searches</p>
                 <div className="flex flex-wrap gap-2">
                   {searchTags.map((tag, i) => (
                     <button
                       key={i}
                       onClick={() => onTagClick(tag)}
-                      className="px-4 py-2 text-sm font-semibold bg-white text-slate-600 cursor-pointer rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200 hover:-translate-y-0.5 transition-all duration-300"
+                      className="px-4 py-2 text-sm font-normal bg-white text-slate-900 cursor-pointer rounded-[8px] border border-transparent shadow-sm hover:shadow-md hover:bg-slate-100 hover:-translate-y-0.5 transition-all duration-300"
                     >
                       {tag}
                     </button>

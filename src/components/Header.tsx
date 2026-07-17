@@ -113,7 +113,7 @@ export function Header() {
               Sign In
             </Link>
           )}
-          <Link href="/contact" className="bg-primary-600 hover:bg-slate-50 text-white hover:text-primary-600 border border-transparent hover:border-primary-200 text-sm font-medium px-8 h-[46px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer">
+          <Link href="/contact" className="bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm">
             Contact
           </Link>
           <button 
