@@ -97,8 +97,11 @@ export default function SupportPage() {
       </div>
 
       {/* Video Tutorials Section - Full Width */}
-      <div className="w-full bg-slate-50 py-16 border-y border-slate-200">
-        <div className="w-full max-w-[1400px] mx-auto px-[15px] flex flex-col items-center">
+      <div className="relative w-full bg-slate-50 py-20 border-y border-slate-200 overflow-hidden">
+        {/* Technical Square Grid Texture & Gradient */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e1_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e1_1px,transparent_1px)] [background-size:48px_48px] opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-transparent to-slate-100/90"></div>
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] flex flex-col items-center">
           <VideoSection />
         </div>
       </div>
