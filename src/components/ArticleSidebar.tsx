@@ -20,7 +20,7 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
 }) => {
   return (
     <aside className="lg:col-span-4">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
         {categories.map((category) => {
           const isExpanded = !!expandedCategories[category.id];
           const isActiveCategory = activeCategory.id === category.id;
