@@ -81,7 +81,8 @@ export async function POST(req: NextRequest) {
           userId: customerId,
           customerName: customerName,
           customerEmail: customerEmail,
-          batchCount: batchCount.toString()
+          batchCount: batchCount.toString(),
+          phone: fromNumber
         }
       });
     }
