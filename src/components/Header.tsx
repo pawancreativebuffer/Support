@@ -41,7 +41,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-100">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-100 shadow-md">
       <div className="max-w-[1400px] mx-auto px-[15px] h-[76px] flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-slate-900 font-bold text-xl tracking-tight cursor-pointer uppercase hover:opacity-90 transition-opacity">
@@ -171,19 +171,13 @@ export function Header() {
             )}
             
             {user ? (
-              <div className="flex flex-col gap-4 py-4 mt-2 border-t border-slate-100">
-                <div className="flex items-center gap-3 text-sm font-semibold text-slate-800">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 border border-primary-200 text-primary-700 flex items-center justify-center font-bold uppercase">
-                    {user.name ? user.name[0] : 'U'}
-                  </div>
-                  <span>{user.name} ({user.role})</span>
-                </div>
+              <div className="pt-4 mt-2 border-t border-slate-100">
                 <button 
                   onClick={() => {
                     setIsOpen(false);
                     handleLogout();
                   }}
-                  className="flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 h-[46px] rounded-[8px] cursor-pointer text-center w-full transition-colors mt-2"
+                  className="flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 h-[46px] rounded-[8px] cursor-pointer text-center w-full transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out

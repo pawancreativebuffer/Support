@@ -751,7 +751,23 @@ export default function AdminPage() {
   const activities = getActivitiesList();
 
   return (
-    <div className="bg-slate-50/50 text-slate-800 min-h-screen font-sans selection:bg-primary-600 selection:text-white pb-20 relative">
+    <div className="bg-slate-50/50 text-slate-800 min-h-screen font-sans selection:bg-primary-600 selection:text-white flex relative">
+      {/* Left Sidebar */}
+      <aside className="hidden lg:flex w-[280px] bg-white border-r border-slate-200 flex-col items-center p-8 fixed top-[77px] bottom-0 left-0 overflow-y-auto shadow-sm z-20">
+        <div className="flex flex-col items-center text-center mt-6 w-full">
+          <div className="w-20 h-20 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 mb-4 shadow-sm">
+            <User className="w-10 h-10" />
+          </div>
+          <span className="text-[10px] font-black tracking-widest text-primary-600 uppercase mb-2 text-center">Admin Console</span>
+          <h2 className="text-xl font-bold text-slate-800 leading-tight">Welcome, <br/> {user.name}</h2>
+          <div className="mt-5 w-full bg-slate-50 border border-slate-200 py-2.5 px-3 rounded-xl flex items-center justify-center overflow-hidden">
+            <span className="text-[11px] font-semibold text-slate-600 truncate w-full" title={user.email}>{user.email}</span>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-20">
 
       {/* Toast Notification Card Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
@@ -768,29 +784,7 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* Header */}
-      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
-              <User className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[10px] font-black tracking-widest text-primary-600 uppercase">
-                {user.role === 'Admin' ? 'Admin Console' : 'Agent Workspace'}
-              </span>
-              <h2 className="text-base font-bold text-slate-800">Welcome Back, {user.name}</h2>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-primary-700 bg-primary-50 border border-primary-200 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-sm select-all">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary-600 animate-pulse"></span>
-              {user.email}
-            </span>
-          </div>
-        </div>
-      </header>
 
       {/* Welcome Banner */}
       <div className="max-w-[1600px] mx-auto px-6 pt-10">
@@ -2660,6 +2654,7 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
