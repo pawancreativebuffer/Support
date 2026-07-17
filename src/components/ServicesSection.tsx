@@ -61,7 +61,7 @@ export const ServicesSection: React.FC = () => {
   ];
 
   return (
-    <div id="solutions" className="w-full mb-32 scroll-mt-24">
+    <div id="solutions" className="w-full scroll-mt-24">
       <div className="flex flex-col items-center text-center mb-16 gap-4">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-normal shadow-sm">
           <Layers className="w-4 h-4 fill-primary-50 text-primary-500" /> Solutions

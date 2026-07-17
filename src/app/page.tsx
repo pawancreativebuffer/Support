@@ -91,15 +91,20 @@ export default function SupportPage() {
         searchTags={searchTags}
       />
 
-      {/* Main Content Area */}
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] py-20 md:py-24 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] py-16 flex flex-col items-center">
         {/* Services Bento Grid */}
         <ServicesSection />
+      </div>
 
-        {/* Video Tutorials Section */}
-        <VideoSection />
+      {/* Video Tutorials Section - Full Width */}
+      <div className="w-full bg-slate-50 py-16 border-y border-slate-200">
+        <div className="w-full max-w-[1400px] mx-auto px-[15px] flex flex-col items-center">
+          <VideoSection />
+        </div>
+      </div>
 
-        {/* Predefined Questions / FAQ */}
+      {/* Predefined Questions / FAQ */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] py-16 flex flex-col items-center">
         <FAQSection
           faqCategory={faqCategory}
           setFaqCategory={setFaqCategory}
