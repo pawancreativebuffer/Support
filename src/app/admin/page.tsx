@@ -196,6 +196,53 @@ export default function AdminPage() {
   const [showMergedTicketsModal, setShowMergedTicketsModal] = useState(false);
   const [mergedTicketsList, setMergedTicketsList] = useState<any[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+  const [newAgentEmail, setNewAgentEmail] = useState('');
+  const [newAgentLogin, setNewAgentLogin] = useState('');
+  const [newAgentFirstName, setNewAgentFirstName] = useState('');
+  const [newAgentLastName, setNewAgentLastName] = useState('');
+  const [newAgentPassword, setNewAgentPassword] = useState('');
+  const [newAgentSubmitting, setNewAgentSubmitting] = useState(false);
+
+  const handleCreateAgent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAgentEmail || !newAgentLogin || !newAgentPassword) {
+      alert('Email, Login, and Password are required.');
+      return;
+    }
+    setNewAgentSubmitting(true);
+    try {
+      const res = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: newAgentFirstName,
+          lastName: newAgentLastName,
+          email: newAgentEmail,
+          login: newAgentLogin,
+          password: newAgentPassword
+        })
+      });
+      if (res.ok) {
+        triggerToast(`Agent ${newAgentEmail} created successfully!`);
+        setShowAddAgentModal(false);
+        setNewAgentFirstName('');
+        setNewAgentLastName('');
+        setNewAgentEmail('');
+        setNewAgentLogin('');
+        setNewAgentPassword('');
+        loadAgents();
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to create agent');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error creating agent');
+    } finally {
+      setNewAgentSubmitting(false);
+    }
+  };
 
   // Custom Ticket Creation Form States
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -783,6 +830,15 @@ export default function AdminPage() {
                 <FileDown className="w-4 h-4 text-primary-600" />
                 Generate Report
               </button>
+              {user.role === 'Admin' && (
+                <button
+                  onClick={() => setShowAddAgentModal(true)}
+                  className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                >
+                  <PlusCircle className="w-4 h-4 text-primary-600" />
+                  Add Agent
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -2543,6 +2599,67 @@ export default function AdminPage() {
         tickets={tickets}
         agents={agents}
       />
+
+      {/* Add Agent Modal */}
+      {showAddAgentModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-[100] animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up-subtle">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Add New Agent</h3>
+                  <p className="text-xs text-slate-500">Register a new support agent profile</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAddAgentModal(false)} className="text-slate-400 hover:text-slate-600 bg-white p-2 rounded-xl border border-slate-200 shadow-sm transition-all cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateAgent} className="p-6 space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">First Name</label>
+                  <input required value={newAgentFirstName} onChange={e => setNewAgentFirstName(e.target.value)} type="text" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="Agent" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Last Name</label>
+                  <input required value={newAgentLastName} onChange={e => setNewAgentLastName(e.target.value)} type="text" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="Name" />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Email Address *</label>
+                <input required value={newAgentEmail} onChange={e => setNewAgentEmail(e.target.value)} type="email" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="agent@ticket-it.com" />
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Login ID *</label>
+                  <input required value={newAgentLogin} onChange={e => setNewAgentLogin(e.target.value)} type="text" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="agent123" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Password *</label>
+                  <input required value={newAgentPassword} onChange={e => setNewAgentPassword(e.target.value)} type="password" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="••••••••" />
+                </div>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-2">
+                <button type="button" onClick={() => setShowAddAgentModal(false)} className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs bg-white hover:bg-slate-50 transition-all cursor-pointer">
+                  Cancel
+                </button>
+                <button type="submit" disabled={newAgentSubmitting} className="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-70">
+                  {newAgentSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
+                  Create Agent
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
