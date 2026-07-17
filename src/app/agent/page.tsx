@@ -773,9 +773,51 @@ export default function AgentPage() {
           </div>
         </div>
 
-        {/* Navigation Placeholder */}
+        {/* Navigation */}
         <nav className="flex-1 w-full mt-8 flex flex-col gap-2">
-          {/* Navigation links will go here */}
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'overview'
+              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+              }`}
+          >
+            <History className={`w-5 h-5 transition-colors ${activeTab === 'overview' ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+            <span className="text-sm">Activity Overview</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('tickets')}
+            className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'tickets'
+              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+              }`}
+          >
+            <Ticket className={`w-5 h-5 transition-colors ${activeTab === 'tickets' ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+            <span className="text-sm">Tickets Queue</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('chats')}
+            className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'chats'
+              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+              }`}
+          >
+            <MessageSquare className={`w-5 h-5 transition-colors ${activeTab === 'chats' ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+            <span className="text-sm">Live Chats</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('voice')}
+            className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'voice'
+              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+              }`}
+          >
+            <Mic className={`w-5 h-5 transition-colors ${activeTab === 'voice' ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+            <span className="text-sm">Voice AI</span>
+          </button>
         </nav>
 
         {/* Sidebar Footer */}
@@ -948,114 +990,8 @@ export default function AgentPage() {
           )}
         </section>
 
-        {/* Tab Switcher */}
-        <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'overview'
-                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-                }`}
-            >
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'overview' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
-                <History className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="block text-sm font-bold">Activity Overview</span>
-                <span className={`block text-[10px] ${activeTab === 'overview' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Audit trail of issues</span>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('tickets')}
-              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'tickets'
-                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-                }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'tickets' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'}`}>
-                  <Ticket className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="block text-sm font-bold">Tickets Queue</span>
-                  <span className={`block text-[10px] ${activeTab === 'tickets' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Manage client inquiries</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {pendingResponseCount > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-500 text-white rounded-full animate-pulse">
-                    {pendingResponseCount} Act
-                  </span>
-                )}
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'tickets'
-                  ? 'bg-white/20 text-white border-white/10'
-                  : 'bg-slate-100 text-slate-700 border-slate-200'
-                  }`}>
-                  {totalTickets}
-                </span>
-              </div>
-            </button>
-
-            {/* TAB 3: Live Chats */}
-            <button
-              onClick={() => setActiveTab('chats')}
-              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'chats'
-                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-                }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'chats' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
-                  }`}>
-                  <MessageSquare className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="block text-sm font-bold">Live Chats</span>
-                  <span className={`block text-[10px] ${activeTab === 'chats' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Chat log sessions</span>
-                </div>
-              </div>
-              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'chats'
-                ? 'bg-white/20 text-white border-white/10'
-                : 'bg-slate-100 text-slate-700 border-slate-200'
-                }`}>
-                {chats.length}
-              </span>
-            </button>
-
-            {/* TAB 4: Voice Calls */}
-            <button
-              onClick={() => setActiveTab('voice')}
-              className={`flex items-center justify-between p-4 rounded-2xl border transition-all text-left cursor-pointer shadow-sm ${activeTab === 'voice'
-                ? 'bg-primary-600 border-primary-700 text-white shadow-md shadow-primary-200'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-                }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${activeTab === 'voice' ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'
-                  }`}>
-                  <Mic className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="block text-sm font-bold">Voice AI</span>
-                  <span className={`block text-[10px] ${activeTab === 'voice' ? 'text-white/80' : 'text-slate-400 font-semibold'}`}>Voice transcript logs</span>
-                </div>
-              </div>
-              <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${activeTab === 'voice'
-                ? 'bg-white/20 text-white border-white/10'
-                : 'bg-slate-100 text-slate-700 border-slate-200'
-                }`}>
-                {voiceLogs.length}
-              </span>
-            </button>
-
-          </div>
-
-        </section>
-
-        {/* Tab contents */}
-        <section>
+        {/* Tab Contents */}
+        <section className="mt-8 w-full">
           {/* TAB 1: OVERVIEW TIMELINE */}
           {activeTab === 'overview' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in">
@@ -1778,7 +1714,6 @@ export default function AgentPage() {
             </div>
           )}
 
-        
         </section>
       </div>
 
