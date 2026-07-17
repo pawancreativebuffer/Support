@@ -75,12 +75,19 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex-1 flex items-center justify-center py-12 px-4 lg:px-8 bg-slate-50 relative overflow-hidden">
-      {/* Background glowing mesh blobs */}
-      <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary-400/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-400/20 rounded-full blur-[140px] pointer-events-none" />
+      {/* Clean Theme Gradients */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-500/5 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent" />
+      
+      {/* Elegant Grid Texture (Light) */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTSA0MCAwIEwgMCAwIDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDAsMCwwLjA0KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] pointer-events-none" />
+      
+      {/* Dynamic Theme Glows */}
+      <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Main Container Card: Split 12-Column Layout */}
-      <div className="relative w-full max-w-5xl bg-white rounded-[32px] border border-slate-200/80 shadow-[0_20px_50px_rgba(99,102,241,0.06)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10">
+      <div className="relative w-full max-w-5xl bg-white rounded-[16px] border border-slate-200/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.15)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10">
 
         {/* Left Side: Admin Support System Panel (5 Columns) */}
         <div className="lg:col-span-5 bg-gradient-to-br from-primary-900 via-primary-850 to-primary-800 p-8 lg:p-10 flex flex-col justify-start space-y-6 text-white relative overflow-hidden">

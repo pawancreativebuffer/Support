@@ -27,10 +27,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     heroSearch.trim() === ''
       ? []
       : allArticles.filter(
-          (art) =>
-            art.title.toLowerCase().includes(heroSearch.toLowerCase()) ||
-            art.description.toLowerCase().includes(heroSearch.toLowerCase())
-        );
+        (art) =>
+          art.title.toLowerCase().includes(heroSearch.toLowerCase()) ||
+          art.description.toLowerCase().includes(heroSearch.toLowerCase())
+      );
 
   const handleArticleSelect = (article: typeof allArticles[0]) => {
     setHeroSearch(article.title);
@@ -45,10 +45,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Deep Theme-Colored Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-slate-950 to-blue-950" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-900/40 via-transparent to-transparent" />
-      
+
       {/* Elegant Grid Texture */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] pointer-events-none" />
-      
+
       {/* Dynamic Theme Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] rounded-full bg-primary-600/25 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none" />
@@ -76,10 +76,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Removed glowing pulse effect per request */}
           <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 md:p-8 shadow-2xl shadow-black/50">
             <div className="flex flex-col gap-6">
-              <div 
-                className={`relative w-full bg-white border-2 transition-all duration-200 z-20 p-2.5 sm:p-3 ${borderClass} ${
-                  isDropdownVisible ? 'rounded-t-2xl' : 'rounded-2xl shadow-inner'
-                }`}
+              <div
+                className={`relative w-full bg-white border-2 transition-all duration-200 z-20 p-2.5 sm:p-3 ${borderClass} ${isDropdownVisible ? 'rounded-t-2xl' : 'rounded-2xl shadow-inner'
+                  }`}
               >
                 {/* Input Wrapper */}
                 <div className="relative flex items-center w-full bg-transparent">
@@ -117,7 +116,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
                 {/* Suggestions Dropdown */}
                 {isDropdownVisible && (
-                  <div 
+                  <div
                     className={`absolute left-[-2px] right-[-2px] top-full bg-white border-2 border-t-0 ${borderClass} rounded-b-2xl shadow-2xl z-50 overflow-hidden transition-all duration-200`}
                   >
                     <div className="max-h-60 overflow-y-auto">
