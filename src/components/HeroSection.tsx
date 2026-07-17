@@ -41,23 +41,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const isDropdownVisible = showDropdown && heroSearch.trim() !== '';
 
   return (
-    <section className="relative w-full bg-slate-50 border-b border-slate-200 pt-16 pb-24 md:pt-24 md:pb-24 overflow-hidden">
-      {/* Background Gradients */}
-      <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-100/60 via-slate-50 to-slate-50 pointer-events-none" />
+    <section className="relative w-full border-b border-primary-900/50 py-20 md:py-24 overflow-hidden bg-slate-950">
+      {/* Deep Theme-Colored Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-slate-950 to-blue-950" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-900/40 via-transparent to-transparent" />
+      
+      {/* Elegant Grid Texture */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] pointer-events-none" />
+      
+      {/* Dynamic Theme Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] rounded-full bg-primary-600/25 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[30%] left-[30%] w-[20%] h-[20%] rounded-full bg-primary-400/10 blur-[80px] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-[1400px] mx-auto px-[15px] grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         {/* Left: Text */}
         <div className="flex flex-col items-start text-left space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 border border-primary-200 text-primary-700 text-sm font-bold shadow-sm shadow-primary-100 cursor-pointer">
-            <Zap className="w-4 h-4 fill-primary-500" /> Fast & Intelligent Support
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-sm font-bold shadow-sm shadow-slate-900 cursor-pointer backdrop-blur-sm">
+            <Zap className="w-4 h-4 fill-primary-400 text-primary-400" /> Fast & Intelligent Support
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
             Find answers. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-300">
               Fix problems.
             </span>
           </h1>
-          <p className="text-base text-slate-600 max-w-lg leading-relaxed">
+          <p className="text-base text-slate-300 max-w-lg leading-relaxed">
             Skip the wait. Search our intelligent knowledge base or browse our interactive guides to resolve issues instantly.
           </p>
         </div>
