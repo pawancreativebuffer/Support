@@ -154,9 +154,9 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 animate-fade-in">
-      <div className="bg-white rounded-3xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 animate-fade-in">
+      <div className="bg-white rounded-xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col">
+        <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
               <FileText className="w-5 h-5" />
@@ -166,7 +166,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
               <p className="text-xs text-slate-500">Download a filtered PDF report</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+          <button onClick={onClose} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -180,7 +180,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
             <select
               value={selectedAgent}
               onChange={(e) => setSelectedAgent(e.target.value)}
-              className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
             >
               <option value="all">All Agents</option>
               {agents.map((agent) => (
@@ -204,7 +204,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
                     setStartDate(e.target.value);
                     setDateRange('custom');
                   }}
-                  className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+                  className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
                 />
               </div>
               <div className="space-y-1.5">
@@ -216,7 +216,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
                     setEndDate(e.target.value);
                     setDateRange('custom');
                   }}
-                  className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+                  className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
                 />
               </div>
             </div>
@@ -228,7 +228,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
             >
               <option value="All">All Statuses</option>
               <option value="Open">Open</option>
@@ -246,7 +246,7 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
+              className="w-full h-[46px] px-4 rounded-[8px] border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all text-sm font-medium text-slate-700"
             >
               <option value="All">All Priorities</option>
               <option value="HIGH">High</option>
@@ -259,13 +259,13 @@ export default function ReportModal({ isOpen, onClose, tickets, agents }: Report
         <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 font-bold rounded-xl transition-all shadow-sm"
+            className="flex flex-1 items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
           >
             Cancel
           </button>
           <button
             onClick={handleDownload}
-            className="flex-1 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all shadow-md shadow-primary-600/20 flex items-center justify-center gap-2"
+            className="flex flex-1 items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" /> Download PDF
           </button>

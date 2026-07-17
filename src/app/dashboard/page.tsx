@@ -564,7 +564,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setActiveTab('overview')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'overview'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -575,7 +575,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setActiveTab('tickets')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'tickets'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -586,7 +586,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setActiveTab('chats')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'chats'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -597,7 +597,7 @@ export default function DashboardPage() {
           <button
             onClick={() => setActiveTab('voice')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'voice'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -654,7 +654,7 @@ export default function DashboardPage() {
       <div className="w-full px-6 mt-6 space-y-6">
 
         <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
               <Ticket className="w-5 h-5 text-primary-600" />
             </div>
@@ -664,7 +664,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
               <Clock className="w-5 h-5 text-amber-500" />
             </div>
@@ -674,7 +674,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
               <CheckCircle className="w-5 h-5 text-emerald-500" />
             </div>
@@ -684,7 +684,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center flex-shrink-0 border border-sky-100/50">
               <MessageCircle className="w-5 h-5 text-sky-500" />
             </div>
@@ -694,7 +694,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all col-span-2 md:col-span-1 flex items-center gap-4">
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all col-span-2 md:col-span-1 flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
               <Mic className="w-5 h-5 text-primary-500" />
             </div>
@@ -706,14 +706,14 @@ export default function DashboardPage() {
         </section>
 
         {/* Tab Contents */}
-        <section className="mt-8 w-full">
+        <section className="w-full">
 
           {/* TAB 1: OVERVIEW TIMELINE */}
           {activeTab === 'overview' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in">
               {/* Left timeline column (8 cols) */}
               <div className="lg:col-span-8 space-y-6">
-                <div className="bg-white border border-slate-200 p-6 rounded-3xl relative shadow-sm">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl relative shadow-sm">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                     <div>
                       <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -725,7 +725,7 @@ export default function DashboardPage() {
 
                   {activities.length === 0 ? (
                     <div className="p-16 text-center space-y-4">
-                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
                         <Activity className="w-6 h-6" />
                       </div>
                       <div>
@@ -771,7 +771,7 @@ export default function DashboardPage() {
                               </h4>
 
                               {/* Description body */}
-                              <div className="bg-white border border-slate-200/80 p-5 rounded-2xl mt-2.5 group-hover:border-slate-350 hover:shadow-sm transition-all max-w-full space-y-3.5">
+                              <div className="bg-white border border-slate-200/80 p-5 rounded-xl mt-2.5 group-hover:border-slate-350 hover:shadow-sm transition-all max-w-full space-y-3.5">
                                 {act.type === 'ticket' && (
                                   <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
@@ -808,7 +808,7 @@ export default function DashboardPage() {
                         <div className="pt-4 flex justify-center">
                           <button
                             onClick={() => setVisibleActivities(prev => prev + 5)}
-                            className="px-6 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                            className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm mt-2"
                           >
                             Load More Activity
                           </button>
@@ -823,7 +823,7 @@ export default function DashboardPage() {
               <div className="lg:col-span-4 space-y-6">
 
                 {/* Voice Launcher Widget */}
-                <div className="bg-gradient-to-tr from-slate-900 via-slate-950 to-primary-950 border border-slate-900 p-6 rounded-3xl relative overflow-hidden shadow-md text-white">
+                <div className="bg-gradient-to-tr from-slate-900 via-slate-950 to-primary-950 border border-slate-900 p-6 rounded-xl relative overflow-hidden shadow-md text-white">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-xl pointer-events-none" />
 
                   <div className="space-y-4">
@@ -842,7 +842,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Customer Support Info Guide Card */}
-                <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-4 shadow-sm">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
                   <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                     <Info className="w-4 h-4 text-primary-600" />
                     <h4 className="text-xs font-black uppercase text-slate-700 tracking-widest">Portal Guidelines</h4>
@@ -869,7 +869,7 @@ export default function DashboardPage() {
 
           {/* TAB 2: SUPPORT TICKETS DETAILS */}
           {activeTab === 'tickets' && (
-            <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm animate-fade-in">
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm animate-fade-in">
               <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h3 className="font-bold text-slate-800 text-sm">Registered Support Tickets</h3>
@@ -925,7 +925,7 @@ export default function DashboardPage() {
                     <div
                       key={ticket.id}
                       onClick={() => setSelectedTicket(ticket)}
-                      className="bg-slate-50/50 border border-slate-200/80 p-5 rounded-2xl hover:bg-white hover:border-primary-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                      className="bg-slate-50/50 border border-slate-200/80 p-5 rounded-xl hover:bg-white hover:border-primary-400 hover:shadow-md transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                     >
                       <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-3 flex-wrap">
@@ -990,14 +990,14 @@ export default function DashboardPage() {
                       <button
                         disabled={ticketsPage === 1}
                         onClick={() => setTicketsPage(prev => prev - 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
                         onClick={() => setTicketsPage(prev => prev + 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1012,8 +1012,8 @@ export default function DashboardPage() {
           {activeTab === 'chats' && (
             <div className="space-y-6 animate-fade-in w-full">
               {chats.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
-                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
+                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
                   <div>
                     <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
                     <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
@@ -1026,7 +1026,7 @@ export default function DashboardPage() {
                       <div
                         key={chat.id}
                         onClick={() => setSelectedChat(chat)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
                       >
                         <div className="space-y-3.5">
                           <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -1065,7 +1065,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Chats Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
                     <span className="text-xs text-slate-500 font-bold">
                       Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
                     </span>
@@ -1073,14 +1073,14 @@ export default function DashboardPage() {
                       <button
                         disabled={chatsPage === 1}
                         onClick={() => setChatsPage(prev => prev - 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={chatsPage * chatsPerPage >= chats.length}
                         onClick={() => setChatsPage(prev => prev + 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1095,8 +1095,8 @@ export default function DashboardPage() {
           {activeTab === 'voice' && (
             <div className="space-y-6 animate-fade-in w-full">
               {voiceLogs.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
-                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
+                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
                   <div>
                     <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
                     <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
@@ -1109,7 +1109,7 @@ export default function DashboardPage() {
                       <div
                         key={log.id}
                         onClick={() => setSelectedVoiceLog(log)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
                       >
                         <div className="space-y-3.5">
                           <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -1148,7 +1148,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Voice Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
                     <span className="text-xs text-slate-500 font-bold">
                       Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
                     </span>
@@ -1156,14 +1156,14 @@ export default function DashboardPage() {
                       <button
                         disabled={voicePage === 1}
                         onClick={() => setVoicePage(prev => prev - 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={voicePage * voicePerPage >= voiceLogs.length}
                         onClick={() => setVoicePage(prev => prev + 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1181,7 +1181,7 @@ export default function DashboardPage() {
       {/* MODAL 1: TICKET CONVERSATION THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
@@ -1202,7 +1202,7 @@ export default function DashboardPage() {
                   setSelectedTicket(null);
                   setTicketReplyText('');
                 }}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 transition-colors cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1216,7 +1216,7 @@ export default function DashboardPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Original Inquiry Description */}
-                  <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner">
+                  <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner">
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">Inquiry Description</p>
                     <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
                       <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed select-text font-normal">
@@ -1230,7 +1230,7 @@ export default function DashboardPage() {
 
                   {/* Ticket Attachments */}
                   {selectedTicket.attachmentUrl && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner flex flex-col">
+                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
                       <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
                       <div className="flex flex-wrap gap-2.5">
                         <a
@@ -1247,7 +1247,7 @@ export default function DashboardPage() {
                   )}
 
                   {/* Status Indicator & Resolve Action */}
-                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
+                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-xl bg-slate-50/50 shadow-inner">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${selectedTicket.status === 'Open'
@@ -1267,7 +1267,7 @@ export default function DashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleResolveTicket(selectedTicket.id)}
-                        className="w-full justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-2 border border-emerald-500/20 shadow-md shadow-emerald-500/10"
+                        className="w-full justify-center flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
                       >
                         <CheckSquare className="w-4 h-4" /> Mark as Resolved
                       </button>
@@ -1296,7 +1296,7 @@ export default function DashboardPage() {
                   <div className="flex-1 overflow-y-auto pr-2 space-y-4 flex flex-col min-h-0 scrollbar-thin">
 
                     {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
-                      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
+                      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-xl space-y-3.5 my-4">
                         <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shadow-sm animate-pulse">
                           <Clock className="w-5 h-5" />
                         </div>
@@ -1322,7 +1322,7 @@ export default function DashboardPage() {
                           const isUser = reply.sender === 'customer';
                           return (
                             <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-normal shadow-sm ${isUser
+                              <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-normal shadow-sm ${isUser
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
@@ -1421,7 +1421,7 @@ export default function DashboardPage() {
                       </form>
                     </div>
                   ) : (
-                    <div className="mt-4 p-4.5 bg-emerald-50/50 border border-emerald-100 rounded-2xl text-center text-xs font-bold text-emerald-600">
+                    <div className="mt-4 p-4.5 bg-emerald-50/50 border border-emerald-100 rounded-xl text-center text-xs font-bold text-emerald-600">
                       This inquiry has been marked as resolved.
                     </div>
                   )}
@@ -1437,9 +1437,9 @@ export default function DashboardPage() {
       {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <span className="p-2 rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
                   <MessageCircle className="w-5 h-5" />
@@ -1458,9 +1458,9 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={() => setSelectedChat(null)}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
-                <X className="w-4.5 h-4.5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -1479,7 +1479,7 @@ export default function DashboardPage() {
                 const isUser = msg.sender === 'user';
                 return (
                   <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm leading-relaxed shadow-sm ${isUser
+                    <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-sm leading-relaxed shadow-sm ${isUser
                       ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                       : 'bg-white border border-slate-200 text-slate-850 rounded-tl-none'
                       }`}>
@@ -1504,10 +1504,10 @@ export default function DashboardPage() {
       {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <span className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
                   <Mic className="w-5 h-5" />
@@ -1521,9 +1521,9 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={() => setSelectedVoiceLog(null)}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
-                <X className="w-4.5 h-4.5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -1535,7 +1535,7 @@ export default function DashboardPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Status Indicator */}
-                  <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex items-center justify-between">
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
                     <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
                       ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
@@ -1547,18 +1547,18 @@ export default function DashboardPage() {
 
                   {/* Call Stats Grid */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
                       <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
                       <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
                     </div>
-                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
                       <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
                       <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
                     </div>
                   </div>
 
                   {/* Audio Recording Player */}
-                  <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-3.5 shadow-sm">
+                  <div className="bg-white border border-slate-200 p-5 rounded-xl space-y-3.5 shadow-sm">
                     <div className="flex items-center justify-between">
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
                       {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
@@ -1622,7 +1622,7 @@ export default function DashboardPage() {
                           const isUser = msg.sender === 'user';
                           return (
                             <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
+                              <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
@@ -1658,7 +1658,7 @@ export default function DashboardPage() {
       {/* Toast Notification Card Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         {toasts.map(toast => (
-          <div key={toast.id} className="bg-slate-900 border border-slate-800 text-white rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3 max-w-sm animate-slide-in-right">
+          <div key={toast.id} className="bg-slate-900 border border-slate-800 text-white rounded-xl px-5 py-4 shadow-xl flex items-center gap-3 max-w-sm animate-slide-in-right">
             <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white shrink-0">
               <AlertCircle className="w-4 h-4" />
             </div>

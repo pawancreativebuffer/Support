@@ -770,7 +770,7 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab('overview')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'overview'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -781,7 +781,7 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab('tickets')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'tickets'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -792,7 +792,7 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab('chats')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'chats'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -803,7 +803,7 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab('voice')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'voice'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -814,7 +814,7 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab('call-logs')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'call-logs'
-              ? 'bg-primary-600 text-white font-bold shadow-md shadow-primary-200'
+              ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
               }`}
           >
@@ -835,7 +835,7 @@ export default function AdminPage() {
       {/* Toast Notification Card Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         {toasts.map(toast => (
-          <div key={toast.id} className="bg-slate-900 border border-slate-800 text-white rounded-2xl px-5 py-4 shadow-xl flex items-center gap-3 max-w-sm animate-slide-in-right">
+          <div key={toast.id} className="bg-slate-900 border border-slate-800 text-white rounded-xl px-5 py-4 shadow-xl flex items-center gap-3 max-w-sm animate-slide-in-right">
             <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white shrink-0">
               <AlertCircle className="w-4 h-4" />
             </div>
@@ -903,7 +903,7 @@ export default function AdminPage() {
           {user.role === 'Admin' ? (
             <>
               {/* Total Cases */}
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
                   <Ticket className="w-5 h-5 text-primary-600" />
                 </div>
@@ -914,7 +914,7 @@ export default function AdminPage() {
               </div>
 
               {/* Open Tickets */}
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
                   <Clock className="w-5 h-5 text-blue-500" />
                 </div>
@@ -925,7 +925,7 @@ export default function AdminPage() {
               </div>
 
               {/* Active Cases */}
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
                   <AlertCircle className="w-5 h-5 text-amber-500" />
                 </div>
@@ -936,7 +936,7 @@ export default function AdminPage() {
               </div>
 
               {/* Resolved */}
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
                   <CheckCircle className="w-5 h-5 text-emerald-500" />
                 </div>
@@ -948,7 +948,7 @@ export default function AdminPage() {
             </>
           ) : (
             <>
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
                   <Ticket className="w-5 h-5 text-primary-600" />
                 </div>
@@ -958,7 +958,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
                   <Clock className="w-5 h-5 text-blue-500" />
                 </div>
@@ -968,7 +968,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4 relative">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4 relative">
                 <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
                   <AlertCircle className="w-5 h-5 text-amber-500" />
                 </div>
@@ -981,7 +981,7 @@ export default function AdminPage() {
                 )}
               </div>
 
-              <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+              <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
                   <CheckCircle className="w-5 h-5 text-emerald-500" />
                 </div>
@@ -995,11 +995,11 @@ export default function AdminPage() {
         </section>
 
         {/* Tab Contents */}
-        <section className="mt-8 w-full">
+        <section className="w-full">
           {/* TAB 1: OVERVIEW TIMELINE */}
           {activeTab === 'overview' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in">
-              <div className="lg:col-span-8 bg-white border border-slate-200 p-6 rounded-3xl relative shadow-sm">
+              <div className="lg:col-span-8 bg-white border border-slate-200 p-6 rounded-xl relative shadow-sm">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                   <div>
                     <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -1011,7 +1011,7 @@ export default function AdminPage() {
 
                 {activities.length === 0 ? (
                   <div className="p-16 text-center space-y-4">
-                    <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
                       <Activity className="w-6 h-6" />
                     </div>
                     <div>
@@ -1050,7 +1050,7 @@ export default function AdminPage() {
                               {act.title}
                             </h4>
 
-                            <div className="bg-white border border-slate-200/80 p-5 rounded-2xl mt-2.5 group-hover:border-slate-355 hover:shadow-sm transition-all max-w-full space-y-3">
+                            <div className="bg-white border border-slate-200/80 p-5 rounded-xl mt-2.5 group-hover:border-slate-355 hover:shadow-sm transition-all max-w-full space-y-3">
                               <div className="flex justify-between items-center flex-wrap gap-2 text-xs">
                                 <div className="flex items-center gap-2">
                                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
@@ -1086,7 +1086,7 @@ export default function AdminPage() {
                       <div className="pt-4 flex justify-center">
                         <button
                           onClick={() => setVisibleActivities(prev => prev + 5)}
-                          className="px-6 py-2.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                          className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Load More Activity
                         </button>
@@ -1099,7 +1099,7 @@ export default function AdminPage() {
               {/* Right widgets column (4 cols) */}
               <div className="lg:col-span-4 space-y-6">
                 {/* Agent Welcome Console Widget */}
-                <div className="bg-gradient-to-tr from-slate-900 via-slate-950 to-primary-950 border border-slate-900 p-6 rounded-3xl relative overflow-hidden shadow-md text-white">
+                <div className="bg-gradient-to-tr from-slate-900 via-slate-950 to-primary-950 border border-slate-900 p-6 rounded-xl relative overflow-hidden shadow-md text-white">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/10 rounded-full blur-xl pointer-events-none" />
 
                   <div className="space-y-4">
@@ -1114,7 +1114,7 @@ export default function AdminPage() {
                     </p>
                     <button
                       onClick={() => setActiveTab('tickets')}
-                      className="inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-xs transition-all shadow-lg shadow-primary-600/20 cursor-pointer border border-primary-500/30"
+                      className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm w-full disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Ticket className="w-4 h-4" /> Go to Tickets Queue
                     </button>
@@ -1122,7 +1122,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Guidelines Card */}
-                <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-4 shadow-sm">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
                   <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
                     <Info className="w-4 h-4 text-primary-600" />
                     <h4 className="text-xs font-black uppercase text-slate-700 tracking-widest">
@@ -1169,7 +1169,7 @@ export default function AdminPage() {
 
           {/* TAB 2: TICKETS QUEUE TABLE */}
           {activeTab === 'tickets' && (
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm animate-fade-in">
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                 <div>
                   <h3 className="text-base font-bold text-slate-800">Support Ticket Queue</h3>
@@ -1229,7 +1229,7 @@ export default function AdminPage() {
                           className="fixed inset-0 z-20 cursor-default"
                           onClick={() => setShowPriorityFilters(false)}
                         />
-                        <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl z-25 py-2 animate-fade-in">
+                        <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-25 py-2 animate-fade-in">
                           <div className="px-3 pb-1 border-b border-slate-100 mb-1">
                             <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Filter Priority</span>
                           </div>
@@ -1258,7 +1258,7 @@ export default function AdminPage() {
 
               {filteredTickets.length === 0 ? (
                 <div className="text-center py-20">
-                  <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                  <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
                     <Ticket className="w-6 h-6" />
                   </div>
                   <h5 className="font-bold text-slate-600 text-sm mt-4">No matching tickets found</h5>
@@ -1365,7 +1365,7 @@ export default function AdminPage() {
                                 <div className="flex items-center justify-end gap-2">
                                   <button
                                     onClick={() => setSelectedTicket(ticket)}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
+                                    className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                   >
                                     {user?.role === 'Admin' ? 'View' : 'Manage'} <ChevronRight className="w-3.5 h-3.5" />
                                   </button>
@@ -1387,14 +1387,14 @@ export default function AdminPage() {
                       <button
                         disabled={ticketsPage === 1}
                         onClick={() => setTicketsPage(prev => prev - 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={ticketsPage * ticketsPerPage >= filteredTickets.length}
                         onClick={() => setTicketsPage(prev => prev + 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1408,8 +1408,8 @@ export default function AdminPage() {
           {activeTab === 'chats' && (
             <div className="space-y-6 animate-fade-in w-full">
               {chats.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
-                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
+                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
                   <div>
                     <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
                     <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
@@ -1422,7 +1422,7 @@ export default function AdminPage() {
                       <div
                         key={chat.id}
                         onClick={() => setSelectedChat(chat)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
                       >
                         <div className="space-y-3.5">
                           <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -1461,7 +1461,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* Chats Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
                     <span className="text-xs text-slate-500 font-bold">
                       Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
                     </span>
@@ -1469,14 +1469,14 @@ export default function AdminPage() {
                       <button
                         disabled={chatsPage === 1}
                         onClick={() => setChatsPage(prev => prev - 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={chatsPage * chatsPerPage >= chats.length}
                         onClick={() => setChatsPage(prev => prev + 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1492,8 +1492,8 @@ export default function AdminPage() {
           {activeTab === 'voice' && (
             <div className="space-y-6 animate-fade-in w-full">
               {voiceLogs.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-3xl space-y-4 shadow-sm">
-                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-2xl" />
+                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
+                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
                   <div>
                     <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
                     <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
@@ -1506,7 +1506,7 @@ export default function AdminPage() {
                       <div
                         key={log.id}
                         onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-2xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
                       >
                         <div className="space-y-3.5">
                           <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -1545,7 +1545,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* Voice Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex-wrap gap-4">
+                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
                     <span className="text-xs text-slate-500 font-bold">
                       Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
                     </span>
@@ -1553,14 +1553,14 @@ export default function AdminPage() {
                       <button
                         disabled={voicePage === 1}
                         onClick={() => setVoicePage(prev => prev - 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Previous
                       </button>
                       <button
                         disabled={voicePage * voicePerPage >= voiceLogs.length}
                         onClick={() => setVoicePage(prev => prev + 1)}
-                        className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                        className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                       >
                         Next
                       </button>
@@ -1573,7 +1573,7 @@ export default function AdminPage() {
 
           {/* TAB 5: CALL LOGS */}
           {activeTab === 'call-logs' && (
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm animate-fade-in w-full">
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                 <div>
                   <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -1585,7 +1585,7 @@ export default function AdminPage() {
 
               {callLogs.length === 0 ? (
                 <div className="p-16 text-center space-y-4">
-                  <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                  <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
                     <PhoneCall className="w-6 h-6" />
                   </div>
                   <div className="space-y-1">
@@ -1624,7 +1624,7 @@ export default function AdminPage() {
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => setSelectedCallLog(log)}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 hover:bg-primary-50 text-slate-600 hover:text-primary-700 rounded-xl border border-slate-200/80 hover:border-primary-200 text-[11px] font-bold transition-all cursor-pointer"
+                                  className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                 >
                                   View <ChevronRight className="w-3.5 h-3.5" />
                                 </button>
@@ -1645,14 +1645,14 @@ export default function AdminPage() {
                         <button
                           disabled={callLogsPage === 1}
                           onClick={() => setCallLogsPage(prev => prev - 1)}
-                          className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                          className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                         >
                           Previous
                         </button>
                         <button
                           disabled={callLogsPage * callLogsPerPage >= callLogs.length}
                           onClick={() => setCallLogsPage(prev => prev + 1)}
-                          className="px-4.5 py-2 bg-white hover:bg-slate-50 disabled:bg-slate-50 disabled:text-slate-300 border border-slate-250 rounded-xl text-xs font-bold transition-all cursor-pointer select-none"
+                          className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                         >
                           Next
                         </button>
@@ -1670,7 +1670,7 @@ export default function AdminPage() {
       {/* DISCUSSION MODAL THREAD */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
             <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
@@ -1691,7 +1691,7 @@ export default function AdminPage() {
                   setSelectedTicket(null);
                   setTicketReplyText('');
                 }}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 transition-colors cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1705,7 +1705,7 @@ export default function AdminPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Original Inquiry Description */}
-                  <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner">
+                  <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner">
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">Original Inquiry</p>
                     <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
                       <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed font-normal">
@@ -1721,7 +1721,7 @@ export default function AdminPage() {
 
                   {/* Ticket Attachments */}
                   {selectedTicket.attachmentUrl && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner flex flex-col">
+                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
                       <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ticket Attachments</p>
                       <div className="flex flex-wrap gap-2.5">
                         <a
@@ -1738,7 +1738,7 @@ export default function AdminPage() {
                   )}
 
                   {selectedTicket.mergedTickets && selectedTicket.mergedTickets.length > 0 && (
-                    <div className="bg-slate-50 border border-slate-150 rounded-2xl p-5 space-y-3 shadow-inner flex flex-col">
+                    <div className="bg-slate-50 border border-slate-150 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
                       <span className="text-xs font-black uppercase tracking-widest text-slate-400">Merged Tickets</span>
                       <button
                         onClick={() => {
@@ -1753,7 +1753,7 @@ export default function AdminPage() {
                   )}
 
                   {/* Status Indicator & Resolve Action */}
-                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-inner">
+                  <div className="flex flex-col gap-4 p-5 border border-slate-100 rounded-xl bg-slate-50/50 shadow-inner">
                     <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
                       <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${selectedTicket.status === 'Open'
@@ -1826,7 +1826,7 @@ export default function AdminPage() {
                   <div className="flex-1 overflow-y-auto pr-2 space-y-4 flex flex-col min-h-0 scrollbar-thin">
 
                     {(!selectedTicket.replies || selectedTicket.replies.length === 0) ? (
-                      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl space-y-3.5 my-4">
+                      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-xl space-y-3.5 my-4">
                         <div className="w-11 h-11 rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shadow-sm animate-pulse">
                           <Clock className="w-5 h-5" />
                         </div>
@@ -1853,7 +1853,7 @@ export default function AdminPage() {
                           const isAgent = reply.sender === 'agent';
                           return (
                             <div key={idx} className={`flex ${isAgent ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-normal shadow-sm ${isAgent
+                              <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-sm md:text-[15px] leading-relaxed font-normal shadow-sm ${isAgent
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
@@ -1893,7 +1893,7 @@ export default function AdminPage() {
                   {/* Reply Form */}
                   {selectedTicket.status !== 'Resolved' ? (
                     user?.role === 'Admin' ? (
-                      <div className="mt-4 p-4.5 bg-blue-50 border border-blue-100 text-blue-800 rounded-2xl flex items-center gap-3 text-xs font-bold leading-relaxed">
+                      <div className="mt-4 p-4.5 bg-blue-50 border border-blue-100 text-blue-800 rounded-xl flex items-center gap-3 text-xs font-bold leading-relaxed">
                         <Lock className="w-5 h-5 text-blue-650 shrink-0" />
                         You are viewing this chat in read-only mode. Only agents can reply to this ticket.
                       </div>
@@ -1953,7 +1953,7 @@ export default function AdminPage() {
                           <button
                             type="submit"
                             disabled={!ticketReplyText.trim() || replyUploading}
-                            className="px-5 py-3 bg-primary-600 hover:bg-primary-750 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-primary-600/10 cursor-pointer border border-primary-500/20"
+                            className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Send <Send className="w-3.5 h-3.5" />
                           </button>
@@ -1961,7 +1961,7 @@ export default function AdminPage() {
                       </div>
                     )
                   ) : (
-                    <div className="mt-4 p-4.5 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-2xl flex items-center gap-3 text-xs font-bold leading-relaxed">
+                    <div className="mt-4 p-4.5 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-xl flex items-center gap-3 text-xs font-bold leading-relaxed">
                       <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
                       This ticket has been marked resolved. Replies are closed.
                     </div>
@@ -1978,9 +1978,9 @@ export default function AdminPage() {
       {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
       {selectedChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <span className="p-2 rounded-xl bg-primary-50 text-primary-600 border border-primary-100">
                   <MessageCircle className="w-5 h-5" />
@@ -1999,9 +1999,9 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={() => setSelectedChat(null)}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
-                <X className="w-4.5 h-4.5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -2020,7 +2020,7 @@ export default function AdminPage() {
                 const isUser = msg.sender === 'user';
                 return (
                   <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-sm leading-relaxed shadow-sm ${isUser
+                    <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-sm leading-relaxed shadow-sm ${isUser
                       ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                       : 'bg-white border border-slate-200 text-slate-850 rounded-tl-none'
                       }`}>
@@ -2046,10 +2046,10 @@ export default function AdminPage() {
       {/* MODAL 3: VOICE LOG TRANSCRIPT */}
       {selectedVoiceLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
 
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <span className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
                   <Mic className="w-5 h-5" />
@@ -2063,9 +2063,9 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={() => setSelectedVoiceLog(null)}
-                className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
-                <X className="w-4.5 h-4.5" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -2077,7 +2077,7 @@ export default function AdminPage() {
                 <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
 
                   {/* Status Indicator */}
-                  <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex items-center justify-between">
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Session Status</span>
                     <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
                       ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
@@ -2089,18 +2089,18 @@ export default function AdminPage() {
 
                   {/* Call Stats Grid */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
                       <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Call Duration</span>
                       <span className="text-base font-black text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
                     </div>
-                    <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
                       <span className="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Confidence Score</span>
                       <span className="text-base font-black mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
                     </div>
                   </div>
 
                   {/* Audio Recording Player */}
-                  <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-3.5 shadow-sm">
+                  <div className="bg-white border border-slate-200 p-5 rounded-xl space-y-3.5 shadow-sm">
                     <div className="flex items-center justify-between">
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Call Recording</p>
                       {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
@@ -2164,7 +2164,7 @@ export default function AdminPage() {
                           const isUser = msg.sender === 'user';
                           return (
                             <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
+                              <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
                                 ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
                                 : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
                                 }`}>
@@ -2201,7 +2201,7 @@ export default function AdminPage() {
       {/* MODAL: CALL LOG TRANSCRIPT */}
       {selectedCallLog && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
@@ -2217,7 +2217,7 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={() => setSelectedCallLog(null)}
-                className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-455 hover:text-slate-700 transition-all cursor-pointer border border-slate-100"
+                className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2227,7 +2227,7 @@ export default function AdminPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
               
               {/* Audio Player */}
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-3">
+              <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-3">
                 <div className="flex items-center gap-2">
                   <Volume2 className="w-4 h-4 text-primary-500" />
                   <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Call Recording</span>
@@ -2242,7 +2242,7 @@ export default function AdminPage() {
               </div>
 
               {/* Transcript */}
-              <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex flex-col min-h-0">
+              <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col min-h-0">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageSquare className="w-4 h-4 text-slate-400" />
                   <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">Full Transcript</span>
@@ -2285,7 +2285,7 @@ export default function AdminPage() {
                         }
                         return (
                           <div key={i} className={`flex w-full ${isCustomer ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
+                            <div className={`max-w-[85%] rounded-xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
                               <div className={`text-[10px] font-black uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
                                 {isCustomer ? 'Customer' : 'AI Agent'}
                               </div>
@@ -2309,7 +2309,7 @@ export default function AdminPage() {
       {/* MODAL: CREATE CUSTOM TICKET */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col animate-scale-up">
             {/* Header */}
             <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
               <div className="flex items-center gap-3.5">
@@ -2412,7 +2412,7 @@ export default function AdminPage() {
               </div>
 
               {/* Attachments Upload */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-3">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4.5 space-y-3">
                 <label className="block text-xs font-semibold text-slate-500">Ticket Attachments (Optional)</label>
                 <div className="flex items-center gap-3">
                   <input
@@ -2465,7 +2465,7 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   disabled={newTicketSubmitting || newTicketUploading}
-                  className="px-6 py-2.5 bg-primary-600 hover:bg-primary-750 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-primary-600/10 cursor-pointer border border-primary-500/20"
+                  className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {newTicketSubmitting ? (
                     <>
@@ -2485,9 +2485,9 @@ export default function AdminPage() {
 
       {/* MODAL: VIEW MERGED TICKETS */}
       {showMergedTicketsModal && (
-        <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+        <div className="fixed inset-0 z-[60] bg-slate-900/80  flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-scale-up h-[80vh]">
+            <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
               <div className="flex items-center gap-3">
                 <span className="p-2.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200">
                   <History className="w-5.5 h-5.5" />
@@ -2497,13 +2497,13 @@ export default function AdminPage() {
                   <p className="text-[11px] text-slate-500 font-semibold mt-0.5">Tickets consolidated into {selectedTicket?.id}</p>
                 </div>
               </div>
-              <button onClick={() => setShowMergedTicketsModal(false)} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-700 cursor-pointer">
+              <button onClick={() => setShowMergedTicketsModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="flex-1 p-6 overflow-y-auto space-y-6 bg-slate-50/50">
               {mergedTicketsList.map((mt, idx) => (
-                <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+                <div key={idx} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
                   <div className="flex justify-between items-start border-b border-slate-100 pb-3">
                     <div>
                       <span className="font-mono text-xs font-bold text-primary-700">{mt.id}</span>
@@ -2551,11 +2551,11 @@ export default function AdminPage() {
 
       {/* Add Agent Modal */}
       {showAddAgentModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-[100] animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up-subtle">
+        <div className="fixed inset-0 bg-slate-900/80  flex items-center justify-center p-4 z-[100] animate-fade-in">
+          <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up-subtle">
             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
+                <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
                   <User className="w-5 h-5" />
                 </div>
                 <div>
@@ -2563,8 +2563,8 @@ export default function AdminPage() {
                   <p className="text-xs text-slate-500">Register a new support agent profile</p>
                 </div>
               </div>
-              <button onClick={() => setShowAddAgentModal(false)} className="text-slate-400 hover:text-slate-600 bg-white p-2 rounded-xl border border-slate-200 shadow-sm transition-all cursor-pointer">
-                <X className="w-4 h-4" />
+              <button onClick={() => setShowAddAgentModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
+                <X className="w-5 h-5" />
               </button>
             </div>
             
@@ -2597,10 +2597,10 @@ export default function AdminPage() {
               </div>
 
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-2">
-                <button type="button" onClick={() => setShowAddAgentModal(false)} className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs bg-white hover:bg-slate-50 transition-all cursor-pointer">
+                <button type="button" onClick={() => setShowAddAgentModal(false)} className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none">
                   Cancel
                 </button>
-                <button type="submit" disabled={newAgentSubmitting} className="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-70">
+                <button type="submit" disabled={newAgentSubmitting} className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                   {newAgentSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
                   Create Agent
                 </button>
