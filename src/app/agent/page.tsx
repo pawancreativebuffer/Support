@@ -864,7 +864,7 @@ export default function AgentPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => loadDatabaseData(user.email)}
-                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-4 h-[46px] rounded-[8px] cursor-pointer bg-white"
                 disabled={isRefreshing}
               >
                 <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -872,7 +872,7 @@ export default function AgentPage() {
               </button>
               <button
                 onClick={() => setShowReportModal(true)}
-                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-4 h-[46px] rounded-[8px] cursor-pointer bg-white"
               >
                 <FileDown className="w-4 h-4 text-primary-600" />
                 Generate Report
@@ -880,9 +880,9 @@ export default function AgentPage() {
               {user?.role === 'Agent' && (
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
+                  className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-4 sm:px-5 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
                 >
-                  <PlusCircle className="w-4 h-4" /> Create Custom Ticket
+                  <PlusCircle className="w-4 h-4" /> Create Ticket
                 </button>
               )}
             </div>
