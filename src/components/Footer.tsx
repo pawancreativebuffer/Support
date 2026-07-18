@@ -6,7 +6,6 @@ import Link from "next/link";
 
 export default function Footer() {
   const pathname = usePathname();
-
   // Hide footer for logged-in workspaces
   const hiddenRoutes = ['/dashboard', '/admin', '/agent'];
   if (
