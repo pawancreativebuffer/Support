@@ -554,7 +554,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 w-full mt-8 flex flex-col gap-2">
+        <nav className="flex-1 w-full mt-8 mb-8 flex flex-col gap-2">
           <button
             onClick={() => setActiveTab('overview')}
             className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'overview'
