@@ -9,7 +9,10 @@ export default function Footer() {
 
   // Hide footer for logged-in workspaces
   const hiddenRoutes = ['/dashboard', '/admin', '/agent'];
-  if (pathname && hiddenRoutes.some(route => pathname.startsWith(route))) {
+  if (
+    pathname &&
+    hiddenRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`))
+  ) {
     return null;
   }
 
@@ -18,10 +21,10 @@ export default function Footer() {
       {/* Deep Theme-Colored Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-slate-950 to-blue-950 pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary-900/40 via-transparent to-transparent pointer-events-none" />
-      
+
       {/* Elegant Grid Texture */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4=')] [mask-image:linear-gradient(to_top,black_70%,transparent_100%)] pointer-events-none" />
-      
+
       {/* Dynamic Theme Glows */}
       <div className="absolute top-[-50%] left-[-10%] w-[40%] h-[150%] rounded-full bg-primary-600/20 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-50%] right-[-10%] w-[40%] h-[150%] rounded-full bg-blue-600/15 blur-[120px] pointer-events-none" />
@@ -34,18 +37,18 @@ export default function Footer() {
           <span>© {new Date().getFullYear()} Ticket-it. All rights reserved.</span>
         </div>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-slate-200">
-          <a 
-            href="https://ticket-it.com/wp-content/uploads/2025/07/Ticket-IT-Privacy-Policy-1.pdf" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://ticket-it.com/wp-content/uploads/2025/07/Ticket-IT-Privacy-Policy-1.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-primary-300 transition-colors cursor-pointer"
           >
             Privacy Policy
           </a>
-          <a 
-            href="https://ticket-it.com/wp-content/uploads/2025/05/ESL-Sales-Agreement-inclusive-of-End-User-Licence.pdf" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://ticket-it.com/wp-content/uploads/2025/05/ESL-Sales-Agreement-inclusive-of-End-User-Licence.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-primary-300 transition-colors cursor-pointer"
           >
             Terms of Service
