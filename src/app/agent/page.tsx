@@ -1301,10 +1301,10 @@ export default function AgentPage() {
                               e.target.value = '';
                             }
                           }}
-                          className="text-[10px] font-bold uppercase tracking-wider rounded-lg px-2.5 py-1.5 border bg-white border-slate-200 text-slate-600 cursor-pointer focus:outline-none transition-all"
+                          className="w-[140px] text-[10px] font-bold uppercase tracking-wider rounded-lg px-2.5 py-1.5 border bg-white border-slate-200 text-slate-600 cursor-pointer focus:outline-none transition-all"
                           defaultValue=""
                         >
-                          <option value="" disabled>Assign Agent</option>
+                          <option value="" disabled hidden>Assign Agent</option>
                           <option value="unassigned">Unassigned</option>
                           {agents.map(a => (
                             <option key={a.id} value={a.id}>{a.name}</option>
@@ -1325,7 +1325,7 @@ export default function AgentPage() {
                   <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
                         <th className="py-3 px-4 w-10">
                           <input
                             type="checkbox"
@@ -1369,7 +1369,7 @@ export default function AgentPage() {
                         const requiresReply = needsReply(ticket);
                         const isChecked = selectedTicketIds.includes(ticket.id);
                         return (
-                          <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group ${isChecked ? 'bg-primary-50/10' : ''}`}>
+                          <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group whitespace-nowrap ${isChecked ? 'bg-primary-50/10' : ''}`}>
                             <td className="py-4 px-4 w-10">
                               <input
                                 type="checkbox"

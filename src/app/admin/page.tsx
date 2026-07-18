@@ -1263,7 +1263,7 @@ export default function AdminPage() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
 
                             <th className="py-3 px-4">Ticket ID</th>
                             <th className="py-3 px-4">Submitter Info</th>
@@ -1280,7 +1280,7 @@ export default function AdminPage() {
                             const requiresReply = needsReply(ticket);
                             const isChecked = selectedTicketIds.includes(ticket.id);
                             return (
-                              <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group ${isChecked ? 'bg-primary-50/10' : ''}`}>
+                              <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group whitespace-nowrap ${isChecked ? 'bg-primary-50/10' : ''}`}>
 
                                 <td className="py-4 px-4 text-xs font-bold text-slate-500">
                                   <span className="flex items-center gap-2">
@@ -1592,7 +1592,7 @@ export default function AdminPage() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
                             <th className="py-3 px-4">Caller</th>
                             <th className="py-3 px-4">Date & Time</th>
                             <th className="py-3 px-4">Duration</th>
@@ -1601,7 +1601,7 @@ export default function AdminPage() {
                         </thead>
                         <tbody className="divide-y divide-slate-100/60">
                           {callLogs.slice((callLogsPage - 1) * callLogsPerPage, callLogsPage * callLogsPerPage).map((log, index) => (
-                            <tr key={index} className="hover:bg-slate-50/50 transition-colors group">
+                            <tr key={index} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap">
                               <td className="py-4 px-4">
                                 <div className="text-xs font-bold text-slate-800">{log.callerNumber}</div>
                                 {log.customer && (
