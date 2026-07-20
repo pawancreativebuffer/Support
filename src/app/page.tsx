@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { HeroSection } from '../components/HeroSection';
 import { ServicesSection } from '../components/ServicesSection';
@@ -16,22 +16,22 @@ export default function SupportPage() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
+  useEffect(() => {
+    const categoryFaqs = faqs.filter(faq => faq.category === faqCategory);
+    if (categoryFaqs && categoryFaqs.length > 0) {
+      setOpenFaq(categoryFaqs[0].question);
+    } else {
+      setOpenFaq(null);
+    }
+  }, [faqCategory]);
+
   const categories = ['ESL', 'Paper Ticketing', 'Store Configuration', 'Ticket-Builder', 'Batches', 'Campaigns', 'LCD Management', 'General'];
   const searchTags = ["ESL", "Paper Ticketing", "Store Configuration", "Ticket-Builder", "Batches", "Campaigns", "LCD Management"];
 
   const handleTagClick = (tag: string) => {
-    const slugMap: Record<string, string> = {
-      "ESL": "esl-setup",
-      "Paper Ticketing": "paper-ticketing",
-      "Store Configuration": "store-configuration",
-      "Ticket-Builder": "ticket-builder-guide",
-      "Batches": "managing-batches",
-      "Campaigns": "campaigns-management",
-      "LCD Management": "lcd-management"
-    };
-    const targetSlug = slugMap[tag];
-    if (targetSlug) {
-      router.push(`/article/${targetSlug}`);
+    const category = CATEGORIES.find(c => c.title === tag);
+    if (category && category.articles.length > 0) {
+      router.push(`/article/${category.articles[0].slug}`);
     }
   };
 
@@ -52,23 +52,16 @@ export default function SupportPage() {
       return;
     }
 
-    // 2. Fallback to hardcoded query groups
-    if (query.includes('esl') || query.includes('electronic')) {
-      router.push('/article/esl-setup');
-    } else if (query.includes('paper') || query.includes('print')) {
-      router.push('/article/paper-ticketing');
-    } else if (query.includes('store') || query.includes('config')) {
-      router.push('/article/store-configuration');
-    } else if (query.includes('campaign') || query.includes('promo')) {
-      router.push('/article/campaigns-management');
-    } else if (query.includes('builder') || query.includes('template')) {
-      router.push('/article/ticket-builder-guide');
-    } else if (query.includes('lcd') || query.includes('display')) {
-      router.push('/article/lcd-management');
-    } else if (query.includes('batch')) {
-      router.push('/article/managing-batches');
-    } else {
-      router.push('/article/getting-started');
+    // 2. Try to match category title
+    const matchedCategory = CATEGORIES.find((cat) => cat.title.toLowerCase().includes(query));
+    if (matchedCategory && matchedCategory.articles.length > 0) {
+      router.push(`/article/${matchedCategory.articles[0].slug}`);
+      return;
+    }
+
+    // 3. Fallback to first article if completely lost
+    if (allArticles.length > 0) {
+      router.push(`/article/${allArticles[0].slug}`);
     }
   };
 
