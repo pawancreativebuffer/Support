@@ -7,20 +7,15 @@ interface TutorialVideo {
   title: string;
   duration: string;
   desc: string;
+  platform?: 'youtube' | 'vimeo';
 }
 
 export const VideoSection: React.FC = () => {
   const tutorialVideos: TutorialVideo[] = [
-    { id: 'M7lc1UVf-VE', title: "Getting Started with Ticket-IT", duration: "4:20", desc: "Learn the fundamentals of setting up your Ticket-IT account. This comprehensive guide covers workspace creation, profile setup, and navigating the main dashboard to automate your retail ticketing." },
-    { id: 'tgbNymZ7vqY', title: "Connecting Your POS System", duration: "12:15", desc: "A deep dive into integrating your Point of Sale system with Ticket-IT. We will cover authentication, syncing product data, and ensuring accurate live pricing across all franchise stores." },
-    { id: 'JGwWNGJdvx8', title: "ESL & Hardware Setup", duration: "6:10", desc: "Take control of your in-store displays. Discover how to connect and configure Electronic Shelf Labels (ESL), LCD screens, and specialized ticket printers to your centralized Ticket-IT system." },
-    { id: 'dQw4w9WgXcQ', title: "Designing Custom Tickets", duration: "3:45", desc: "Set up beautiful custom tickets using our intuitive web-based Ticket-Builder. Learn how to upload brand logos, arrange layout elements, and apply flexible templates for any promotion." },
-    { id: 'jNQXAC9IVRw', title: "Managing Store Batches", duration: "2:30", desc: "Enhance your store's efficiency by mastering batch printing. We show you how to generate bulk print jobs, select specific store locations, and manage distributed printing workflows." },
-    { id: '3JZ_D3ELwOQ', title: "Creating Promo Campaigns", duration: "8:45", desc: "Save hours of manual work by building automated pricing campaigns. We walk through scheduling discounts, generating promotional tags, and tracking campaign effectiveness." },
-    { id: 'LXb3EKWsInQ', title: "Compliance & Reporting", duration: "5:15", desc: "Unlock the power of your data. Learn how to generate ongoing reports of store user access, ticket creation history, and compliance metrics across your entire retail network." },
-    { id: 'V-_O7nl0Ii0', title: "Replacing Lost Tickets", duration: "3:20", desc: "Never miss a sale due to a missing ticket. Learn the quick workflow for store staff to instantly generate and print replacement Web Tickets for lost or damaged price tags." },
-    { id: 'aqz-KE-bpKQ', title: "Platform Security & SSO", duration: "7:10", desc: "Ensure your retail data remains compliant and secure. This video covers 100% CREST approved testing features, enabling Single Sign-On (SSO), and managing user permissions." },
-    { id: 'y8Yv4pnO7qc', title: "Ticket-IT Mobile App", duration: "4:05", desc: "Take your retail operations on the go. Learn how to scan barcodes, verify ticket pricing, and request new print batches directly from the shop floor using the Ticket-IT mobile app." },
+    { id: '468744105', platform: 'vimeo', title: "Four Reasons to Provide Ticket-IT To Your Stores", duration: "1:30", desc: "There are more than 4 reasons to provide Ticket-IT to your stores; but these are the ones that are most noteworthy. We hope that this quick video gives you a little bit more of an insight on the benefits of using our product." },
+    { id: '409572495', platform: 'vimeo', title: "Managing Product Lists", duration: "2:15", desc: "Using Ticket-IT is incredibly simple and efficient and we pride ourselves on that. Our product list editing allows users to influence the types of ticket templates in their batches with large amounts of control, while still keeping the data accurate and brand relevant." },
+    { id: '364180087', platform: 'vimeo', title: "Make In store Ticketing Simple", duration: "1:45", desc: "At Ticket-IT, this is what we do. We keep ticketing simple. We receive minimal support requests from our users. We have a simple solution that takes minimal training." },
+    { id: '321384163', platform: 'vimeo', title: "Getting Started With Your Datasource", duration: "3:20", desc: "Here’s a quick demonstration of how easy it is for your brand to use Ticket-IT to send batches to 100’s and 1000’s of stores in a very short amount of time. Ticket-IT’s accurate, effective workflow allows for our users to really get the most out of our system." }
   ];
 
   const [activeVideo, setActiveVideo] = useState<TutorialVideo>(tutorialVideos[0]);
@@ -51,13 +46,23 @@ export const VideoSection: React.FC = () => {
         {/* Main Video Player (Left: Video, Right: Details) */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-start">
           <div className="relative w-full lg:w-[60%] aspect-video rounded-[1.5rem] overflow-hidden bg-slate-900 shadow-inner ring-1 ring-slate-200 flex-shrink-0">
-            <iframe
-              className="absolute inset-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1&mute=0`}
-              title={activeVideo.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+            {activeVideo.platform === 'vimeo' ? (
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src={`https://player.vimeo.com/video/${activeVideo.id}?autoplay=1&muted=0`}
+                title={activeVideo.title}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            ) : (
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1&mute=0`}
+                title={activeVideo.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            )}
           </div>
           <div className="w-full lg:w-[40%] flex flex-col justify-center px-2 py-4">
             <h3 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight">{activeVideo.title}</h3>
@@ -102,7 +107,7 @@ export const VideoSection: React.FC = () => {
                   }`}
                 >
                   <Image
-                    src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
+                    src={video.platform === 'vimeo' ? `https://vumbnail.com/${video.id}.jpg` : `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
                     alt={video.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
