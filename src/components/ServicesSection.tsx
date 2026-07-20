@@ -5,59 +5,86 @@ import Link from 'next/link';
 export const ServicesSection: React.FC = () => {
   const services = [
     {
-      title: "Ticketing & Help Desk",
-      slug: "ticketing-helpdesk",
-      icon: <Ticket className="w-7 h-7" />,
-      description: "Manage, prioritize, and track customer support queries from creation to final resolution.",
+      title: "Retail Automation & ESL",
+      slug: "esl-setup",
+      icon: <Activity className="w-7 h-7" />,
+      description: "Manage and deploy thousands of electronic shelf labels (ESL) across your entire retail network in seconds.",
       iconBg: "bg-orange-100",
       iconColor: "text-orange-500",
       textColor: "text-orange-500 hover:text-orange-600",
     },
     {
-      title: "Live Chat & Widgets",
-      slug: "live-chat-widgets",
-      icon: <MessageCircle className="w-7 h-7" />,
-      description: "Embed responsive chat widgets and convert visitor chats directly to tickets in real-time.",
+      title: "Ticket-Builder",
+      slug: "ticket-builder-guide",
+      icon: <Ticket className="w-7 h-7" />,
+      description: "Design custom tickets matching your brand guidelines with our intuitive web-based ticket builder.",
       iconBg: "bg-emerald-100",
       iconColor: "text-emerald-500",
       textColor: "text-emerald-500 hover:text-emerald-600",
     },
     {
-      title: "Agent & Team Routing",
-      slug: "agent-team-routing",
+      title: "Store & Batch Management",
+      slug: "store-configuration",
       icon: <Users className="w-7 h-7" />,
-      description: "Configure role access permissions, group departments, and establish round-robin routing rules.",
+      description: "Organize retail locations, handle ticket batches, and configure pricing models on a per-store basis.",
       iconBg: "bg-blue-100",
       iconColor: "text-blue-500",
       textColor: "text-blue-500 hover:text-blue-600",
     },
     {
-      title: "API & Developer Tools",
-      slug: "api-integrations",
+      title: "POS Integrations",
+      slug: "pos-integrations",
       icon: <Code className="w-7 h-7" />,
-      description: "Integrate custom workflows using webhooks, REST API keys, and rate-limited developer channels.",
+      description: "Seamlessly sync product data and automated pricing from leading Point of Sale systems.",
       iconBg: "bg-rose-100",
       iconColor: "text-rose-500",
       textColor: "text-rose-500 hover:text-rose-600",
     },
     {
-      title: "System Status & Uptime",
-      slug: "status-performance",
-      icon: <Activity className="w-7 h-7" />,
-      description: "Monitor service operational status and track response times against service level agreements.",
+      title: "Campaigns & Promotions",
+      slug: "campaigns-management",
+      icon: <MessageCircle className="w-7 h-7" />,
+      description: "Set up, schedule, and automate promotional pricing campaigns to update store tickets instantly.",
       iconBg: "bg-purple-100",
       iconColor: "text-purple-500",
       textColor: "text-purple-500 hover:text-purple-600",
     },
     {
-      title: "Security & Compliance",
-      slug: "security-compliance",
+      title: "Hardware & LCDs",
+      slug: "lcd-management",
       icon: <Shield className="w-7 h-7" />,
-      description: "Configure single sign-on, manage data retention policies, and verify HIPAA/SOC2 compliance configurations.",
+      description: "Connect and troubleshoot digital signage, LED displays, and specialized retail ticket printers.",
       iconBg: "bg-cyan-100",
       iconColor: "text-cyan-600",
       textColor: "text-cyan-600 hover:text-cyan-700",
     },
+    {
+      title: "Paper Ticketing & Print",
+      slug: "paper-ticketing",
+      icon: <BookOpen className="w-7 h-7" />,
+      description: "Manage centralized, distributed, or hybrid printing processes for physical paper tickets.",
+      iconBg: "bg-yellow-100",
+      iconColor: "text-yellow-600",
+      textColor: "text-yellow-600 hover:text-yellow-700",
+    },
+    {
+      title: "Reporting & Compliance",
+      slug: "reporting-compliance",
+      icon: <Layers className="w-7 h-7" />,
+      description: "Generate ongoing reports of store user access, ticket creation, and compliance metrics.",
+      iconBg: "bg-teal-100",
+      iconColor: "text-teal-600",
+      textColor: "text-teal-600 hover:text-teal-700",
+    },
+    {
+      title: "Ticket-IT Mobile",
+      slug: "mobile-app",
+      icon: <Users className="w-7 h-7" />,
+      description: "Build batches on the go. Scan products and manage tickets directly from the shop floor.",
+      iconBg: "bg-pink-100",
+      iconColor: "text-pink-500",
+      textColor: "text-pink-500 hover:text-pink-600",
+    }
   ];
 
   return (
@@ -67,7 +94,7 @@ export const ServicesSection: React.FC = () => {
           <Layers className="w-4 h-4 fill-primary-50 text-primary-500" /> Solutions
         </div>
         <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight max-w-2xl mx-auto">
-          Explore Specialized Teams.
+          Browse Ticket-IT Solutions.
         </h2>
       </div>
 
@@ -102,10 +129,10 @@ export const ServicesSection: React.FC = () => {
 
       <div className="mt-14 flex justify-center">
         <Link
-          href="/article/ticketing-helpdesk"
+          href="/article/esl-setup"
           className="bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] inline-flex items-center justify-center gap-2 rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm group"
         >
-          View all services <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          View all topics <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
     </div>

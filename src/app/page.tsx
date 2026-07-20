@@ -12,11 +12,11 @@ import { CATEGORIES } from '../data/categories';
 export default function SupportPage() {
   const router = useRouter();
   const [heroSearch, setHeroSearch] = useState('');
-  const [faqCategory, setFaqCategory] = useState('Billing');
+  const [faqCategory, setFaqCategory] = useState('ESL');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
-  const categories = ['Billing', 'Account', 'Developers', 'Pricing', 'Usage', 'System', 'Security'];
+  const categories = ['ESL', 'Paper Ticketing', 'Store Configuration', 'Ticket-Builder', 'Batches', 'Campaigns', 'LCD Management', 'General'];
   const searchTags = ["ESL", "Paper Ticketing", "Store Configuration", "Ticket-Builder", "Batches", "Campaigns", "LCD Management"];
 
   const handleTagClick = (tag: string) => {

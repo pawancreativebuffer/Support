@@ -7,382 +7,265 @@ export interface FaqItem {
 }
 
 export const faqs: FaqItem[] = [
-  // --- ACCOUNT CATEGORY ---
+  // --- ESL ---
   {
-    question: "How do I reset my password?",
-    answer: "To reset your password, click on your profile avatar in the top-right corner, navigate to Settings, and select the Security tab. Click 'Change Password', enter your current password, and choose a new secure password. If you are locked out, click the 'Forgot Password' link on the login page, enter your registered email address, and we will send you a secure link to reset it.",
-    category: "Account",
+    question: "What is ESL and how does Ticket-IT integrate with it?",
+    answer: "Electronic Shelf Labels (ESL) are digital price tags used in retail stores. Ticket-IT is a future-proof solution that seamlessly connects with ESL gateways to push automated pricing and product data directly to the shelves, eliminating manual paper updates.",
+    category: "ESL",
+    helpfulCount: 312
+  },
+  {
+    question: "Which ESL hardware brands are supported by Ticket-IT?",
+    answer: "We support major ESL hardware providers including Pricer, SES-imagotag (Vusion), and SoluM. Our API integration ensures that data payload formats are automatically translated for the specific hardware you have deployed.",
+    category: "ESL",
+    helpfulCount: 185
+  },
+  {
+    question: "How long does it take for price changes to reflect on ESLs?",
+    answer: "Price changes are virtually instantaneous. Once a price is updated in your POS or ERP and synced to Ticket-IT, the system pushes the new data payload to the ESL gateway, updating the digital tag within seconds.",
+    category: "ESL",
+    helpfulCount: 205
+  },
+  {
+    question: "Can ESLs display promotional tags or just standard pricing?",
+    answer: "Yes, Ticket-IT allows you to send rich data to ESLs, including promotional flags, 'Was/Now' pricing, and stock levels. Depending on your ESL model (e.g., e-ink with color capabilities), you can highlight promotions in red or yellow.",
+    category: "ESL",
     helpfulCount: 142
   },
   {
-    question: "How do I enable Multi-Factor Authentication (MFA)?",
-    answer: "We highly recommend securing your account with MFA. To enable it, go to Settings > Security and click 'Configure MFA'. You can use any authenticator app (like Google Authenticator, Authy, or Microsoft Authenticator) to scan the QR code and enter the 6-digit confirmation code.",
-    category: "Security",
-    helpfulCount: 89
-  },
-  {
-    question: "Can I invite support agents or team members to my account?",
-    answer: "Yes, organization admins can invite team members to Ticket-it. Go to Settings > Team and click 'Invite Member'. Enter their email address and select a role (Admin, Agent, Manager, or Billing). They will receive an email invitation to create their account and join your Ticket-it workspace.",
-    category: "Account",
-    helpfulCount: 120
-  },
-  {
-    question: "How do I configure Role-Based Access Control (RBAC)?",
-    answer: "Under Settings > Roles & Permissions, you can define custom roles or assign default ones (Admin, Manager, Agent, Billing). Admins have complete system control, Managers can view reports and reassign tickets, Agents handle tickets and chats, and Billing manages invoices.",
-    category: "Security",
-    helpfulCount: 94
-  },
-  {
-    question: "How do I set up agent shifts and operational hours?",
-    answer: "Go to Settings > Team > Working Hours. You can define timezone-specific business hours for each group or individual agent. Automatic ticket assignment (e.g. round-robin) respects these schedules and routes incoming tickets only to active, clocked-in agents.",
-    category: "Security",
-    helpfulCount: 73
-  },
-  {
-    question: "Can I create custom ticket statuses?",
-    answer: "Yes. Ticket-it allows you to customize the default ticket lifecycle. Navigate to Settings > Workflow > Ticket Statuses, where you can add new statuses (e.g., 'Awaiting Customer Response', 'Pending Developer Fix') and categorize them into Open, In-Progress, or Closed groups.",
-    category: "Account",
-    helpfulCount: 68
-  },
-  {
-    question: "How do I update my profile details and email address?",
-    answer: "To update your profile details, navigate to Settings > Profile. Here, you can change your first name, last name, and display name. If you need to change your registered email address, click 'Change Email', enter your new email, and confirm your password. We will send verification links to both your old and new email addresses to secure the change.",
-    category: "Account",
-    helpfulCount: 54
-  },
-  {
-    question: "Can I delete or temporarily disable my account?",
-    answer: "Yes. You can deactivate your account temporarily under Settings > Security. If you wish to permanently delete your Ticket-it account and all associated data, scroll to the Danger Zone at the bottom of the Account Settings page and click 'Delete Account'. Please note this action is irreversible and deletes all configurations, agent assignments, and ticket logs.",
-    category: "Account",
-    helpfulCount: 38
-  },
-  {
-    question: "How do I download my personal data audit logs?",
-    answer: "To comply with GDPR and CCPA, you can request a complete archive of your personal data. Go to Settings > Privacy & Data and click 'Request Data Export'. A download link containing your profile, audit logs, and ticket history in JSON format will be sent to your registered email address within 24 hours.",
-    category: "Security",
-    helpfulCount: 42
-  },
-
-  // --- BILLING CATEGORY ---
-  {
-    question: "Where can I find my billing history?",
-    answer: "You can view and download all past invoices and billing statements by navigating to Billing & Subscription from your account menu. There, you can filter invoices by date, see pending charges, update payment methods, and download full PDF receipts. For custom tax invoicing details, contact our finance team.",
-    category: "Billing",
+    question: "What happens if an ESL loses connection to the network?",
+    answer: "Ticket-IT's dashboard includes a hardware monitoring tab. If an ESL fails to acknowledge a price update, it is flagged in the system. Store managers receive automated alerts detailing which specific tags are offline or out of sync.",
+    category: "ESL",
     helpfulCount: 98
   },
   {
-    question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards including Visa, Mastercard, American Express, and Discover. For Enterprise plans, we also support bank wire transfers, ACH payments, and purchase orders. You can update your payment method at any time in Settings > Billing.",
-    category: "Billing",
-    helpfulCount: 75
-  },
-  {
-    question: "How is billing calculated for additional agent seats?",
-    answer: "Ticket-it charges a flat rate per agent seat per month. If you add a seat mid-cycle, we prorate the cost for the remainder of the billing period. If you deactivate a seat, the seat credit remains on your account and will be applied to your next renewal cycle.",
-    category: "Billing",
-    helpfulCount: 88
-  },
-  {
-    question: "Is there a limit on how many organizations can be billed under one parent account?",
-    answer: "Our Enterprise Plan allows multi-tenant organizational billing. You can create child workspaces for sub-brands or distinct organizations and manage their billing centrally under one parent billing profile with detailed per-organization usage reports.",
-    category: "Billing",
-    helpfulCount: 62
-  },
-  {
-    question: "Do you charge extra for custom domains on the customer help center?",
-    answer: "Custom domains (e.g., support.yourcompany.com) are free and included in both our Pro and Enterprise tiers. You will need to configure a CNAME record pointing to our server and we will provision an SSL certificate automatically.",
-    category: "Billing",
-    helpfulCount: 57
-  },
-  {
-    question: "How do I update my tax ID or invoice information?",
-    answer: "To add your VAT, GST, or local business tax ID to your invoices, go to Settings > Billing and edit your billing details. The updated tax ID will be displayed on all future invoices automatically. If you need it applied to a past invoice, please contact support.",
-    category: "Billing",
-    helpfulCount: 56
-  },
-  {
-    question: "Can I set up multiple backup payment methods?",
-    answer: "Yes, you can configure multiple credit cards or bank accounts. Go to Settings > Billing and click 'Add Payment Method'. Once added, you can designate one as 'Primary' and others as 'Backup'. If a payment attempt fails on your primary card, our system will automatically try the backup methods to prevent service disruption.",
-    category: "Billing",
-    helpfulCount: 31
-  },
-  {
-    question: "How do I receive monthly invoices via email automatically?",
-    answer: "To receive billing invoices directly in your inbox, navigate to Settings > Billing and locate the Billing Contacts section. You can add up to five email addresses that will automatically receive PDF copies of all invoices and receipts as soon as they are generated.",
-    category: "Billing",
-    helpfulCount: 48
-  },
-
-  // --- DEVELOPERS CATEGORY ---
-  {
-    question: "How to integrate the Ticket-it API?",
-    answer: "API integration can be completed in a few quick steps:\n\n1. Go to Developer Settings and generate an API key.\n2. Set the Authorization header as Bearer YOUR_API_KEY.\n3. Send requests to our base URL https://api.ticket-it.com/v1.\n\nCheck out the simple JS Fetch code example below to start querying our endpoints. See our full API reference for complete SDK packages.",
-    category: "Developers",
-    helpfulCount: 215,
-    isCode: true
-  },
-  {
-    question: "How do I implement secure customer identity verification (HMAC) for the widget?",
-    answer: "To prevent spoofing, enable Identity Verification under Settings > Developer > Widget. Generate a secret key and compute a SHA-256 HMAC hash of the customer's email and user ID on your backend server. Pass this signature to the widget init function:\n\nticketit('identify', {\n  email: 'customer@example.com',\n  userId: 'usr_123456',\n  signature: 'computed_signature_hash'\n});",
-    category: "Developers",
-    helpfulCount: 167
-  },
-  {
-    question: "What are the IP addresses we need to whitelist for incoming webhooks?",
-    answer: "All Ticket-it webhooks originate from a static set of IP addresses: 52.28.16.4, 52.28.16.5, and 3.120.44.18. Ensure your firewall/load balancer allows incoming POST requests from these IPs on port 443.",
-    category: "Developers",
-    helpfulCount: 112
-  },
-  {
-    question: "How can I programmatically update a ticket status via the API?",
-    answer: "You can update ticket fields using our PATCH endpoint: PATCH /v1/tickets/{id} with a JSON body specifying the fields to modify (e.g., { \"status\": \"Resolved\" }). The request must include your Bearer API key in the authorization header.",
-    category: "Developers",
-    helpfulCount: 95
-  },
-  {
-    question: "What is the rate limit for API requests?",
-    answer: "Standard API keys are limited to 60 requests per minute. Pro plans support up to 600 requests per minute, and Enterprise accounts can be configured for custom limits. If you exceed the rate limit, the API will return a 429 Too Many Requests status code with a Retry-After header.",
-    category: "Developers",
-    helpfulCount: 134
-  },
-  {
-    question: "Where can I find the API Webhook logs?",
-    answer: "Webhook delivery history and payloads can be monitored in the Webhooks tab under Developer Settings. You can view the status of each sent webhook (success or retry), check response latency, and trigger manual redeliveries of failed events.",
-    category: "Developers",
-    helpfulCount: 92
-  },
-  {
-    question: "How do I rotate my API keys safely without downtime?",
-    answer: "To rotate your API keys safely, go to Developer Settings > API Keys. Click 'Generate New Key' to create a secondary active key. Deploy this new key to your production environment. Once you verify that traffic is successfully routing through the new key, return to the dashboard and safely delete the old key.",
-    category: "Developers",
-    helpfulCount: 84
-  },
-  {
-    question: "Do you offer SDKs for specific programming languages?",
-    answer: "Yes, we maintain official SDK libraries for Node.js, Python, Go, and Ruby. You can find installation instructions, code repositories, and quickstart guides in our Developer Center. We also provide a community-supported PHP SDK.",
-    category: "Developers",
-    helpfulCount: 77
-  },
-  {
-    question: "How can I verify the signature of webhooks?",
-    answer: "Every webhook sent by our system contains a 'X-TicketIt-Signature' header. You can verify this signature using your webhook signing secret (found in Developer Settings > Webhooks). Compute the HMAC hex digest of the request payload using SHA-256 and confirm that it matches the signature header.",
-    category: "Developers",
-    helpfulCount: 65
-  },
-
-  // --- PRICING CATEGORY ---
-  {
-    question: "Do you offer a discount for open-source projects or academic institutions?",
-    answer: "Yes, Ticket-it is proud to support the open-source community and academic work. We offer a 50% discount on the Pro tier for registered non-profits, verified students/teachers, and open-source project leads. Submit a request to our billing team with your documentation.",
-    category: "Pricing",
-    helpfulCount: 81
-  },
-  {
-    question: "What is the difference between the Free, Pro, and Enterprise tiers?",
-    answer: "The Free tier supports up to 3 agents and 100 tickets/month. Pro features unlimited tickets, advanced routing, Slack/Teams integrations, custom SLA rules, and live chat widgets. Enterprise adds SOC2 compliance, HIPAA enablement, custom data residency, dedicated support managers, and 1-hour priority SLAs.",
-    category: "Pricing",
-    helpfulCount: 124
-  },
-  {
-    question: "Can I change my subscription plan?",
-    answer: "Yes, you can upgrade, downgrade, or switch billing cycles (monthly/yearly) at any time. Go to Settings > Billing and click 'Change Plan'. Plan upgrades take effect immediately with prorated charges applied. Downgrades or cancellations remain active on your current tier until the end of your billing cycle.",
-    category: "Pricing",
-    helpfulCount: 64
-  },
-  {
-    question: "Do you offer a free trial?",
-    answer: "Yes! New accounts receive a 14-day free trial of our Pro plan with no credit card required. During the trial, you have access to all Pro features and 5 active agent seats to test our services. After the trial, you can choose to subscribe or downgrade to our free tier.",
-    category: "Pricing",
-    helpfulCount: 110
-  },
-  {
-    question: "Are there custom enterprise plans available?",
-    answer: "Absolutely. We offer customized enterprise plans for high-volume users, custom compliance requirements (HIPAA, SOC2), dedicated support options, and custom SLAs. Please contact our sales team to discuss your needs.",
-    category: "Pricing",
-    helpfulCount: 45
-  },
-  {
-    question: "Is there a discount for annual billing subscriptions?",
-    answer: "Yes! If you select our Annual billing option, you receive a 20% discount compared to monthly billing. This discount is applied automatically during checkout. You can switch from monthly to annual billing at any time through the Billing Settings page.",
-    category: "Pricing",
-    helpfulCount: 58
-  },
-
-  // --- USAGE CATEGORY ---
-  {
-    question: "How is agent capacity calculated for auto-assignment?",
-    answer: "Under Settings > Assignment, you can define maximum concurrent ticket capacities for agents (e.g. 5 active chats or 15 open email tickets). Once an agent reaches their capacity threshold, the system skips them in the round-robin queue until they close or resolve a ticket.",
-    category: "Usage",
-    helpfulCount: 91
-  },
-  {
-    question: "Can I set up auto-archive rules for dormant tickets?",
-    answer: "Yes. In Settings > Workflow > Automation, you can create a rule: 'If a ticket has been in Resolved status for more than 7 days, automatically change status to Archived.' Archived tickets are removed from daily search indexes but remain exportable for audit logs.",
-    category: "Usage",
-    helpfulCount: 79
-  },
-  {
-    question: "What happens if I exceed my usage limits?",
-    answer: "We send automated email warnings when your ticket volume reaches 80% and 100% of your plan limits. If you exceed 100%, we apply soft limits initially. To avoid service interruptions or automatic overages, you can enable auto-scaling on your account settings, which will automatically scale your plan up as needed.",
-    category: "Usage",
-    helpfulCount: 83
-  },
-  {
-    question: "How can I monitor my real-time usage?",
-    answer: "You can track your API calls and active support tickets in real-time on the Usage Dashboard. The dashboard features daily and monthly ticket volume charts, breakdowns by agent group, and detailed metrics for each endpoint.",
-    category: "Usage",
-    helpfulCount: 71
-  },
-  {
-    question: "Can I set billing alerts for my usage?",
-    answer: "Yes, you can set custom email alerts for usage spending thresholds under Settings > Billing > Alerts. You can configure multiple threshold alerts to stay informed of your usage trends.",
-    category: "Usage",
-    helpfulCount: 52
-  },
-  {
-    question: "What are soft limits versus hard limits on usage?",
-    answer: "A soft limit triggers email notifications to inform you that your ticket or seat volume is high, but does not block requests. A hard limit is the absolute ceiling where API requests will start failing with a 429 error and new tickets will be paused. You can adjust these limits in Settings > Usage to prevent unexpected costs.",
-    category: "Usage",
-    helpfulCount: 41
-  },
-
-  // --- SYSTEM CATEGORY ---
-  {
-    question: "How do I configure SLA escalation alerts?",
-    answer: "Navigate to Settings > SLAs. You can create target policies based on ticket priority (Low, Medium, High, Urgent). Set response and resolution time targets. If a target is breached, you can set escalation actions such as alerting a channel in Slack or auto-reassigning the ticket to a tier-2 queue.",
-    category: "System",
-    helpfulCount: 104
-  },
-  {
-    question: "How do you handle data backups and disaster recovery?",
-    answer: "We perform automated, encrypted database backups every 6 hours with a multi-region failover configuration. In case of a major cloud outage, our recovery point objective (RPO) is 6 hours, and our recovery time objective (RTO) is under 30 minutes. Uptime statuses are posted live on our status page.",
-    category: "System",
-    helpfulCount: 89
-  },
-  {
-    question: "Is there a status page for services?",
-    answer: "Yes! We maintain 99.99% uptime and post live status reports of all system operations, API latency, and email delivery networks at status.ticket-it.com. You can also sign up for email or SMS notifications regarding scheduled maintenance.",
-    category: "System",
-    helpfulCount: 112
-  },
-  {
-    question: "Where are your servers located?",
-    answer: "Our cloud infrastructure is hosted across secure AWS and Azure data centers in North America, Europe, and Asia-Pacific. By default, requests are routed to the nearest regional endpoint to minimize latency and ensure compliance with local data residency laws.",
-    category: "System",
-    helpfulCount: 95
-  },
-  {
-    question: "How do you handle security updates and patches?",
-    answer: "We deploy security updates and OS patches automatically without downtime. Critical vulnerability checks are run daily, and maintenance windows are scheduled during low-traffic periods. System status updates are published on our status page.",
-    category: "System",
-    helpfulCount: 68
-  },
-  {
-    question: "What is your Service Level Agreement (SLA) percentage?",
-    answer: "We guarantee a 99.99% monthly uptime SLA for all paid and enterprise tier accounts. In the unlikely event that uptime falls below this threshold, you are eligible to receive service credits. Detailed SLA terms and claim procedures are available in our Terms of Service.",
-    category: "System",
-    helpfulCount: 49
-  },
-  {
-    question: "Are your services compliant with SOC2 and HIPAA?",
-    answer: "Yes, our ticketing platform is SOC2 Type II certified and compliant with HIPAA regulations. We undergo annual third-party audits to verify our security practices. Enterprise customers can sign a Business Associate Agreement (BAA) with us.",
-    category: "Security",
+    question: "How do I check the battery status of my ESL tags?",
+    answer: "Battery diagnostics are transmitted back from the ESL gateway to the Ticket-IT platform. You can view the battery health of all deployed tags in the 'Hardware Health' report and order replacements before they die.",
+    category: "ESL",
     helpfulCount: 76
   },
+
+  // --- Paper Ticketing ---
   {
-    question: "How do I report a security vulnerability or bug?",
-    answer: "We take security very seriously. If you discover a vulnerability, please do not disclose it publicly. Report it directly to our security team via security@ticket-it.com. We operate a bug bounty program and reward verified findings in accordance with our disclosure guidelines.",
-    category: "Security",
-    helpfulCount: 55
+    question: "How do I set up centralized printing for head office?",
+    answer: "Ticket-IT allows head offices to generate massive batches of tickets for the entire network. Under 'Print Workflows', select 'Centralized'. The system will generate print-ready PDFs sorted by store, aisle, or category for easy distribution.",
+    category: "Paper Ticketing",
+    helpfulCount: 230
   },
   {
-    question: "How can I configure agent collision detection?",
-    answer: "Ticket-it prevents multiple agents from answering the same ticket concurrently. When an agent opens a ticket, a live socket connection flags it. Other agents viewing it will see a colored indicator avatar and a banner warning: 'Agent Sarah is currently typing a reply.' If a second agent attempts to post, the system prompts them to verify Sarah's pending draft.",
-    category: "Account",
-    helpfulCount: 92
+    question: "Can stores print tickets locally using distributed printing?",
+    answer: "Absolutely. With 'Distributed Printing', the head office creates the ticket batches, but the print jobs are securely routed to the local printers inside each franchise store, saving on shipping costs and time.",
+    category: "Paper Ticketing",
+    helpfulCount: 194
   },
   {
-    question: "Can I set up auto-responder rules for out-of-office agents?",
-    answer: "Yes. In Settings > Team > Working Hours, you can toggle 'Out of Office Auto-Reply'. When active, any ticket routed to an agent who is clocked out or away automatically triggers a preset friendly response, informing the customer when the agent returns or routing the ticket to an active backup teammate.",
-    category: "Account",
-    helpfulCount: 81
+    question: "What is a hybrid printing workflow?",
+    answer: "A hybrid workflow allows you to print standard, everyday price tags at the local store level, while large-scale promotional campaign materials (like large posters or special stock) are printed centrally and shipped.",
+    category: "Paper Ticketing",
+    helpfulCount: 125
   },
   {
-    question: "How do I set up sub-billing accounts for multiple support channels?",
-    answer: "In Settings > Billing > Sub-organizations, you can invite distinct child entities to share your parent tier. You can allocate agent seat quotas to each organization and choose to receive either one unified parent invoice or individual prorated invoices for each sub-brand.",
-    category: "Billing",
-    helpfulCount: 47
+    question: "How do I quickly print a replacement for a damaged paper ticket?",
+    answer: "Store staff can use the 'Web Tickets' feature. Simply search for the product via barcode or name, select the desired template, and hit print. A replacement ticket is generated instantly without head office intervention.",
+    category: "Paper Ticketing",
+    helpfulCount: 310
   },
   {
-    question: "What happens to my data if my subscription is suspended?",
-    answer: "If your billing payment fails, Ticket-it enters a 14-day Grace Period during which all functions remain fully active. If unpaid after 14 days, the account is moved to 'Read-Only Mode' where agents can view past tickets but cannot reply or receive new entries. After 90 days of suspension, data is queued for automatic permanent deletion in line with our retention policy.",
-    category: "Billing",
-    helpfulCount: 66
+    question: "Does Ticket-IT support specific label printer models?",
+    answer: "Yes, we support all major thermal and laser printers, including Zebra, Brother, and Lexmark. Ticket-IT generates high-resolution PDFs or direct ZPL code depending on your hardware configuration.",
+    category: "Paper Ticketing",
+    helpfulCount: 156
+  },
+
+  // --- Store Configuration ---
+  {
+    question: "How do I add a new retail store to my network?",
+    answer: "Go to Settings > Store Management and click 'Add Store'. Enter the store details, assign a store ID that matches your POS, and define regional pricing rules. The new store will immediately be available for batch printing and campaign targeting.",
+    category: "Store Configuration",
+    helpfulCount: 182
   },
   {
-    question: "Can I send custom metadata with webhooks?",
-    answer: "Yes. When creating or updating tickets programmatically via API, you can include a 'metadata' JSON block containing key-value pairs (e.g. {\"checkout_id\": \"99882\", \"plan\": \"trial\"}). Ticket-it preserves this metadata and sends it back intact in the payloads of all related webhook events.",
-    category: "Developers",
+    question: "How do I manage role-based access for store managers?",
+    answer: "Under Settings > Roles & Permissions, you can define specific roles for store staff. For example, a 'Store Manager' role can be restricted to only viewing and re-printing tickets for their specific location, while blocking access to global templates.",
+    category: "Store Configuration",
     helpfulCount: 145
   },
   {
-    question: "How does the widget communicate with custom React components?",
-    answer: "The Ticket-it frontend widget registers window-level custom events. You can listen to these events within your React components using `window.addEventListener('ticketit:loaded', callback)` or trigger widget methods programmatically by calling `window.ticketit('open')` or passing credentials dynamically via React hooks.",
-    category: "Developers",
-    helpfulCount: 119
+    question: "How do I connect my POS system (like Vend) to a specific store?",
+    answer: "Navigate to Settings > Integrations. Select your POS provider and authenticate. You can map POS location IDs directly to your Ticket-IT stores, ensuring that product pricing syncs accurately per location.",
+    category: "Store Configuration",
+    helpfulCount: 275
   },
   {
-    question: "What is your pricing policy for Light Agents?",
-    answer: "Light Agents are free of charge and do not consume paid agent seats. They are restricted to read-only access on tickets, cannot communicate directly with external customers, but are allowed to review ticket history and leave internal private notes to collaborate with full support agents.",
-    category: "Pricing",
+    question: "Does Ticket-IT offer reporting and compliance tracking for stores?",
+    answer: "Yes, our reporting suite offers ongoing insights into store user access, ticket creation, and printing logs. This helps head office ensure compliance and accuracy across all franchise locations.",
+    category: "Store Configuration",
+    helpfulCount: 112
+  },
+  {
+    question: "How secure is the platform when configuring store access?",
+    answer: "Security is our top priority. The Ticket-IT platform undergoes 100% CREST approved penetration testing. We also support SAML and SSO integrations so store staff can securely log in using existing corporate credentials.",
+    category: "Store Configuration",
+    helpfulCount: 210
+  },
+
+  // --- Ticket-Builder ---
+  {
+    question: "How do I create a new ticket template from scratch?",
+    answer: "Go to the 'Templates' section and launch the Ticket-Builder. You can start with a blank canvas, define the physical dimensions, and use the drag-and-drop interface to add text boxes, images, shapes, and dynamic data fields.",
+    category: "Ticket-Builder",
+    helpfulCount: 215
+  },
+  {
+    question: "Can I upload custom brand fonts and logos to Ticket-Builder?",
+    answer: "Yes. Ticket-IT allows you to upload custom TTF/OTF fonts and high-resolution SVG or PNG logos to ensure that every ticket adheres strictly to your corporate brand guidelines.",
+    category: "Ticket-Builder",
+    helpfulCount: 176
+  },
+  {
+    question: "Are there dynamic fields in the ticket builder (e.g. price per unit)?",
+    answer: "Absolutely. You can drag dynamic placeholders (like {{product.name}}, {{price.current}}, or {{price.unit}}) onto the canvas. These fields automatically populate with the correct data when a batch is generated.",
+    category: "Ticket-Builder",
+    helpfulCount: 204
+  },
+  {
+    question: "Can I add barcodes or QR codes to the ticket templates?",
+    answer: "Yes. The Ticket-Builder includes a barcode generator widget. You can map it to your product's SKU or UPC field. We support standard formats like EAN-13, Code 128, and QR codes for customer scanning.",
+    category: "Ticket-Builder",
+    helpfulCount: 189
+  },
+  {
+    question: "How do I restrict store managers from altering locked template designs?",
+    answer: "Using our advanced Role-Based Access Control (RBAC), head office admins can lock template layouts. Store managers can select the templates and populate data, but they cannot move elements, change fonts, or alter the branding.",
+    category: "Ticket-Builder",
+    helpfulCount: 130
+  },
+
+  // --- Batches ---
+  {
+    question: "What is a print batch in Ticket-IT?",
+    answer: "A batch is a grouped collection of tickets scheduled for printing or digital deployment. Batches organize tickets by template type, store location, and paper stock to streamline the physical printing process.",
+    category: "Batches",
+    helpfulCount: 188
+  },
+  {
+    question: "How do I create a bulk print batch for multiple stores?",
+    answer: "In the 'Batches' dashboard, select the products you want to ticket, apply the desired templates, and select the target stores. Ticket-IT will automatically generate separate print files routed to each specific store.",
+    category: "Batches",
+    helpfulCount: 165
+  },
+  {
+    question: "Can store staff build their own batches using the mobile app?",
+    answer: "Yes, using the Ticket-IT Mobile app, staff can walk the aisles, scan barcodes of products that need new tickets, and compile a 'Mobile Batch'. They can then send this batch directly to the back-office printer.",
+    category: "Batches",
+    helpfulCount: 210
+  },
+  {
+    question: "How do I automate batch generation based on POS price changes?",
+    answer: "You can configure 'Auto-Batches'. When Ticket-IT detects a price change from your POS, it automatically adds the affected product to a pending daily batch. At a scheduled time (e.g., 6:00 AM), the batch is finalized and printed.",
+    category: "Batches",
+    helpfulCount: 195
+  },
+  {
+    question: "How do I re-print a historical batch?",
+    answer: "Navigate to 'Batch History'. Here you can view all previously processed batches. Simply select a past batch and click 'Re-print'. You can choose to reprint the entire batch or select specific tickets within it.",
+    category: "Batches",
+    helpfulCount: 98
+  },
+
+  // --- Campaigns ---
+  {
+    question: "How do I schedule a promotional campaign in advance?",
+    answer: "In the 'Campaigns' module, create a new promotion, select the start and end dates, and import the list of participating products and their promotional prices. Ticket-IT will queue the tickets for deployment exactly when the campaign begins.",
+    category: "Campaigns",
+    helpfulCount: 220
+  },
+  {
+    question: "Can campaigns be targeted to specific franchise locations or regions?",
+    answer: "Yes, campaigns can be globally applied to all stores, or segmented by specific regions, franchise tiers, or even individual store locations. Pricing and templates will only update for the targeted stores.",
+    category: "Campaigns",
+    helpfulCount: 178
+  },
+  {
+    question: "Does Ticket-IT automatically revert pricing after a campaign ends?",
+    answer: "Yes. When setting up a campaign, you define an end date. Once the campaign expires, Ticket-IT automatically generates a 'Revert Batch' to print standard price tags, or instantly resets ESLs back to their original prices.",
+    category: "Campaigns",
+    helpfulCount: 245
+  },
+  {
+    question: "How do I highlight sale items (e.g. 'Was/Now' pricing) during a campaign?",
+    answer: "You can configure your campaign templates to utilize dynamic fields like 'Previous Price' and 'Promo Price'. Ticket-IT will automatically calculate savings percentages and render striking 'Was/Now' visual layouts.",
+    category: "Campaigns",
+    helpfulCount: 192
+  },
+  {
+    question: "Is it possible to run multiple overlapping campaigns?",
+    answer: "Yes. Ticket-IT includes a conflict resolution engine. If a product exists in multiple active campaigns, the system applies a hierarchy rule (e.g., 'Clearance overrides Weekly Special') to ensure the correct price is always displayed.",
+    category: "Campaigns",
+    helpfulCount: 134
+  },
+
+  // --- LCD Management ---
+  {
+    question: "How does Ticket-IT push content to LCD and digital signage screens?",
+    answer: "Ticket-IT integrates with digital signage media players over the cloud. You can assign 'Digital Templates' to specific screen IP addresses or MAC addresses, pushing high-definition HTML5 or image content in real-time.",
+    category: "LCD Management",
+    helpfulCount: 185
+  },
+  {
+    question: "Can I schedule different content to play at different times of the day on LCDs?",
+    answer: "Yes, using the Digital Scheduler, you can rotate content. For example, a screen in the bakery section can show breakfast promotions in the morning and discount bread pricing in the evening.",
+    category: "LCD Management",
+    helpfulCount: 162
+  },
+  {
+    question: "What media formats are supported for LCD displays?",
+    answer: "Ticket-IT supports rendering dynamic HTML5 templates (which update prices live), high-resolution Images (JPEG, PNG), and looping MP4 video backgrounds overlaid with live pricing data.",
+    category: "LCD Management",
+    helpfulCount: 140
+  },
+  {
+    question: "How do I group multiple screens to show the same digital ticket?",
+    answer: "In the Hardware dashboard, you can group multiple LCD screens into 'Zones' (e.g., 'Endcap Displays'). When you deploy a digital ticket batch to a Zone, all screens within it update simultaneously.",
+    category: "LCD Management",
+    helpfulCount: 115
+  },
+  {
+    question: "What hardware media players are compatible with Ticket-IT?",
+    answer: "Ticket-IT is hardware agnostic and works via web browser URLs. Any digital signage player that supports a modern HTML5 browser (such as BrightSign, Samsung Tizen, LG WebOS, or standard Android/Windows mini-PCs) is fully compatible.",
+    category: "LCD Management",
     helpfulCount: 104
   },
+  
+  // --- General ---
   {
-    question: "Do you charge separately for live chat transcripts or attachment storage?",
-    answer: "Live chat transcripts are stored forever at no extra cost. Standard attachment storage is capped at 10GB for Pro plans and is unlimited for Enterprise plans. Extra storage for Pro plans can be purchased in 50GB increments from your Billing dashboard.",
-    category: "Pricing",
-    helpfulCount: 71
+    question: "Is Ticket-IT a web-based solution?",
+    answer: "Yes, Ticket-IT was the first web-based retail ticketing solution in the world. Our platform allows you to create and send thousands of tickets to thousands of stores in seconds from any browser.",
+    category: "General",
+    helpfulCount: 245
   },
   {
-    question: "How is the Monthly Active Users (MAU) limit calculated?",
-    answer: "MAU represents the count of unique end-users who create a ticket, initiate a chat, or receive a support response within a calendar month. We do not count anonymous help center visitors towards this quota, only identified users who engage in active support loops.",
-    category: "Usage",
-    helpfulCount: 87
+    question: "How secure is the Ticket-IT platform?",
+    answer: "Security is our top priority. The Ticket-IT platform undergoes 100% CREST approved penetration testing to guarantee optimal security and protection for your retail data.",
+    category: "General",
+    helpfulCount: 210
   },
   {
-    question: "How do I request a temporary usage limit increase?",
-    answer: "If you anticipate a high-traffic event (e.g., product launch, holiday sales), go to Settings > Usage and click 'Configure Buffer'. You can request a temporary increase to your ticket or API limits for up to 72 hours, with usage billed at a standard prorated overage rate.",
-    category: "Usage",
-    helpfulCount: 53
+    question: "Do you support Single Sign-On (SSO)?",
+    answer: "Yes, we support SAML and SSO integrations so your head office and store staff can seamlessly log in using their existing corporate credentials.",
+    category: "General",
+    helpfulCount: 134
   },
   {
-    question: "How do I configure DNS records for custom support email addresses?",
-    answer: "To handle outbound support mail under your domain, go to Settings > Channels > Email and add your address. You must verify ownership by adding three CNAME records for DKIM (domainkeys-identified-mail), one TXT record for SPF (sender-policy-framework), and an MX record pointing to our incoming email mailboxes.",
-    category: "System",
-    helpfulCount: 122
+    question: "How is Ticket-IT priced?",
+    answer: "Pricing is tailored based on the number of stores, users, and the specific modules (ESL, POS integration, Print) you require. Please contact our sales team to book a presentation and receive a custom quote.",
+    category: "General",
+    helpfulCount: 145
   },
   {
-    question: "Does Ticket-it have a status page API?",
-    answer: "Yes, our status portal publishes public JSON and RSS endpoints at `https://status.ticket-it.com/api/v2/summary`. Developers can query this endpoint to check system component latency, database load, and ongoing incident details to display on custom internal admin panels.",
-    category: "System",
-    helpfulCount: 68
-  },
-  {
-    question: "How does Ticket-it protect uploaded files from malware?",
-    answer: "Every file uploaded as a ticket attachment is scanned in real-time by our integrated antivirus filter before writing to storage. Any file flagged as suspicious is rejected with an upload error. Approved files are stored using server-side AES-256 encryption with expiring signed URLs.",
-    category: "Security",
-    helpfulCount: 99
-  },
-  {
-    question: "Can we restrict agent logins to specific countries?",
-    answer: "Yes, under Settings > Security > Access Controls, Enterprise administrators can configure Geo-Location restrictions. You can select specific countries from a whitelist, block connections originating from anonymous proxies or Tor exit nodes, and trigger security alerts for suspicious login behaviors.",
-    category: "Security",
-    helpfulCount: 88
-  },
-  {
-    question: "Does Ticket-it support field-level encryption for sensitive PII data?",
-    answer: "Yes, you can define custom ticket fields as 'Sensitive PII'. The data in these fields is encrypted at the application tier before database insertion using unique customer keys. Access is restricted and audited, and values can be auto-redacted in search index systems.",
-    category: "Security",
-    helpfulCount: 111
+    question: "How do I get help if my store staff face an issue?",
+    answer: "Our dedicated support team provides excellent service for both head office functions and individual retailers. You can submit a support ticket via this portal or use our live chat for urgent issues.",
+    category: "General",
+    helpfulCount: 176
   }
 ];
