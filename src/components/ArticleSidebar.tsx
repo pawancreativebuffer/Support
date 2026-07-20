@@ -39,7 +39,7 @@ export const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
                   <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                     isActiveCategory ? 'bg-primary-100 text-primary-700' : 'bg-slate-100 text-slate-500'
                   }`}>
-                    {getCategoryIcon(category.id)}
+                    {getCategoryIcon(category.iconName)}
                   </div>
                   <span className={`text-sm md:text-base font-bold transition-colors ${
                     isActiveCategory ? 'text-primary-700' : 'text-slate-700'

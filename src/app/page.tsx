@@ -25,8 +25,8 @@ export default function SupportPage() {
     }
   }, [faqCategory]);
 
-  const categories = ['ESL', 'Paper Ticketing', 'Store Configuration', 'Ticket-Builder', 'Batches', 'Campaigns', 'LCD Management', 'General'];
-  const searchTags = ["ESL", "Paper Ticketing", "Store Configuration", "Ticket-Builder", "Batches", "Campaigns", "LCD Management"];
+  const categories = CATEGORIES.map(c => c.title);
+  const searchTags = CATEGORIES.slice(0, 7).map(c => c.title);
 
   const handleTagClick = (tag: string) => {
     const category = CATEGORIES.find(c => c.title === tag);

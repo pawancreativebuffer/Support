@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { ArrowRight, ArrowLeft, Info, Zap, CheckCircle, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import { Category, Article, TableData, ReceivingAccountData } from '../data/categories';
 import { InteractivePaymentForm } from './InteractivePaymentForm';
-import { faqs } from '../data/faqs';
 
 interface ArticleViewerProps {
   activeCategory: Category;
@@ -12,9 +11,6 @@ interface ArticleViewerProps {
   feedbackSubmitted: boolean;
   setFeedbackSubmitted: (val: boolean) => void;
 }
-
-const FAQ_MAPPINGS: Record<string, string[]> = {"ticketing-helpdesk": ["Account","Usage"],"live-chat-widgets": ["Developers","Usage"],"agent-team-routing": ["Account"],"api-integrations": ["Developers"],"status-performance": ["System"],"security-compliance": ["Security"]
-};
 
 export const ArticleViewer: React.FC<ArticleViewerProps> = ({
   activeCategory,
@@ -28,11 +24,8 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
     setOpenFaqIndex(null);
   }, [activeCategory, activeArticle]);
 
-  const relevantFaqCategories = FAQ_MAPPINGS[activeCategory.id] || [];
-  const relevantFaqs = faqs.filter(faq => relevantFaqCategories.includes(faq.category));
-
-  const renderRelatedFaqs = (isInsideCard: boolean = false) => {
-    if (relevantFaqs.length === 0) return null;
+  const renderRelatedFaqs = (articleFaqs?: { question: string; answer: string }[], isInsideCard: boolean = false) => {
+    if (!articleFaqs || articleFaqs.length === 0) return null;
 
     return (
       <div className={isInsideCard ? 'border-t border-slate-100 pt-6 px-6 pb-6' : 'mt-8 bg-white rounded-lg border border-slate-200 shadow-sm p-6'}>
@@ -41,7 +34,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
           <h3 className="text-2xl font-bold text-slate-900">Frequently Asked Questions</h3>
         </div>
         <div className="space-y-2">
-          {relevantFaqs.map((faq, idx) => {
+          {articleFaqs.map((faq, idx) => {
             const isOpen = openFaqIndex === idx;
             return (
               <div 
@@ -314,7 +307,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
       </div>
 
       {/* Frequently Asked Questions accordion (inside the card) */}
-      {renderRelatedFaqs(true)}
+      {renderRelatedFaqs(activeArticle.faqs, true)}
 
       {/* Feedback bottom block */}
       <div className="bg-slate-50 border-t border-slate-100 py-8 px-6 flex flex-col items-center justify-center text-center">
