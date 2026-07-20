@@ -32,6 +32,7 @@ model PortalUser {
   sentMessages    TicketMessage[]
   voiceLogs       VoiceSessionLog[]
   callLogs        CallLog[]
+  notifications   Notification[]
 }
 
 enum TicketStatus {
@@ -155,4 +156,23 @@ model SupportSearchAnalytics {
   keyword   String   @unique
   count     Int      @default(1)
   updatedAt DateTime @updatedAt
+}
+
+enum NotificationType {
+  ALERT
+  WARNING
+  INFO
+  SUCCESS
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user      PortalUser       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, LogIn, Menu, X, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { NotificationBell } from './NotificationBell';
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string; role: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ id?: number; name: string; role: string; email: string } | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -53,16 +54,16 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-10 text-sm font-medium text-slate-600">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
             after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
             ${pathname === '/' ? 'text-primary-600 after:w-full' : 'after:w-0 hover:after:w-full'}`}
           >
             Home
           </Link>
-          <Link 
-            href="/#solutions" 
+          <Link
+            href="/#solutions"
             onClick={(e) => {
               if (pathname === '/') {
                 e.preventDefault();
@@ -76,8 +77,8 @@ export function Header() {
           >
             Solutions
           </Link>
-          <Link 
-            href="/article/request-a-payment" 
+          <Link
+            href="/article/request-a-payment"
             className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
             after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
             ${pathname === '/article/request-a-payment' ? 'text-primary-600 after:w-full' : 'after:w-0 hover:after:w-full'}`}
@@ -85,8 +86,8 @@ export function Header() {
             Resources
           </Link>
           {user && (
-            <Link 
-              href={user.role === 'Admin' ? "/admin" : user.role === 'Agent' ? "/agent" : "/dashboard"} 
+            <Link
+              href={user.role === 'Admin' ? "/admin" : user.role === 'Agent' ? "/agent" : "/dashboard"}
               className={`relative py-1 hover:text-primary-600 transition-colors cursor-pointer 
               after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-primary-500 after:transition-all after:duration-300 
               ${['/admin', '/agent', '/dashboard'].includes(pathname || '') ? 'text-primary-600 after:w-full' : 'text-slate-600 after:w-0 hover:after:w-full'}`}
@@ -99,11 +100,14 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2">
+              <NotificationBell userId={user.id || 1} userRole={user.role} />
 
-              <button 
+              <div className="w-px h-6 bg-slate-200 mx-1"></div> {/* Separator */}
+
+              <button
                 onClick={handleLogout}
-                className="flex items-center justify-center gap-1.5 text-sm font-medium text-slate-500 hover:text-red-600 border border-slate-200 hover:border-red-200 hover:bg-red-50 transition-colors px-4 h-[46px] rounded-[8px] cursor-pointer"
+                className="flex items-center justify-center gap-1.5 text-sm font-medium text-slate-500 hover:text-red-600 border border-transparent hover:border-red-200 hover:bg-red-50 transition-colors px-4 h-[46px] rounded-[8px] cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out
@@ -118,7 +122,7 @@ export function Header() {
           <Link href="/contact" className="bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm">
             Contact
           </Link>
-          <button 
+          <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-slate-600 hover:text-primary-600 transition-colors p-2 rounded-lg hover:bg-slate-100 cursor-pointer"
             aria-label="Toggle Menu"
@@ -132,15 +136,15 @@ export function Header() {
       {isOpen && (
         <div className="md:hidden bg-white/95 border-t border-slate-100 backdrop-blur-md animate-fade-in shadow-2xl">
           <nav className="flex flex-col text-center p-[15px] gap-2 text-sm font-medium text-slate-600">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               onClick={() => setIsOpen(false)}
               className="hover:text-primary-600 py-1.5 transition-colors cursor-pointer block w-full"
             >
               Home
             </Link>
-            <Link 
-              href="/#solutions" 
+            <Link
+              href="/#solutions"
               onClick={(e) => {
                 setIsOpen(false);
                 if (pathname === '/') {
@@ -153,15 +157,15 @@ export function Header() {
             >
               Solutions
             </Link>
-            <Link 
-              href="/article/request-a-payment" 
+            <Link
+              href="/article/request-a-payment"
               onClick={() => setIsOpen(false)}
               className="hover:text-primary-600 py-1.5 transition-colors cursor-pointer block w-full"
             >
               Resources
             </Link>
             {user && (
-              <Link 
+              <Link
                 href={user.role === 'Admin' ? "/admin" : user.role === 'Agent' ? "/agent" : "/dashboard"}
                 onClick={() => setIsOpen(false)}
                 className="text-primary-600 hover:text-primary-700 py-1.5 transition-colors cursor-pointer font-bold block w-full"
@@ -169,10 +173,10 @@ export function Header() {
                 My Dashboard
               </Link>
             )}
-            
+
             {user ? (
               <div className="pt-4 mt-2 border-t border-slate-100">
-                <button 
+                <button
                   onClick={() => {
                     setIsOpen(false);
                     handleLogout();
@@ -185,7 +189,7 @@ export function Header() {
               </div>
             ) : (
               <div className="pt-4 mt-2 border-t border-slate-100">
-                <Link 
+                <Link
                   href="/login"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 transition-all duration-300 h-[46px] rounded-[8px] cursor-pointer text-center w-full"
