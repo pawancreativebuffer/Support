@@ -149,3 +149,10 @@ model CallLog {
   customerId     Int?
   customer       PortalUser? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 }
+
+model SupportSearchAnalytics {
+  id        Int      @id @default(autoincrement())
+  keyword   String   @unique
+  count     Int      @default(1)
+  updatedAt DateTime @updatedAt
+}

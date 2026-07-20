@@ -12,12 +12,16 @@ import { CATEGORIES } from '../data/categories';
 export default function SupportPage() {
   const router = useRouter();
   const [heroSearch, setHeroSearch] = useState('');
-  const [faqCategory, setFaqCategory] = useState('ESL');
+  const [faqCategory, setFaqCategory] = useState(CATEGORIES[0]?.title || 'Retail Automation & ESL');
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
   useEffect(() => {
-    const categoryFaqs = faqs.filter(faq => faq.category === faqCategory);
+    const categoryFaqs = faqs.filter(faq => 
+      faq.category === faqCategory ||
+      faqCategory.toLowerCase().includes(faq.category.toLowerCase()) || 
+      faq.category.toLowerCase().includes(faqCategory.toLowerCase())
+    );
     if (categoryFaqs && categoryFaqs.length > 0) {
       setOpenFaq(categoryFaqs[0].question);
     } else {
@@ -26,21 +30,37 @@ export default function SupportPage() {
   }, [faqCategory]);
 
   const categories = CATEGORIES.map(c => c.title);
-  const searchTags = CATEGORIES.slice(0, 7).map(c => c.title);
+  
+  // Real Trending Searches pulled from DB
+  const [searchTags, setSearchTags] = useState<string[]>([]);
 
-  const handleTagClick = (tag: string) => {
-    const category = CATEGORIES.find(c => c.title === tag);
-    if (category && category.articles.length > 0) {
-      router.push(`/article/${category.articles[0].slug}`);
-    }
-  };
+  useEffect(() => {
+    fetch('/api/search')
+      .then(res => res.json())
+      .then(data => {
+        if (data.tags && data.tags.length > 0) {
+          // Capitalize the first letter of each tag for better UI
+          const formattedTags = data.tags.map((t: string) => t.charAt(0).toUpperCase() + t.slice(1));
+          setSearchTags(formattedTags);
+        }
+      })
+      .catch(err => console.error("Failed to load trending tags", err));
+  }, []);
 
-  const handleHeroSearch = () => {
-    const query = heroSearch.toLowerCase().trim();
+  const performSearch = async (queryStr: string) => {
+    const query = queryStr.toLowerCase().trim();
     if (!query) return;
 
-    // 1. Try to find direct match in all article titles/descriptions
+    // Track search asynchronously so it doesn't block navigation
+    fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword: query })
+    }).catch(console.error);
+
     const allArticles = CATEGORIES.flatMap((cat) => cat.articles);
+    
+    // 1. Try to find direct match in all article titles/descriptions
     const matchedArticle = allArticles.find(
       (art) =>
         art.title.toLowerCase().includes(query) ||
@@ -48,21 +68,28 @@ export default function SupportPage() {
     );
 
     if (matchedArticle) {
-      router.push(`/article/${matchedArticle.slug}`);
+      router.push(`/article/${matchedArticle.slug}?highlight=${encodeURIComponent(query)}`);
       return;
     }
 
     // 2. Try to match category title
     const matchedCategory = CATEGORIES.find((cat) => cat.title.toLowerCase().includes(query));
     if (matchedCategory && matchedCategory.articles.length > 0) {
-      router.push(`/article/${matchedCategory.articles[0].slug}`);
+      router.push(`/article/${matchedCategory.articles[0].slug}?highlight=${encodeURIComponent(query)}`);
       return;
     }
 
-    // 3. Fallback to first article if completely lost
-    if (allArticles.length > 0) {
-      router.push(`/article/${allArticles[0].slug}`);
-    }
+    // 3. Fallback to not-found page if completely lost
+    router.push(`/article/not-found?q=${encodeURIComponent(query)}`);
+  };
+
+  const handleTagClick = (tag: string) => {
+    setHeroSearch(tag);
+    performSearch(tag);
+  };
+
+  const handleHeroSearch = () => {
+    performSearch(heroSearch);
   };
 
   return (

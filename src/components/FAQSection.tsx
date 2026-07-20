@@ -31,11 +31,17 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
   categories,
 }) => {
   const getFaqCount = (cat: string) => {
-    return faqs.filter((f) => f.category === cat).length;
+    return faqs.filter((faq) => 
+      faq.category === cat || 
+      cat.toLowerCase().includes(faq.category.toLowerCase()) || 
+      faq.category.toLowerCase().includes(cat.toLowerCase())
+    ).length;
   };
 
   const filteredFaqs = faqs.filter((faq) => {
-    return faq.category === faqCategory;
+    return faq.category === faqCategory || 
+           faqCategory.toLowerCase().includes(faq.category.toLowerCase()) || 
+           faq.category.toLowerCase().includes(faqCategory.toLowerCase());
   });
 
   return (

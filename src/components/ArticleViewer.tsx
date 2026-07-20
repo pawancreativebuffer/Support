@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowLeft, Info, Zap, CheckCircle, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import { Category, Article, TableData, ReceivingAccountData } from '../data/categories';
+import { faqs as allFaqs } from '../data/faqs';
 import { InteractivePaymentForm } from './InteractivePaymentForm';
 
 interface ArticleViewerProps {
@@ -22,7 +23,40 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
 
   useEffect(() => {
     setOpenFaqIndex(null);
-  }, [activeCategory, activeArticle]);
+    setFeedbackSubmitted(false);
+
+    const params = new URLSearchParams(window.location.search);
+    const highlightQuery = params.get('highlight');
+    
+    if (highlightQuery && activeArticle) {
+      setTimeout(() => {
+        const elements = Array.from(document.querySelectorAll('.article-content p, .article-content li, .article-content h2, .article-content h3, .article-content h4'));
+        const match = elements.find(el => el.textContent?.toLowerCase().includes(highlightQuery.toLowerCase()));
+        
+        if (match) {
+          match.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          match.classList.add('bg-yellow-100', 'transition-colors', 'duration-1000', 'rounded', 'px-1', '-ml-1');
+          setTimeout(() => match.classList.remove('bg-yellow-100', 'rounded', 'px-1', '-ml-1'), 4000);
+        } else if (activeArticle.faqs) {
+          // If not in main content, check FAQs and open the matching one
+          const faqMatchIndex = activeArticle.faqs.findIndex(faq => 
+            faq.question.toLowerCase().includes(highlightQuery.toLowerCase()) || 
+            faq.answer.toLowerCase().includes(highlightQuery.toLowerCase())
+          );
+          
+          if (faqMatchIndex !== -1) {
+            setOpenFaqIndex(faqMatchIndex);
+            setTimeout(() => {
+              const faqEl = document.getElementById(`faq-${faqMatchIndex}`);
+              if (faqEl) {
+                faqEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 300);
+          }
+        }
+      }, 500);
+    }
+  }, [activeCategory, activeArticle, setFeedbackSubmitted]);
 
   const renderRelatedFaqs = (articleFaqs?: { question: string; answer: string }[], isInsideCard: boolean = false) => {
     if (!articleFaqs || articleFaqs.length === 0) return null;
@@ -39,6 +73,7 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
             return (
               <div 
                 key={idx} 
+                id={`faq-${idx}`}
                 className="border border-slate-100 rounded-2xl overflow-hidden transition-all duration-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-200 hover:shadow-sm"
               >
                 <button
@@ -96,13 +131,32 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
             </div>
           </Link>
         ))}
+
+        {/* Render Category FAQs */}
+        {(() => {
+          const catFaqs = allFaqs.filter(faq => 
+            activeCategory.title.toLowerCase().includes(faq.category.toLowerCase()) || 
+            faq.category.toLowerCase().includes(activeCategory.title.toLowerCase()) ||
+            activeCategory.id?.toLowerCase().includes(faq.category.toLowerCase()) ||
+            activeCategory.slug.toLowerCase().includes(faq.category.toLowerCase())
+          );
+          
+          if (catFaqs.length > 0) {
+            return (
+              <div className="mt-8 pt-4">
+                {renderRelatedFaqs(catFaqs, false)}
+              </div>
+            );
+          }
+          return null;
+        })()}
       </div>
     );
   }
 
   /* ARTICLE VIEW: Displays detailed step-by-step documentation */
   return (
-    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden article-content">
       <div className="p-6">
         <Link
           href={`/article/${activeCategory.slug}`}

@@ -77,35 +77,35 @@ export const faqs: FaqItem[] = [
     helpfulCount: 156
   },
 
-  // --- Store Configuration ---
+  // --- Store Configuration & Batches ---
   {
     question: "How do I add a new retail store to my network?",
     answer: "Go to Settings > Store Management and click 'Add Store'. Enter the store details, assign a store ID that matches your POS, and define regional pricing rules. The new store will immediately be available for batch printing and campaign targeting.",
-    category: "Store Configuration",
+    category: "Store & Batch Management",
     helpfulCount: 182
   },
   {
     question: "How do I manage role-based access for store managers?",
     answer: "Under Settings > Roles & Permissions, you can define specific roles for store staff. For example, a 'Store Manager' role can be restricted to only viewing and re-printing tickets for their specific location, while blocking access to global templates.",
-    category: "Store Configuration",
+    category: "Store & Batch Management",
     helpfulCount: 145
   },
   {
     question: "How do I connect my POS system (like Vend) to a specific store?",
     answer: "Navigate to Settings > Integrations. Select your POS provider and authenticate. You can map POS location IDs directly to your Ticket-IT stores, ensuring that product pricing syncs accurately per location.",
-    category: "Store Configuration",
+    category: "POS Integrations",
     helpfulCount: 275
   },
   {
     question: "Does Ticket-IT offer reporting and compliance tracking for stores?",
     answer: "Yes, our reporting suite offers ongoing insights into store user access, ticket creation, and printing logs. This helps head office ensure compliance and accuracy across all franchise locations.",
-    category: "Store Configuration",
+    category: "Reporting & Compliance",
     helpfulCount: 112
   },
   {
     question: "How secure is the platform when configuring store access?",
     answer: "Security is our top priority. The Ticket-IT platform undergoes 100% CREST approved penetration testing. We also support SAML and SSO integrations so store staff can securely log in using existing corporate credentials.",
-    category: "Store Configuration",
+    category: "Store & Batch Management",
     helpfulCount: 210
   },
 
@@ -145,31 +145,31 @@ export const faqs: FaqItem[] = [
   {
     question: "What is a print batch in Ticket-IT?",
     answer: "A batch is a grouped collection of tickets scheduled for printing or digital deployment. Batches organize tickets by template type, store location, and paper stock to streamline the physical printing process.",
-    category: "Batches",
+    category: "Store & Batch Management",
     helpfulCount: 188
   },
   {
     question: "How do I create a bulk print batch for multiple stores?",
     answer: "In the 'Batches' dashboard, select the products you want to ticket, apply the desired templates, and select the target stores. Ticket-IT will automatically generate separate print files routed to each specific store.",
-    category: "Batches",
+    category: "Store & Batch Management",
     helpfulCount: 165
   },
   {
     question: "Can store staff build their own batches using the mobile app?",
     answer: "Yes, using the Ticket-IT Mobile app, staff can walk the aisles, scan barcodes of products that need new tickets, and compile a 'Mobile Batch'. They can then send this batch directly to the back-office printer.",
-    category: "Batches",
+    category: "Ticket-IT Mobile",
     helpfulCount: 210
   },
   {
     question: "How do I automate batch generation based on POS price changes?",
     answer: "You can configure 'Auto-Batches'. When Ticket-IT detects a price change from your POS, it automatically adds the affected product to a pending daily batch. At a scheduled time (e.g., 6:00 AM), the batch is finalized and printed.",
-    category: "Batches",
+    category: "Store & Batch Management",
     helpfulCount: 195
   },
   {
     question: "How do I re-print a historical batch?",
     answer: "Navigate to 'Batch History'. Here you can view all previously processed batches. Simply select a past batch and click 'Re-print'. You can choose to reprint the entire batch or select specific tickets within it.",
-    category: "Batches",
+    category: "Store & Batch Management",
     helpfulCount: 98
   },
 
@@ -205,35 +205,35 @@ export const faqs: FaqItem[] = [
     helpfulCount: 134
   },
 
-  // --- LCD Management ---
+  // --- Hardware & LCDs ---
   {
     question: "How does Ticket-IT push content to LCD and digital signage screens?",
     answer: "Ticket-IT integrates with digital signage media players over the cloud. You can assign 'Digital Templates' to specific screen IP addresses or MAC addresses, pushing high-definition HTML5 or image content in real-time.",
-    category: "LCD Management",
+    category: "Hardware & LCDs",
     helpfulCount: 185
   },
   {
     question: "Can I schedule different content to play at different times of the day on LCDs?",
     answer: "Yes, using the Digital Scheduler, you can rotate content. For example, a screen in the bakery section can show breakfast promotions in the morning and discount bread pricing in the evening.",
-    category: "LCD Management",
+    category: "Hardware & LCDs",
     helpfulCount: 162
   },
   {
     question: "What media formats are supported for LCD displays?",
     answer: "Ticket-IT supports rendering dynamic HTML5 templates (which update prices live), high-resolution Images (JPEG, PNG), and looping MP4 video backgrounds overlaid with live pricing data.",
-    category: "LCD Management",
+    category: "Hardware & LCDs",
     helpfulCount: 140
   },
   {
     question: "How do I group multiple screens to show the same digital ticket?",
     answer: "In the Hardware dashboard, you can group multiple LCD screens into 'Zones' (e.g., 'Endcap Displays'). When you deploy a digital ticket batch to a Zone, all screens within it update simultaneously.",
-    category: "LCD Management",
+    category: "Hardware & LCDs",
     helpfulCount: 115
   },
   {
     question: "What hardware media players are compatible with Ticket-IT?",
     answer: "Ticket-IT is hardware agnostic and works via web browser URLs. Any digital signage player that supports a modern HTML5 browser (such as BrightSign, Samsung Tizen, LG WebOS, or standard Android/Windows mini-PCs) is fully compatible.",
-    category: "LCD Management",
+    category: "Hardware & LCDs",
     helpfulCount: 104
   },
   
@@ -267,5 +267,43 @@ export const faqs: FaqItem[] = [
     answer: "Our dedicated support team provides excellent service for both head office functions and individual retailers. You can submit a support ticket via this portal or use our live chat for urgent issues.",
     category: "General",
     helpfulCount: 176
+  },
+  
+  // --- New Static Data for Empty Categories ---
+  {
+    question: "What POS systems does Ticket-IT integrate with?",
+    answer: "We support direct API integrations with over 40 major POS systems including Vend, Lightspeed, Retail Pro, and Microsoft Dynamics 365. Custom CSV/XML SFTP drops are also supported.",
+    category: "POS Integrations",
+    helpfulCount: 215
+  },
+  {
+    question: "How frequently does the POS integration sync?",
+    answer: "By default, API-based POS integrations sync every 5 minutes. SFTP based integrations sync based on your scheduled cron job, typically every 15-30 minutes.",
+    category: "POS Integrations",
+    helpfulCount: 145
+  },
+  {
+    question: "Can I generate a compliance report for missing tickets?",
+    answer: "Yes, our 'Gap Report' feature scans your POS active inventory against currently printed tickets and highlights missing shelf tags to ensure pricing compliance.",
+    category: "Reporting & Compliance",
+    helpfulCount: 198
+  },
+  {
+    question: "How do I export batch history reports?",
+    answer: "In the Reporting dashboard, select 'Batch History', choose your date range, and click 'Export'. You can download the report as CSV, Excel, or PDF.",
+    category: "Reporting & Compliance",
+    helpfulCount: 88
+  },
+  {
+    question: "Is the Ticket-IT Mobile app available for iOS?",
+    answer: "Yes, the Ticket-IT Mobile scanner is available for both iOS and Android. It can be downloaded from the App Store and Google Play Store.",
+    category: "Ticket-IT Mobile",
+    helpfulCount: 340
+  },
+  {
+    question: "How do I pair a bluetooth scanner with the mobile app?",
+    answer: "Open the app settings, select 'Hardware Pairing', and put your bluetooth scanner in discovery mode. Select your scanner from the list to connect.",
+    category: "Ticket-IT Mobile",
+    helpfulCount: 167
   }
 ];

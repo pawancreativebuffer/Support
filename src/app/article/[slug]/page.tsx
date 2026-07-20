@@ -14,6 +14,8 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
   const rawSlug = resolvedParams?.slug || 'how-to-setup-your-account';
   const normalizedSlug = decodeURIComponent(rawSlug).toLowerCase();
 
+  const isNotFound = normalizedSlug === 'not-found';
+
   // Find active category and article
   let activeCategory = CATEGORIES.find(c =>
     c.slug.toLowerCase() === normalizedSlug ||
@@ -62,6 +64,30 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
     }));
   };
 
+  if (isNotFound) {
+    return (
+      <div className="bg-slate-50 min-h-[70vh] pb-12 flex flex-col items-center justify-center pt-24 px-6 text-center">
+        <div className="max-w-lg bg-white p-10 rounded-3xl shadow-sm border border-slate-200">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <h1 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">No Article Found</h1>
+          <p className="text-slate-500 mb-8 leading-relaxed">
+            We couldn't find any articles matching your exact search query. Please try using different keywords or contact our technical support team directly.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/" className="px-6 py-3 rounded-full font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors w-full sm:w-auto">
+              Back to Home
+            </Link>
+            <Link href="/contact" className="px-6 py-3 rounded-full font-bold text-white bg-primary-600 hover:bg-primary-500 shadow-md transition-all w-full sm:w-auto">
+              Contact Support
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white pb-12">
       {/* Sub-header Banner */}
@@ -69,10 +95,10 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
         {/* Deep Theme-Colored Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-slate-950 to-blue-950" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-900/40 via-transparent to-transparent" />
-        
+
         {/* Elegant Grid Texture */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] pointer-events-none" />
-        
+
         {/* Dynamic Theme Glows */}
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] rounded-full bg-primary-600/25 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none" />
