@@ -17,15 +17,17 @@ export default function SupportPage() {
   const [helpfulFeedback, setHelpfulFeedback] = useState<Record<string, 'up' | 'down'>>({});
 
   const categories = ['Billing', 'Account', 'Developers', 'Pricing', 'Usage', 'System', 'Security'];
-  const searchTags = ["SSO & SAML", "API Authentication", "WhatsApp Integration", "SLA Policies", "Agent Roles"];
+  const searchTags = ["ESL", "Paper Ticketing", "Store Configuration", "Ticket-Builder", "Batches", "Campaigns", "LCD Management"];
 
   const handleTagClick = (tag: string) => {
     const slugMap: Record<string, string> = {
-      "SSO & SAML": "configuring-sso-saml",
-      "API Authentication": "authenticating-api-requests",
-      "WhatsApp Integration": "configuring-whatsapp-business",
-      "SLA Policies": "setting-up-sla-policies",
-      "Agent Roles": "roles-and-permissions"
+      "ESL": "esl-setup",
+      "Paper Ticketing": "paper-ticketing",
+      "Store Configuration": "store-configuration",
+      "Ticket-Builder": "ticket-builder-guide",
+      "Batches": "managing-batches",
+      "Campaigns": "campaigns-management",
+      "LCD Management": "lcd-management"
     };
     const targetSlug = slugMap[tag];
     if (targetSlug) {
@@ -51,32 +53,22 @@ export default function SupportPage() {
     }
 
     // 2. Fallback to hardcoded query groups
-    if (query.includes('sso') || query.includes('saml')) {
-      router.push('/article/configuring-sso-saml');
-    } else if (query.includes('api') || query.includes('key') || query.includes('token') || query.includes('auth')) {
-      router.push('/article/authenticating-api-requests');
-    } else if (query.includes('whatsapp')) {
-      router.push('/article/configuring-whatsapp-business');
-    } else if (query.includes('sla') || query.includes('policy')) {
-      router.push('/article/setting-up-sla-policies');
-    } else if (query.includes('role') || query.includes('permission') || query.includes('member') || query.includes('team')) {
-      router.push('/article/roles-and-permissions');
-    } else if (query.includes('status') || query.includes('uptime') || query.includes('health') || query.includes('latency')) {
-      router.push('/article/system-health-monitoring');
-    } else if (query.includes('widget') || query.includes('embed') || query.includes('chat')) {
-      router.push('/article/embedding-chat-widget');
-    } else if (query.includes('survey') || query.includes('csat') || query.includes('satisfaction')) {
-      router.push('/article/managing-csat-surveys');
-    } else if (query.includes('shift') || query.includes('hours') || query.includes('schedule')) {
-      router.push('/article/configuring-agent-shifts');
-    } else if (query.includes('backup') || query.includes('export') || query.includes('retention') || query.includes('db')) {
-      router.push('/article/database-backup-exports');
-    } else if (query.includes('gdpr') || query.includes('privacy') || query.includes('delete') || query.includes('scrub')) {
-      router.push('/article/data-privacy-gdpr-compliance');
-    } else if (query.includes('ip') || query.includes('whitelist') || query.includes('mfa')) {
-      router.push('/article/enforcing-ip-whitelisting-mfa');
+    if (query.includes('esl') || query.includes('electronic')) {
+      router.push('/article/esl-setup');
+    } else if (query.includes('paper') || query.includes('print')) {
+      router.push('/article/paper-ticketing');
+    } else if (query.includes('store') || query.includes('config')) {
+      router.push('/article/store-configuration');
+    } else if (query.includes('campaign') || query.includes('promo')) {
+      router.push('/article/campaigns-management');
+    } else if (query.includes('builder') || query.includes('template')) {
+      router.push('/article/ticket-builder-guide');
+    } else if (query.includes('lcd') || query.includes('display')) {
+      router.push('/article/lcd-management');
+    } else if (query.includes('batch')) {
+      router.push('/article/managing-batches');
     } else {
-      router.push('/article/ticketing-helpdesk');
+      router.push('/article/getting-started');
     }
   };
 

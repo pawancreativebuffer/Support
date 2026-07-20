@@ -58,16 +58,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Left: Text */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-sm font-normal shadow-sm shadow-slate-900 cursor-pointer backdrop-blur-sm">
-            <Zap className="w-4 h-4 fill-primary-400 text-primary-400" /> Fast & Intelligent Support
+            <Zap className="w-4 h-4 fill-primary-400 text-primary-400" /> Ticket-IT Help Center
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
-            Find answers. <br />
+            Ticket-IT Support. <br />
             <span className="text-primary-500">
-              Fix problems.
+              How can we help?
             </span>
           </h1>
           <p className="text-base text-slate-300 max-w-lg leading-relaxed">
-            Skip the wait. Search our intelligent knowledge base or browse our interactive guides to resolve issues instantly.
+            Search our knowledge base for guides on ESL, Paper Ticketing, Store Configuration, Campaigns, Ticket-Builder, LCD Management, and Batches.
           </p>
         </div>
 
