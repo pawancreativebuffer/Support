@@ -64,7 +64,9 @@ export default function SupportPage() {
     const matchedArticle = allArticles.find(
       (art) =>
         art.title.toLowerCase().includes(query) ||
-        art.description.toLowerCase().includes(query)
+        query.includes(art.title.toLowerCase()) ||
+        art.description.toLowerCase().includes(query) ||
+        query.includes(art.description.toLowerCase())
     );
 
     if (matchedArticle) {
@@ -72,8 +74,15 @@ export default function SupportPage() {
       return;
     }
 
-    // 2. Try to match category title
-    const matchedCategory = CATEGORIES.find((cat) => cat.title.toLowerCase().includes(query));
+    // 2. Try to match category title or alternative slugs
+    const matchedCategory = CATEGORIES.find((cat) => 
+      cat.title.toLowerCase().includes(query) || 
+      query.includes(cat.title.toLowerCase()) ||
+      (cat.alternativeSlugs && cat.alternativeSlugs.some(slug => 
+        slug.toLowerCase().includes(query) || 
+        query.includes(slug.toLowerCase())
+      ))
+    );
     if (matchedCategory && matchedCategory.articles.length > 0) {
       router.push(`/article/${matchedCategory.articles[0].slug}?highlight=${encodeURIComponent(query)}`);
       return;

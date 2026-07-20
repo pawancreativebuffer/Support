@@ -188,7 +188,7 @@ export const CATEGORIES: Category[] = [
       iconColor: "text-blue-500",
       textColor: "text-blue-500 hover:text-blue-600"
     },
-    alternativeSlugs: ["stores", "store-setup", "pos-integration", "batches"],
+    alternativeSlugs: ["stores", "store-setup", "pos-integration", "batch", "batches"],
     articles: [
       {
         slug: "add-new-store",
@@ -248,7 +248,7 @@ export const CATEGORIES: Category[] = [
       iconColor: "text-rose-500",
       textColor: "text-rose-500 hover:text-rose-600"
     },
-    alternativeSlugs: ["api", "sync"],
+    alternativeSlugs: ["api", "sync", "point of sale", "database", "sql", "db", "ssms"],
     articles: [
       {
         slug: "setting-up-pos-sync",

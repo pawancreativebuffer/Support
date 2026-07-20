@@ -76,10 +76,10 @@ export default function ArticleDetail({ params }: { params: Promise<{ slug: stri
             We couldn't find any articles matching your exact search query. Please try using different keywords or contact our technical support team directly.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/" className="px-6 py-3 rounded-full font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors w-full sm:w-auto">
+            <Link href="/" className="flex items-center justify-center gap-2 text-sm font-medium text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer w-full sm:w-auto">
               Back to Home
             </Link>
-            <Link href="/contact" className="px-6 py-3 rounded-full font-bold text-white bg-primary-600 hover:bg-primary-500 shadow-md transition-all w-full sm:w-auto">
+            <Link href="/contact" className="bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] flex items-center justify-center rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm w-full sm:w-auto">
               Contact Support
             </Link>
           </div>
