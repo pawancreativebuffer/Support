@@ -131,25 +131,6 @@ export const ArticleViewer: React.FC<ArticleViewerProps> = ({
             </div>
           </Link>
         ))}
-
-        {/* Render Category FAQs */}
-        {(() => {
-          const catFaqs = allFaqs.filter(faq => 
-            activeCategory.title.toLowerCase().includes(faq.category.toLowerCase()) || 
-            faq.category.toLowerCase().includes(activeCategory.title.toLowerCase()) ||
-            activeCategory.id?.toLowerCase().includes(faq.category.toLowerCase()) ||
-            activeCategory.slug.toLowerCase().includes(faq.category.toLowerCase())
-          );
-          
-          if (catFaqs.length > 0) {
-            return (
-              <div className="mt-8 pt-4">
-                {renderRelatedFaqs(catFaqs, false)}
-              </div>
-            );
-          }
-          return null;
-        })()}
       </div>
     );
   }
