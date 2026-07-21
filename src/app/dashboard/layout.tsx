@@ -165,6 +165,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Filters & Search
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed'>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [chatsFilter, setChatsFilter] = useState<'All' | 'Active' | 'Closed'>('All');
+  const [chatsSearchQuery, setChatsSearchQuery] = useState('');
+  const [voiceFilter, setVoiceFilter] = useState<'All' | 'Completed' | 'Failed'>('All');
+  const [voiceSearchQuery, setVoiceSearchQuery] = useState('');
 
   // Pagination & Limits
   const [visibleActivities, setVisibleActivities] = useState(5);
@@ -530,6 +534,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return matchesFilter && matchesSearch;
   });
 
+  const filteredChats = chats.filter(c => {
+    const matchesFilter = chatsFilter === 'All' ? true : c.status === chatsFilter;
+    const matchesSearch = 
+      c.id.toLowerCase().includes(chatsSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const filteredVoiceLogs = voiceLogs.filter(v => {
+    const matchesFilter = voiceFilter === 'All' ? true : v.status === voiceFilter;
+    const matchesSearch = 
+      v.id.toLowerCase().includes(voiceSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
   const totalTickets = tickets.length;
   const openTickets = tickets.filter(t => t.status !== 'Closed' && t.status !== 'Resolved').length;
   const resolvedTickets = tickets.filter(t => t.status === 'Closed' || t.status === 'Resolved').length;
@@ -882,7 +900,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm animate-fade-in">
               <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-bold text-slate-800 text-sm">Registered Support Tickets</h3>
+                  <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2"><Ticket className="w-5 h-5 text-primary-600" /> Registered Support Tickets</h3>
                   <p className="text-xs text-slate-400 mt-1">Review raised cases, check reply threads, and close solved issues.</p>
                 </div>
 
@@ -1019,172 +1037,268 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           )}
 
           {/* TAB 3: LIVE CHATS */}
-          {pathname === '/dashboard/chats' && (
-            <div className="space-y-6 animate-fade-in w-full">
-              {chats.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
-                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
+            {pathname === '/dashboard/chats' && (
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                   <div>
-                    <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
-                    <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-primary-600" /> Live Chats Queue
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Review active chats, prioritize responses, and manage chat lifecycles.</p>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {chats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map((chat) => (
-                      <div
-                        key={chat.id}
-                        onClick={() => setSelectedChat(chat)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search chats..."
+                        value={chatsSearchQuery}
+                        onChange={(e) => setChatsSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={chatsFilter}
+                        onChange={(e) => setChatsFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
                       >
-                        <div className="space-y-3.5">
-                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100 flex-shrink-0">
-                                <MessageCircle className="w-3.5 h-3.5" />
-                              </span>
-                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                                {chat.title}
-                              </span>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
-                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
-                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                              }`}>
-                              {chat.status}
-                            </span>
-                          </div>
-
-                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                            &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
-                          </p>
-                        </div>
-
-                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                            {chat.messages.length} messages
-                          </span>
-                          <span className="text-slate-450 flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-slate-400" />
-                            {chat.updatedAt}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Chats Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
-                    <span className="text-xs text-slate-500 font-bold">
-                      Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        disabled={chatsPage === 1}
-                        onClick={() => setChatsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        disabled={chatsPage * chatsPerPage >= chats.length}
-                        onClick={() => setChatsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Next
-                      </button>
+                        <option value="All">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Closed">Closed</option>
+                      </select>
                     </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* TAB 4: VOICE LOGS */}
-          {pathname === '/dashboard/voice' && (
-            <div className="space-y-6 animate-fade-in w-full">
-              {voiceLogs.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
-                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
-                  <div>
-                    <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
-                    <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
-                  </div>
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {voiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map((log) => (
-                      <div
-                        key={log.id}
-                        onClick={() => setSelectedVoiceLog(log)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
-                      >
-                        <div className="space-y-3.5">
-                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
-                                <Mic className="w-3.5 h-3.5" />
-                              </span>
-                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                                Voice Session
-                              </span>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
-                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                              }`}>
-                              {log.status}
-                            </span>
-                          </div>
 
-                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                            &quot;{log.transcript}&quot;
-                          </p>
-                        </div>
-
-                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                            Duration: {log.duration}
-                          </span>
-                          <span className="text-slate-450 flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-slate-400" />
-                            {log.createdAt}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Voice Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
-                    <span className="text-xs text-slate-500 font-bold">
-                      Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        disabled={voicePage === 1}
-                        onClick={() => setVoicePage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        disabled={voicePage * voicePerPage >= voiceLogs.length}
-                        onClick={() => setVoicePage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Next
-                      </button>
+                {filteredChats.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <MessageSquare className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching chats found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries or updating your status filter categories.</p>
                     </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+                ) : (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4">Chat ID</th>
+                            <th className="py-3 px-4">Customer Info</th>
+                            <th className="py-3 px-4">Last Updated</th>
+                            <th className="py-3 px-4">Messages</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+ <tbody className="divide-y divide-slate-100/60">
+ {filteredChats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map(chat => (
+ <tr key={chat.id} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+ <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+ {chat.id.slice(0, 8)}
+ </td>
+ <td className="py-4 px-4">
+ <div className="font-bold text-slate-800 uppercase ">{chat.customerName || 'Guest User'}</div>
+ {chat.customerEmail && <div className="text-[10px] text-slate-400 mt-0.5">{chat.customerEmail}</div>}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ {chat.updatedAt}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ <span className="inline-flex items-center bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-[8px] border border-slate-200 text-[10px] uppercase ">
+ {chat.messages?.length || 0} messages
+ </span>
+ </td>
+ <td className="py-4 px-4">
+ <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${chat.status === 'Active'
+ ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
+ : 'bg-slate-100 text-slate-450 border-slate-200/60'
+ }`}>
+ {chat.status}
+ </span>
+ </td>
+ <td className="py-4 px-4 text-right">
+ <div className="flex items-center justify-end gap-2">
+ <button
+ onClick={() => setSelectedChat(chat)}
+ className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+ >
+ View <ChevronRight className="w-3.5 h-3.5" />
+ </button>
+ </div>
+ </td>
+ </tr>
+ ))}
+ </tbody>
+                      </table>
+                    </div>
 
-        </section>
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
+                      <span className="text-xs text-slate-500 font-bold">
+                        Showing {Math.min(filteredChats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(filteredChats.length, chatsPage * chatsPerPage)} of {filteredChats.length} chats
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={chatsPage === 1}
+                          onClick={() => setChatsPage(prev => prev - 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          disabled={chatsPage * chatsPerPage >= filteredChats.length}
+                          onClick={() => setChatsPage(prev => prev + 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* TAB 4: VOICE LOGS */}
+            {pathname === '/dashboard/voice' && (
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <Mic className="w-5 h-5 text-primary-600" /> Voice AI Logs
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Review AI voice calls, transcripts, and status.</p>
+                  </div>
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search calls..."
+                        value={voiceSearchQuery}
+                        onChange={(e) => setVoiceSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={voiceFilter}
+                        onChange={(e) => setVoiceFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
+                      >
+                        <option value="All">All Statuses</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Failed">Failed</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {filteredVoiceLogs.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <Mic className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching voice calls found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries or updating your status filter categories.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4">Log ID</th>
+                            <th className="py-3 px-4">Customer Info</th>
+                            <th className="py-3 px-4">Date Tracked</th>
+                            <th className="py-3 px-4">Duration</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+ <tbody className="divide-y divide-slate-100/60">
+ {filteredVoiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map(log => (
+ <tr key={log.id} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+ <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+ {log.id.slice(0, 8)}
+ </td>
+ <td className="py-4 px-4">
+ <div className="font-bold text-slate-800 uppercase ">{log.customerName || 'Guest User'}</div>
+ {log.customerEmail && <div className="text-[10px] text-slate-400 mt-0.5">{log.customerEmail}</div>}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ {log.createdAt}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ <span className="inline-flex items-center bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-[8px] border border-slate-200 text-[10px] uppercase ">
+ {log.duration}
+ </span>
+ </td>
+ <td className="py-4 px-4">
+ <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${log.status === 'Completed'
+ ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+ : 'bg-slate-100 text-slate-450 border-slate-200/60'
+ }`}>
+ {log.status}
+ </span>
+ </td>
+ <td className="py-4 px-4 text-right">
+ <div className="flex items-center justify-end gap-2">
+ <button
+ onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
+ className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+ >
+ View <ChevronRight className="w-3.5 h-3.5" />
+ </button>
+ </div>
+ </td>
+ </tr>
+ ))}
+ </tbody>
+                      </table>
+                    </div>
+
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
+                      <span className="text-xs text-slate-500 font-bold">
+                        Showing {Math.min(filteredVoiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(filteredVoiceLogs.length, voicePage * voicePerPage)} of {filteredVoiceLogs.length} calls
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={voicePage === 1}
+                          onClick={() => setVoicePage(prev => prev - 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          disabled={voicePage * voicePerPage >= filteredVoiceLogs.length}
+                          onClick={() => setVoicePage(prev => prev + 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            </section>
 
       </div>
 

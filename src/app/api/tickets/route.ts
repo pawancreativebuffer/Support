@@ -100,11 +100,12 @@ export async function GET(req: NextRequest) {
           attachmentUrl: m.attachmentUrl,
           attachmentName: m.attachmentName,
           time: m.createdAt.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
         })),
         mergedTickets: t.mergedTickets ? t.mergedTickets.map(mt => ({
           id: `TK-${mt.id}`,
@@ -150,11 +151,12 @@ export async function GET(req: NextRequest) {
         attachmentUrl: m.attachmentUrl,
         attachmentName: m.attachmentName,
         time: m.createdAt.toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
       }))
     }));
 

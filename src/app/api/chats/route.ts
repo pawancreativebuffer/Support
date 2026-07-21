@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
       title: `Chat Session: ${s.sessionKey}`,
       status: s.status === 'ACTIVE' ? 'Active' : 'Closed',
       updatedAt: s.updatedAt.toLocaleString('en-US', {
+        year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',

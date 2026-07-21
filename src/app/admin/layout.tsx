@@ -191,6 +191,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [priorityFilter, setPriorityFilter] = useState<'All' | 'High' | 'Medium' | 'Low'>('All');
   const [showPriorityFilters, setShowPriorityFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [chatsFilter, setChatsFilter] = useState<'All' | 'Active' | 'Closed'>('All');
+  const [chatsSearchQuery, setChatsSearchQuery] = useState('');
+  const [voiceFilter, setVoiceFilter] = useState<'All' | 'Completed' | 'Failed'>('All');
+  const [voiceSearchQuery, setVoiceSearchQuery] = useState('');
+  const [callLogsFilter, setCallLogsFilter] = useState<'All' | 'Answered' | 'No Answer'>('All');
+  const [callLogsSearchQuery, setCallLogsSearchQuery] = useState('');
 
   // Pagination & Limits
   const [visibleActivities, setVisibleActivities] = useState(5);
@@ -201,6 +207,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     setTicketsPage(1);
   }, [searchQuery, ticketFilter, priorityFilter]);
+
+  useEffect(() => {
+    setChatsPage(1);
+  }, [chatsSearchQuery, chatsFilter]);
+
+  useEffect(() => {
+    setVoicePage(1);
+  }, [voiceSearchQuery, voiceFilter]);
+
+  useEffect(() => {
+    setCallLogsPage(1);
+  }, [callLogsSearchQuery, callLogsFilter]);
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
@@ -736,6 +754,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return matchesFilter && matchesPriority && matchesSearch;
   });
 
+  const filteredChats = chats.filter(c => {
+    const matchesFilter = chatsFilter === 'All' ? true : c.status === chatsFilter;
+    const matchesSearch =
+      c.id.toLowerCase().includes(chatsSearchQuery.toLowerCase()) ||
+      (c.customerName || '').toLowerCase().includes(chatsSearchQuery.toLowerCase()) ||
+      (c.customerEmail || '').toLowerCase().includes(chatsSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const filteredVoiceLogs = voiceLogs.filter(v => {
+    const matchesFilter = voiceFilter === 'All' ? true : v.status === voiceFilter;
+    const matchesSearch =
+      v.id.toLowerCase().includes(voiceSearchQuery.toLowerCase()) ||
+      (v.customerName || '').toLowerCase().includes(voiceSearchQuery.toLowerCase()) ||
+      (v.customerEmail || '').toLowerCase().includes(voiceSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const filteredCallLogs = callLogs.filter(log => {
+    const status = (log.duration || 0) > 5 ? 'Answered' : 'No Answer';
+    const matchesFilter = callLogsFilter === 'All' ? true : status === callLogsFilter;
+    const matchesSearch =
+      log.callerNumber.toLowerCase().includes(callLogsSearchQuery.toLowerCase()) ||
+      (log.customer?.name || '').toLowerCase().includes(callLogsSearchQuery.toLowerCase()) ||
+      (log.customer?.email || '').toLowerCase().includes(callLogsSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
   const totalTickets = tickets.length;
   const activeTicketsCount = tickets.filter(t => t.status !== 'Closed' && t.status !== 'Resolved').length;
   const pendingResponseCount = tickets.filter(needsReply).length;
@@ -859,52 +905,52 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Custom Modals */}
         {pathname === '/admin' && (
-        <div className="w-full px-6 pt-6">
-          <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary-50/40 rounded-full blur-[80px] pointer-events-none" />
+          <div className="w-full px-6 pt-6">
+            <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary-50/40 rounded-full blur-[80px] pointer-events-none" />
 
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100">
-                  <Sparkles className="w-3.5 h-3.5 text-primary-600" />
-                  <span className="text-[10px] font-bold text-primary-700 uppercase tracking-widest">
-                    {user.role === 'Admin' ? 'Admin Portal' : 'Agent Portal'}
-                  </span>
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 border border-primary-100">
+                    <Sparkles className="w-3.5 h-3.5 text-primary-600" />
+                    <span className="text-[10px] font-bold text-primary-700 uppercase tracking-widest">
+                      {user.role === 'Admin' ? 'Admin Portal' : 'Agent Portal'}
+                    </span>
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+                    {user.role === 'Admin' ? 'Operations Overview' : 'System Administration'}
+                  </h1>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
-                  {user.role === 'Admin' ? 'Operations Overview' : 'System Administration'}
-                </h1>
-              </div>
 
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => loadDatabaseData(user.email)}
-                  className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
-                  disabled={isRefreshing}
-                >
-                  <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  {isRefreshing ? 'Refreshing...' : 'Refresh records'}
-                </button>
-                <button
-                  onClick={() => setShowReportModal(true)}
-                  className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
-                >
-                  <FileDown className="w-4 h-4 text-primary-600" />
-                  Generate Report
-                </button>
-                {user.role === 'Admin' && (
+                <div className="flex flex-wrap gap-3">
                   <button
-                    onClick={() => setShowAddAgentModal(true)}
-                    className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
+                    onClick={() => loadDatabaseData(user.email)}
+                    className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                    disabled={isRefreshing}
                   >
-                    <PlusCircle className="w-4 h-4" />
-                    Add Agent
+                    <Activity className={`w-4 h-4 text-primary-600 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    {isRefreshing ? 'Refreshing...' : 'Refresh records'}
                   </button>
-                )}
+                  <button
+                    onClick={() => setShowReportModal(true)}
+                    className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white"
+                  >
+                    <FileDown className="w-4 h-4 text-primary-600" />
+                    Generate Report
+                  </button>
+                  {user.role === 'Admin' && (
+                    <button
+                      onClick={() => setShowAddAgentModal(true)}
+                      className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 sm:px-8 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      Add Agent
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         )}
 
@@ -912,99 +958,99 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="w-full px-6 mt-6 space-y-6">
           {pathname === '/admin' && (
             <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {user.role === 'Admin' ? (
-              <>
-                {/* Total Cases */}
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
-                    <Ticket className="w-5 h-5 text-primary-600" />
+              {user.role === 'Admin' ? (
+                <>
+                  {/* Total Cases */}
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
+                      <Ticket className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Total Tickets Raised</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Total Tickets Raised</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
-                  </div>
-                </div>
 
-                {/* Open Tickets */}
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
-                    <Clock className="w-5 h-5 text-blue-500" />
+                  {/* Open Tickets */}
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
+                      <Clock className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Open Status</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{openTicketsCount}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Open Status</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{openTicketsCount}</div>
-                  </div>
-                </div>
 
-                {/* Active Cases */}
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
-                    <AlertCircle className="w-5 h-5 text-amber-500" />
+                  {/* Active Cases */}
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
+                      <AlertCircle className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Active Cases</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{activeTicketsCount}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Active Cases</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{activeTicketsCount}</div>
-                  </div>
-                </div>
 
-                {/* Resolved */}
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  {/* Resolved */}
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
+                      <CheckCircle className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Resolved Status</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTicketsCount}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Resolved Status</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTicketsCount}</div>
+                </>
+              ) : (
+                <>
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
+                      <Ticket className="w-5 h-5 text-primary-600" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Total Cases</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
+                    </div>
                   </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0 border border-primary-100/50">
-                    <Ticket className="w-5 h-5 text-primary-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Total Cases</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{totalTickets}</div>
-                  </div>
-                </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
-                    <Clock className="w-5 h-5 text-blue-500" />
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 border border-blue-100/50">
+                      <Clock className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Active Tickets</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{activeTicketsCount}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Active Tickets</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{activeTicketsCount}</div>
-                  </div>
-                </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4 relative">
-                  <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
-                    <AlertCircle className="w-5 h-5 text-amber-500" />
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4 relative">
+                    <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0 border border-amber-100/50">
+                      <AlertCircle className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Needs Response</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{pendingResponseCount}</div>
+                    </div>
+                    {pendingResponseCount > 0 && (
+                      <span className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                    )}
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Needs Response</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{pendingResponseCount}</div>
-                  </div>
-                  {pendingResponseCount > 0 && (
-                    <span className="absolute top-5 right-5 w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                  )}
-                </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 border border-emerald-100/50">
+                      <CheckCircle className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-slate-500 text-sm font-medium">Resolved</h4>
+                      <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTicketsCount}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-500 text-sm font-medium">Resolved</h4>
-                    <div className="text-2xl font-bold text-slate-800 leading-none mt-1">{resolvedTicketsCount}</div>
-                  </div>
-                </div>
-              </>
-            )}
-          </section>
+                </>
+              )}
+            </section>
           )}
 
           {/* Tab Contents */}
@@ -1185,7 +1231,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                   <div>
-                    <h3 className="text-base font-bold text-slate-800">Support Ticket Queue</h3>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2"><Ticket className="w-5 h-5 text-primary-600" /> Support Ticket Queue</h3>
                     <p className="text-xs text-slate-400 mt-1">Review active submissions, prioritize responses, and manage ticket lifecycles.</p>
                   </div>
                   {/* Filter and Search Bar */}
@@ -1299,35 +1345,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             const requiresReply = needsReply(ticket);
                             const isChecked = selectedTicketIds.includes(ticket.id);
                             return (
-                              <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group whitespace-nowrap ${isChecked ? 'bg-primary-50/10' : ''}`}>
+                              <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium ${isChecked ? 'bg-primary-50/10' : ''}`}>
 
-                                <td className="py-4 px-4 text-xs font-bold text-slate-500">
+                                <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
                                   <span className="flex items-center gap-2">
                                     {requiresReply && (
-                                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Requires Attention" />
+                                      <span className="w-2 h-2 rounded-[8px] bg-amber-500 animate-pulse" title="Requires Attention" />
                                     )}
                                     {ticket.id}
                                   </span>
                                 </td>
                                 <td className="py-4 px-4">
-                                  <div className="text-xs font-bold text-slate-800">{ticket.firstName} {ticket.lastName}</div>
+                                  <div className="font-bold text-slate-800 uppercase ">{ticket.firstName} {ticket.lastName}</div>
                                   <div className="text-[10px] text-slate-400 mt-0.5">{ticket.email}</div>
                                 </td>
-                                <td className="py-4 px-4 text-xs font-bold text-slate-700">
+                                <td className="py-4 px-4 text-slate-500">
                                   {ticket.category}
                                 </td>
-                                <td className="py-4 px-4 text-xs text-slate-400 font-semibold">
+                                <td className="py-4 px-4 text-slate-500">
                                   {ticket.createdAt}
                                 </td>
                                 <td className="py-4 px-4">
-                                  <span className="text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border bg-slate-50 border-slate-200 text-slate-600 inline-block">
-                                    {ticket.agentId ? `👤 ${agents.find(a => a.id === ticket.agentId)?.name || 'Unknown'}` : '👤 Unassigned'}
-                                  </span>
+                                  {user?.role === 'Admin' ? (
+                                    <select
+                                      value={ticket.agentId ? String(ticket.agentId) : 'unassigned'}
+                                      onChange={(e) => handleUpdateAssignee(ticket.id, e.target.value)}
+                                      className="text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all bg-slate-50 border-slate-200 text-slate-600 w-32 truncate"
+                                    >
+                                      <option value="unassigned">👤 Unassigned</option>
+                                      {agents.map(agent => (
+                                        <option key={agent.id} value={agent.id}>
+                                          👤 {agent.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <span className="text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border bg-slate-50 border-slate-200 text-slate-600 inline-block w-32 truncate">
+                                      {ticket.agentId ? `👤 ${agents.find(a => a.id === ticket.agentId)?.name || 'Unknown'}` : '👤 Unassigned'}
+                                    </span>
+                                  )}
                                 </td>
                                 <td className="py-4 px-4">
                                   {user?.role === 'Admin' ? (
                                     <span
-                                      className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${ticket.priority === 'HIGH'
+                                      className={`text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border inline-block ${ticket.priority === 'HIGH'
                                         ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                                         : ticket.priority === 'LOW'
                                           ? 'bg-slate-50 border-slate-200 text-slate-600'
@@ -1340,7 +1401,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     <select
                                       value={ticket.priority || 'MEDIUM'}
                                       onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
-                                      className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${ticket.priority === 'HIGH'
+                                      className={`text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${ticket.priority === 'HIGH'
                                         ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
                                         : ticket.priority === 'LOW'
                                           ? 'bg-slate-50 border-slate-200 text-slate-600'
@@ -1354,7 +1415,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                   )}
                                 </td>
                                 <td className="py-4 px-4">
-                                  <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border ${ticket.status === 'Open'
+                                  <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${ticket.status === 'Open'
                                     ? 'bg-slate-50 border-slate-200 text-slate-750'
                                     : ticket.status === 'With Client' || ticket.status === 'On Hold'
                                       ? 'bg-amber-50 border-amber-200 text-amber-700'
@@ -1378,7 +1439,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                   <div className="flex items-center justify-end gap-2">
                                     <button
                                       onClick={() => setSelectedTicket(ticket)}
-                                      className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                                      className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
                                     >
                                       {user?.role === 'Admin' ? 'View' : 'Manage'} <ChevronRight className="w-3.5 h-3.5" />
                                     </button>
@@ -1419,77 +1480,125 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             {/* TAB 3: LIVE CHATS */}
             {pathname === '/admin/chats' && (
-              <div className="space-y-6 animate-fade-in w-full">
-                {chats.length === 0 ? (
-                  <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
-                    <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-primary-600" /> Live Chats Queue
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Review active chats, prioritize responses, and manage chat lifecycles.</p>
+                  </div>
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search chats..."
+                        value={chatsSearchQuery}
+                        onChange={(e) => setChatsSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={chatsFilter}
+                        onChange={(e) => setChatsFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
+                      >
+                        <option value="All">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Closed">Closed</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {filteredChats.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <MessageSquare className="w-6 h-6" />
+                    </div>
                     <div>
-                      <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
-                      <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching chats found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries or updating your status filter categories.</p>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {chats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map((chat) => (
-                        <div
-                          key={chat.id}
-                          onClick={() => setSelectedChat(chat)}
-                          className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
-                        >
-                          <div className="space-y-3.5">
-                            <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                              <div className="flex items-center gap-2 truncate">
-                                <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100 flex-shrink-0">
-                                  <MessageCircle className="w-3.5 h-3.5" />
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4">Chat ID</th>
+                            <th className="py-3 px-4">Customer Info</th>
+                            <th className="py-3 px-4">Last Updated</th>
+                            <th className="py-3 px-4">Messages</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100/60">
+                          {filteredChats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map(chat => (
+                            <tr key={chat.id} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+                              <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+                                {chat.id.slice(0, 8)}
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="font-bold text-slate-800 uppercase ">{chat.customerName || 'Guest User'}</div>
+                                {chat.customerEmail && <div className="text-[10px] text-slate-400 mt-0.5">{chat.customerEmail}</div>}
+                              </td>
+                              <td className="py-4 px-4 text-slate-500">
+                                {chat.updatedAt}
+                              </td>
+                              <td className="py-4 px-4 text-slate-500">
+                                <span className="inline-flex items-center bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-[8px] border border-slate-200 text-[10px] uppercase ">
+                                  {chat.messages?.length || 0} messages
                                 </span>
-                                <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                                  {chat.customerName && chat.customerEmail ? `${chat.customerName} (${chat.customerEmail})` : chat.customerName ? chat.customerName : chat.customerEmail ? chat.customerEmail : 'Guest User'}
+                              </td>
+                              <td className="py-4 px-4">
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${chat.status === 'Active'
+                                  ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
+                                  : 'bg-slate-100 text-slate-450 border-slate-200/60'
+                                  }`}>
+                                  {chat.status}
                                 </span>
-                              </div>
-                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
-                                ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
-                                : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                                }`}>
-                                {chat.status}
-                              </span>
-                            </div>
-
-                            <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                              &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
-                            </p>
-                          </div>
-
-                          <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                            <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                              {chat.messages.length} messages
-                            </span>
-                            <span className="text-slate-450 flex items-center gap-1">
-                              <Calendar className="w-3 h-3 text-slate-400" />
-                              {chat.updatedAt}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => setSelectedChat(chat)}
+                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+                                  >
+                                    View <ChevronRight className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
 
-                    {/* Chats Pagination */}
-                    <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
                       <span className="text-xs text-slate-500 font-bold">
-                        Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
+                        Showing {Math.min(filteredChats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(filteredChats.length, chatsPage * chatsPerPage)} of {filteredChats.length} chats
                       </span>
                       <div className="flex gap-2">
                         <button
                           disabled={chatsPage === 1}
                           onClick={() => setChatsPage(prev => prev - 1)}
-                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
                         >
                           Previous
                         </button>
                         <button
-                          disabled={chatsPage * chatsPerPage >= chats.length}
+                          disabled={chatsPage * chatsPerPage >= filteredChats.length}
                           onClick={() => setChatsPage(prev => prev + 1)}
-                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
                         >
                           Next
                         </button>
@@ -1500,80 +1609,127 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
             )}
 
-
             {/* TAB 4: VOICE LOGS */}
             {pathname === '/admin/voice' && (
-              <div className="space-y-6 animate-fade-in w-full">
-                {voiceLogs.length === 0 ? (
-                  <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
-                    <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <Mic className="w-5 h-5 text-primary-600" /> Voice AI Logs
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Review AI voice calls, transcripts, and status.</p>
+                  </div>
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search calls..."
+                        value={voiceSearchQuery}
+                        onChange={(e) => setVoiceSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={voiceFilter}
+                        onChange={(e) => setVoiceFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
+                      >
+                        <option value="All">All Statuses</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Failed">Failed</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {filteredVoiceLogs.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <Mic className="w-6 h-6" />
+                    </div>
                     <div>
-                      <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
-                      <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching voice calls found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries or updating your status filter categories.</p>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {voiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map((log) => (
-                        <div
-                          key={log.id}
-                          onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
-                          className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
-                        >
-                          <div className="space-y-3.5">
-                            <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                              <div className="flex items-center gap-2 truncate">
-                                <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
-                                  <Mic className="w-3.5 h-3.5" />
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4">Log ID</th>
+                            <th className="py-3 px-4">Customer Info</th>
+                            <th className="py-3 px-4">Date Tracked</th>
+                            <th className="py-3 px-4">Duration</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100/60">
+                          {filteredVoiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map(log => (
+                            <tr key={log.id} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+                              <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+                                {log.id.slice(0, 8)}
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="font-bold text-slate-800 uppercase ">{log.customerName || 'Guest User'}</div>
+                                {log.customerEmail && <div className="text-[10px] text-slate-400 mt-0.5">{log.customerEmail}</div>}
+                              </td>
+                              <td className="py-4 px-4 text-slate-500">
+                                {log.createdAt}
+                              </td>
+                              <td className="py-4 px-4 text-slate-500">
+                                <span className="inline-flex items-center bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-[8px] border border-slate-200 text-[10px] uppercase ">
+                                  {log.duration}
                                 </span>
-                                <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                                  {log.customerName && log.customerEmail ? `${log.customerName} (${log.customerEmail})` : log.customerName ? log.customerName : log.customerEmail ? log.customerEmail : 'Guest User'}
+                              </td>
+                              <td className="py-4 px-4">
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${log.status === 'Completed'
+                                  ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                                  : 'bg-slate-100 text-slate-450 border-slate-200/60'
+                                  }`}>
+                                  {log.status}
                                 </span>
-                              </div>
-                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
-                                ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                                : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                                }`}>
-                                {log.status}
-                              </span>
-                            </div>
-
-                            <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                              &quot;{log.transcript}&quot;
-                            </p>
-                          </div>
-
-                          <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                            <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                              Duration: {log.duration}
-                            </span>
-                            <span className="text-slate-450 flex items-center gap-1">
-                              <Calendar className="w-3 h-3 text-slate-400" />
-                              {log.createdAt}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
+                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+                                  >
+                                    View <ChevronRight className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
 
-                    {/* Voice Pagination */}
-                    <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
                       <span className="text-xs text-slate-500 font-bold">
-                        Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
+                        Showing {Math.min(filteredVoiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(filteredVoiceLogs.length, voicePage * voicePerPage)} of {filteredVoiceLogs.length} calls
                       </span>
                       <div className="flex gap-2">
                         <button
                           disabled={voicePage === 1}
                           onClick={() => setVoicePage(prev => prev - 1)}
-                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
                         >
                           Previous
                         </button>
                         <button
-                          disabled={voicePage * voicePerPage >= voiceLogs.length}
+                          disabled={voicePage * voicePerPage >= filteredVoiceLogs.length}
                           onClick={() => setVoicePage(prev => prev + 1)}
-                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
                         >
                           Next
                         </button>
@@ -1587,16 +1743,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* TAB 5: CALL LOGS */}
             {pathname === '/admin/call-logs' && (
               <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                   <div>
                     <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
                       <PhoneCall className="w-5 h-5 text-primary-600" /> AI Inbound Phone Call Logs
                     </h3>
                     <p className="text-xs text-slate-400 mt-1">Review phone calls answered by the ElevenLabs Virtual Agent.</p>
                   </div>
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search call logs..."
+                        value={callLogsSearchQuery}
+                        onChange={(e) => setCallLogsSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={callLogsFilter}
+                        onChange={(e) => setCallLogsFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
+                      >
+                        <option value="All">All Statuses</option>
+                        <option value="Answered">Answered</option>
+                        <option value="No Answer">No Answer</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                {callLogs.length === 0 ? (
+                {filteredCallLogs.length === 0 ? (
                   <div className="p-16 text-center space-y-4">
                     <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
                       <PhoneCall className="w-6 h-6" />
@@ -1608,51 +1791,103 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="overflow-x-auto">
+                    <div className="w-full relative z-10">
                       <table className="w-full text-left border-collapse">
                         <thead>
                           <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
                             <th className="py-3 px-4">Caller</th>
-                            <th className="py-3 px-4">Date & Time</th>
+                            <th className="py-3 px-4">Number</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4">When</th>
                             <th className="py-3 px-4">Duration</th>
+                            <th className="py-3 px-4 text-center">Summary</th>
                             <th className="py-3 px-4 text-right">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100/60">
-                          {callLogs.slice((callLogsPage - 1) * callLogsPerPage, callLogsPage * callLogsPerPage).map((log, index) => (
-                            <tr key={index} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap">
-                              <td className="py-4 px-4">
-                                <div className="text-xs font-bold text-slate-800">{log.callerNumber}</div>
-                                {log.customer && (
-                                  <div className="text-[10px] text-slate-400 mt-0.5">{log.customer.name} ({log.customer.email})</div>
-                                )}
-                              </td>
-                              <td className="py-4 px-4 text-xs text-slate-400 font-semibold">
-                                {new Date(log.createdAt).toLocaleString()}
-                              </td>
-                              <td className="py-4 px-4 text-xs font-bold text-slate-700">
-                                {log.duration}s
-                              </td>
-                              <td className="py-4 px-4 text-right">
-                                <div className="flex items-center justify-end gap-2">
-                                  <button
-                                    onClick={() => setSelectedCallLog(log)}
-                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                                  >
-                                    View <ChevronRight className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
+                          {filteredCallLogs.slice((callLogsPage - 1) * callLogsPerPage, callLogsPage * callLogsPerPage).map((log, index) => {
+                            const status = (log.duration || 0) > 5 ? 'Answered' : 'No Answer';
+
+                            const formatDuration = (secs: number) => {
+                              const h = Math.floor(secs / 3600).toString().padStart(2, '0');
+                              const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
+                              const s = (secs % 60).toString().padStart(2, '0');
+                              return `${h}:${m}:${s}`;
+                            };
+
+                            // Generate a brief summary from transcript
+                            let summaryText = 'No transcript available.';
+                            if (log.transcript) {
+                              if (log.transcript.includes('[SUMMARY]')) {
+                                summaryText = log.transcript.split('[TRANSCRIPT]')[0].replace('[SUMMARY]', '').trim();
+                              } else {
+                                // Fallback: Smartly extract the customer's main question
+                                const lines: string[] = String(log.transcript).split('\n');
+                                const customerLines = lines.filter((l: string) => l.startsWith('Customer:'));
+                                const firstQuestion = customerLines.find((l: string) => l.length > 30) || customerLines[0];
+
+                                if (firstQuestion) {
+                                  const q = firstQuestion.replace('Customer:', '').trim();
+                                  summaryText = "Customer asked: " + (q.length > 120 ? q.slice(0, 120) + '...' : q);
+                                } else {
+                                  const cleanTranscript = log.transcript.replace(/Agent:|User:|Assistant:|Customer:/g, '').trim();
+                                  summaryText = cleanTranscript.length > 120 ? cleanTranscript.slice(0, 120) + '...' : cleanTranscript;
+                                }
+                              }
+                            }
+
+                            return (
+                              <tr key={index} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+                                <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+                                  {log.customer?.name || 'Unknown Caller'}
+                                </td>
+                                <td className="py-4 px-4 text-slate-500">
+                                  {log.callerNumber}
+                                </td>
+                                <td className="py-4 px-4">
+                                  <span className={`inline-flex items-center px-2.5 py-1 rounded-[8px] text-[10px] font-bold uppercase ${status === 'Answered' ? 'bg-emerald-50 text-emerald-650 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200/60'}`}>
+                                    {status}
+                                  </span>
+                                </td>
+                                <td className="py-4 px-4 text-slate-500">
+                                  {new Date(log.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </td>
+                                <td className="py-4 px-4 font-medium text-slate-700">
+                                  {formatDuration(log.duration || 0)}
+                                </td>
+                                <td className="py-4 px-4 text-center">
+                                  <div className="group/tooltip relative inline-block">
+                                    <button className="flex items-center justify-center w-8 h-8 bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-primary-600 hover:border-primary-200 rounded-[8px] transition-all cursor-help mx-auto">
+                                      <Info className="w-4 h-4" />
+                                    </button>
+                                    <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 w-64 p-2.5 bg-slate-800 text-white text-xs rounded-[8px] opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all shadow-xl z-10 whitespace-normal pointer-events-none text-left">
+                                      <div className="font-medium text-slate-200 mb-1 border-b border-slate-600 pb-1">Call Summary</div>
+                                      <span className="leading-relaxed text-slate-300">{summaryText}</span>
+                                      <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-slate-800"></div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="py-4 px-4 text-right">
+                                  <div className="flex items-center justify-end gap-2">
+                                    <button
+                                      onClick={() => setSelectedCallLog(log)}
+                                      className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+                                    >
+                                      View <ChevronRight className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </table>
                     </div>
 
-                    {callLogs.length > 0 && (
+                    {filteredCallLogs.length > 0 && (
                       <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
                         <span className="text-xs text-slate-500 font-bold">
-                          Showing {Math.min(callLogs.length, (callLogsPage - 1) * callLogsPerPage + 1)} to {Math.min(callLogs.length, callLogsPage * callLogsPerPage)} of {callLogs.length} logs
+                          Showing {Math.min(filteredCallLogs.length, (callLogsPage - 1) * callLogsPerPage + 1)} to {Math.min(filteredCallLogs.length, callLogsPage * callLogsPerPage)} of {filteredCallLogs.length} logs
                         </span>
                         <div className="flex gap-2">
                           <button
@@ -1663,7 +1898,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             Previous
                           </button>
                           <button
-                            disabled={callLogsPage * callLogsPerPage >= callLogs.length}
+                            disabled={callLogsPage * callLogsPerPage >= filteredCallLogs.length}
                             onClick={() => setCallLogsPage(prev => prev + 1)}
                             className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
                           >

@@ -176,6 +176,10 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   const [priorityFilter, setPriorityFilter] = useState<'All' | 'High' | 'Medium' | 'Low'>('All');
   const [showPriorityFilters, setShowPriorityFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [chatsFilter, setChatsFilter] = useState<'All' | 'Active' | 'Closed'>('All');
+  const [chatsSearchQuery, setChatsSearchQuery] = useState('');
+  const [voiceFilter, setVoiceFilter] = useState<'All' | 'Completed' | 'Failed'>('All');
+  const [voiceSearchQuery, setVoiceSearchQuery] = useState('');
 
   // Pagination & Limits
   const [visibleActivities, setVisibleActivities] = useState(5);
@@ -190,6 +194,14 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     setTicketsPage(1);
   }, [searchQuery, ticketFilter, priorityFilter]);
+
+  useEffect(() => {
+    setChatsPage(1);
+  }, [chatsSearchQuery, chatsFilter]);
+
+  useEffect(() => {
+    setVoicePage(1);
+  }, [voiceSearchQuery, voiceFilter]);
 
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
@@ -746,6 +758,24 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
     return matchesFilter && matchesPriority && matchesSearch;
   });
 
+  const filteredChats = chats.filter(c => {
+    const matchesFilter = chatsFilter === 'All' ? true : c.status === chatsFilter;
+    const matchesSearch = 
+      c.id.toLowerCase().includes(chatsSearchQuery.toLowerCase()) ||
+      (c.customerName || '').toLowerCase().includes(chatsSearchQuery.toLowerCase()) ||
+      (c.customerEmail || '').toLowerCase().includes(chatsSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const filteredVoiceLogs = voiceLogs.filter(v => {
+    const matchesFilter = voiceFilter === 'All' ? true : v.status === voiceFilter;
+    const matchesSearch = 
+      v.id.toLowerCase().includes(voiceSearchQuery.toLowerCase()) ||
+      (v.customerName || '').toLowerCase().includes(voiceSearchQuery.toLowerCase()) ||
+      (v.customerEmail || '').toLowerCase().includes(voiceSearchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
   const totalTickets = tickets.length;
   const activeTicketsCount = tickets.filter(t => t.status !== 'Closed' && t.status !== 'Resolved').length;
   const pendingResponseCount = tickets.filter(needsReply).length;
@@ -1181,7 +1211,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
             <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Support Ticket Queue</h3>
+                  <h3 className="text-base font-bold text-slate-800 flex items-center gap-2"><Ticket className="w-5 h-5 text-primary-600" /> Support Ticket Queue</h3>
                   <p className="text-xs text-slate-400 mt-1">Review active submissions, prioritize responses, and manage ticket lifecycles.</p>
                 </div>
                  {/* Filter and Search Bar */}
@@ -1380,158 +1410,158 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100/60">
-                      {filteredTickets.slice((ticketsPage - 1) * ticketsPerPage, ticketsPage * ticketsPerPage).map(ticket => {
-                        const requiresReply = needsReply(ticket);
-                        const isChecked = selectedTicketIds.includes(ticket.id);
-                        return (
-                          <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group whitespace-nowrap ${isChecked ? 'bg-primary-50/10' : ''}`}>
-                            <td className="py-4 px-4 w-10">
-                              <input
-                                type="checkbox"
-                                className="rounded border-slate-350 text-primary-600 focus:ring-primary-500 w-3.5 h-3.5 cursor-pointer"
-                                checked={isChecked}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setSelectedTicketIds(prev => [...prev, ticket.id]);
-                                  } else {
-                                    setSelectedTicketIds(prev => prev.filter(id => id !== ticket.id));
-                                  }
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            </td>
-                            <td className="py-4 px-4 text-xs font-bold text-slate-500">
-                              <span className="flex items-center gap-2">
-                                {requiresReply && (
-                                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Requires Attention" />
-                                )}
-                                {ticket.id}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="text-xs font-bold text-slate-800">{ticket.firstName} {ticket.lastName}</div>
-                              <div className="text-[10px] text-slate-400 mt-0.5">{ticket.email}</div>
-                            </td>
-                            <td className="py-4 px-4 text-xs font-bold text-slate-700">
-                              {ticket.category}
-                            </td>
-                            <td className="py-4 px-4 text-xs text-slate-400 font-semibold">
-                              {ticket.createdAt}
-                            </td>
-                            <td className="py-4 px-4">
-                              <select
-                                value={ticket.agentId || 'unassigned'}
-                                onChange={(e) => handleUpdateAssignee(ticket.id, e.target.value)}
-                                className="text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border bg-white border-slate-200 text-slate-700 cursor-pointer focus:outline-none transition-all"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <option value="unassigned">👤 Unassigned</option>
-                                {agents.map(a => (
-                                  <option key={a.id} value={a.id}>
-                                    👤 {a.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </td>
-                            <td className="py-4 px-4">
-                              {user?.role === 'Admin' ? (
-                                <span
-                                  className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${
-                                    ticket.priority === 'HIGH'
-                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
-                                      : ticket.priority === 'LOW'
-                                        ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                        : 'bg-amber-50 border-amber-200 text-amber-700'
-                                  }`}
-                                >
-                                  {ticket.priority === 'HIGH' ? '🔴 High' : ticket.priority === 'LOW' ? '🔵 Low' : '🟡 Medium'}
-                                </span>
-                              ) : (
-                                <select
-                                  value={ticket.priority || 'MEDIUM'}
-                                  onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)}
-                                  className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
-                                    ticket.priority === 'HIGH'
-                                      ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
-                                      : ticket.priority === 'LOW'
-                                        ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                        : 'bg-amber-50 border-amber-200 text-amber-700'
-                                  }`}
-                                >
-                                  <option value="HIGH">🔴 High</option>
-                                  <option value="MEDIUM">🟡 Medium</option>
-                                  <option value="LOW">🔵 Low</option>
-                                </select>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              {user?.role === 'Admin' ? (
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border ${
-                                  ticket.status === 'Open'
-                                    ? 'bg-slate-50 border-slate-200 text-slate-750'
-                                    : ticket.status === 'With Client' || ticket.status === 'On Hold'
-                                      ? 'bg-amber-50 border-amber-200 text-amber-700'
-                                      : ticket.status === 'Escalated'
-                                        ? 'bg-slate-50 border-slate-250 text-slate-800'
-                                        : 'bg-emerald-50 border-emerald-250 text-emerald-750'
-                                }`}>
-                                   <span className="text-[8px] leading-none">
-                                     {ticket.status === 'Open'
-                                       ? '⚪'
-                                       : ticket.status === 'With Client' || ticket.status === 'On Hold'
-                                         ? '🟠'
-                                         : ticket.status === 'Escalated'
-                                           ? '⚪'
-                                           : '🟢'}
-                                   </span>
-                                   <span className="ml-1">{ticket.status}</span>
-                                 </span>
-                              ) : (
-                                <select
-                                  value={ticket.status}
-                                  onChange={(e) => handleUpdateStatus(ticket.id, e.target.value as any)}
-                                  className={`text-[10px] font-bold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${
-                                    ticket.status === 'Open'
-                                      ? 'bg-slate-50 border-slate-200 text-slate-750'
-                                      : ticket.status === 'With Client' || ticket.status === 'On Hold'
-                                        ? 'bg-amber-50 border-amber-200 text-amber-700 font-bold'
-                                        : ticket.status === 'Escalated'
-                                          ? 'bg-slate-50 border-slate-250 text-slate-800 font-bold'
-                                          : 'bg-emerald-50 border-emerald-250 text-emerald-750 font-bold'
-                                  }`}
-                                >
-                                  <option value="Open">⚪ Open</option>
-                                  <option value="With Client">🟠 With Client</option>
-                                  <option value="On Hold">🟠 On Hold</option>
-                                  <option value="Escalated">⚪ Escalated</option>
-                                  <option value="Closed">🟢 Closed</option>
-                                </select>
-                              )}
-                            </td>
-                            <td className="py-4 px-4 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                {ticket.status !== 'Closed' && ticket.status !== 'Resolved' && user?.role !== 'Admin' && (
-                                  <button
-                                    onClick={() => handleUpdateStatus(ticket.id, 'Closed')}
-                                    className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                                    title="Quick Close Ticket"
-                                  >
-                                    Quick Close
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => setSelectedTicket(ticket)}
-                                  className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                                >
-                                  {user?.role === 'Admin' ? 'View' : 'Manage'} <ChevronRight className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+ <tbody className="divide-y divide-slate-100/60"> 
+ {filteredTickets.slice((ticketsPage - 1) * ticketsPerPage, ticketsPage * ticketsPerPage).map(ticket => { 
+ const requiresReply = needsReply(ticket); 
+ const isChecked = selectedTicketIds.includes(ticket.id); 
+ return ( 
+ <tr key={ticket.id} className={`hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium ${isChecked ? 'bg-primary-50/10' : ''}`}> 
+ <td className="py-4 px-4 w-10"> 
+ <input 
+ type="checkbox" 
+ className="rounded border-slate-350 text-primary-600 focus:ring-primary-500 w-3.5 h-3.5 cursor-pointer" 
+ checked={isChecked} 
+ onChange={(e) => { 
+ if (e.target.checked) { 
+ setSelectedTicketIds(prev => [...prev, ticket.id]); 
+ } else { 
+ setSelectedTicketIds(prev => prev.filter(id => id !== ticket.id)); 
+ } 
+ }} 
+ onClick={(e) => e.stopPropagation()} 
+ /> 
+ </td> 
+ <td className="py-4 px-4 font-bold text-slate-800 uppercase "> 
+ <span className="flex items-center gap-2"> 
+ {requiresReply && ( 
+ <span className="w-2 h-2 rounded-[8px] bg-amber-500 animate-pulse" title="Requires Attention" /> 
+ )} 
+ {ticket.id} 
+ </span> 
+ </td> 
+ <td className="py-4 px-4"> 
+ <div className="font-bold text-slate-800 uppercase ">{ticket.firstName} {ticket.lastName}</div> 
+ <div className="text-[10px] text-slate-400 mt-0.5">{ticket.email}</div> 
+ </td> 
+ <td className="py-4 px-4 text-slate-500"> 
+ {ticket.category} 
+ </td> 
+ <td className="py-4 px-4 text-slate-500"> 
+ {ticket.createdAt} 
+ </td> 
+ <td className="py-4 px-4"> 
+ <select 
+ value={ticket.agentId || 'unassigned'} 
+ onChange={(e) => handleUpdateAssignee(ticket.id, e.target.value)} 
+ className="text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border bg-white border-slate-200 text-slate-700 cursor-pointer focus:outline-none transition-all" 
+ onClick={(e) => e.stopPropagation()} 
+ > 
+ <option value="unassigned">👤 Unassigned</option> 
+ {agents.map(a => ( 
+ <option key={a.id} value={a.id}> 
+ 👤 {a.name} 
+ </option> 
+ ))} 
+ </select> 
+ </td> 
+ <td className="py-4 px-4"> 
+ {user?.role === 'Admin' ? ( 
+ <span 
+ className={`text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border inline-block ${ 
+ ticket.priority === 'HIGH' 
+ ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' 
+ : ticket.priority === 'LOW' 
+ ? 'bg-slate-50 border-slate-200 text-slate-600' 
+ : 'bg-amber-50 border-amber-200 text-amber-700' 
+ }`} 
+ > 
+ {ticket.priority === 'HIGH' ? '🔴 High' : ticket.priority === 'LOW' ? '🔵 Low' : '🟡 Medium'} 
+ </span> 
+ ) : ( 
+ <select 
+ value={ticket.priority || 'MEDIUM'} 
+ onChange={(e) => handleUpdatePriority(ticket.id, e.target.value as any)} 
+ className={`text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${ 
+ ticket.priority === 'HIGH' 
+ ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' 
+ : ticket.priority === 'LOW' 
+ ? 'bg-slate-50 border-slate-200 text-slate-600' 
+ : 'bg-amber-50 border-amber-200 text-amber-700' 
+ }`} 
+ > 
+ <option value="HIGH">🔴 High</option> 
+ <option value="MEDIUM">🟡 Medium</option> 
+ <option value="LOW">🔵 Low</option> 
+ </select> 
+ )} 
+ </td> 
+ <td className="py-4 px-4"> 
+ {user?.role === 'Admin' ? ( 
+ <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${ 
+ ticket.status === 'Open' 
+ ? 'bg-slate-50 border-slate-200 text-slate-750' 
+ : ticket.status === 'With Client' || ticket.status === 'On Hold' 
+ ? 'bg-amber-50 border-amber-200 text-amber-700' 
+ : ticket.status === 'Escalated' 
+ ? 'bg-slate-50 border-slate-250 text-slate-800' 
+ : 'bg-emerald-50 border-emerald-250 text-emerald-750' 
+ }`}> 
+ <span className="text-[8px] leading-none"> 
+ {ticket.status === 'Open' 
+ ? '⚪' 
+ : ticket.status === 'With Client' || ticket.status === 'On Hold' 
+ ? '🟠' 
+ : ticket.status === 'Escalated' 
+ ? '⚪' 
+ : '🟢'} 
+ </span> 
+ <span className="ml-1">{ticket.status}</span> 
+ </span> 
+ ) : ( 
+ <select 
+ value={ticket.status} 
+ onChange={(e) => handleUpdateStatus(ticket.id, e.target.value as any)} 
+ className={`text-[10px] font-bold uppercase rounded-[8px] px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${ 
+ ticket.status === 'Open' 
+ ? 'bg-slate-50 border-slate-200 text-slate-750' 
+ : ticket.status === 'With Client' || ticket.status === 'On Hold' 
+ ? 'bg-amber-50 border-amber-200 text-amber-700 font-medium' 
+ : ticket.status === 'Escalated' 
+ ? 'bg-slate-50 border-slate-250 text-slate-800 font-medium' 
+ : 'bg-emerald-50 border-emerald-250 text-emerald-750 font-medium' 
+ }`} 
+ > 
+ <option value="Open">⚪ Open</option> 
+ <option value="With Client">🟠 With Client</option> 
+ <option value="On Hold">🟠 On Hold</option> 
+ <option value="Escalated">⚪ Escalated</option> 
+ <option value="Closed">🟢 Closed</option> 
+ </select> 
+ )} 
+ </td> 
+ <td className="py-4 px-4 text-right"> 
+ <div className="flex items-center justify-end gap-2"> 
+ {ticket.status !== 'Closed' && ticket.status !== 'Resolved' && user?.role !== 'Admin' && ( 
+ <button 
+ onClick={() => handleUpdateStatus(ticket.id, 'Closed')} 
+ className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300 rounded-[8px] text-[10px] font-bold uppercase transition-all cursor-pointer" 
+ title="Quick Close Ticket" 
+ > 
+ Quick Close 
+ </button> 
+ )} 
+ <button 
+ onClick={() => setSelectedTicket(ticket)} 
+ className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none" 
+ > 
+ {user?.role === 'Admin' ? 'View' : 'Manage'} <ChevronRight className="w-3.5 h-3.5" /> 
+ </button> 
+ </div> 
+ </td> 
+ </tr> 
+ ); 
+ })} 
+ </tbody> 
                   </table>
                 </div>
 
@@ -1562,170 +1592,265 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
           )}
         {/* TAB 3: LIVE CHATS */}
             {pathname === '/agent/chats' && (
-            <div className="space-y-6 animate-fade-in w-full">
-              {chats.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
-                  <MessageSquare className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                   <div>
-                    <h5 className="font-bold text-slate-600 text-sm">No Live Chats Initiated</h5>
-                    <p className="text-slate-400 text-xs mt-1">Start a conversation in our active support widget to track history.</p>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 text-primary-600" /> Live Chats Queue
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Review active chats, prioritize responses, and manage chat lifecycles.</p>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {chats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map((chat) => (
-                      <div
-                        key={chat.id}
-                        onClick={() => setSelectedChat(chat)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search chats..."
+                        value={chatsSearchQuery}
+                        onChange={(e) => setChatsSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={chatsFilter}
+                        onChange={(e) => setChatsFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
                       >
-                        <div className="space-y-3.5">
-                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="p-1 rounded-lg bg-primary-50 text-primary-600 border border-primary-100 flex-shrink-0">
-                                <MessageCircle className="w-3.5 h-3.5" />
-                              </span>
-                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                                {chat.customerName && chat.customerEmail ? `${chat.customerName} (${chat.customerEmail})` : chat.customerName ? chat.customerName : chat.customerEmail ? chat.customerEmail : 'Guest User'}
-                              </span>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${chat.status === 'Active'
-                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
-                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                              }`}>
-                              {chat.status}
-                            </span>
-                          </div>
-
-                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                            &quot;{chat.messages[chat.messages.length - 1]?.text || 'Chat session initiated.'}&quot;
-                          </p>
-                        </div>
-
-                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                            {chat.messages.length} messages
-                          </span>
-                          <span className="text-slate-450 flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-slate-400" />
-                            {chat.updatedAt}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Chats Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
-                    <span className="text-xs text-slate-500 font-bold">
-                      Showing {Math.min(chats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(chats.length, chatsPage * chatsPerPage)} of {chats.length} chat sessions
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        disabled={chatsPage === 1}
-                        onClick={() => setChatsPage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        disabled={chatsPage * chatsPerPage >= chats.length}
-                        onClick={() => setChatsPage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Next
-                      </button>
+                        <option value="All">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Closed">Closed</option>
+                      </select>
                     </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+                </div>
 
+                {filteredChats.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <MessageSquare className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching chats found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries or updating your status filter categories.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4">Chat ID</th>
+                            <th className="py-3 px-4">Customer Info</th>
+                            <th className="py-3 px-4">Last Updated</th>
+                            <th className="py-3 px-4">Messages</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+ <tbody className="divide-y divide-slate-100/60">
+ {filteredChats.slice((chatsPage - 1) * chatsPerPage, chatsPage * chatsPerPage).map(chat => (
+ <tr key={chat.id} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+ <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+ {chat.id.slice(0, 8)}
+ </td>
+ <td className="py-4 px-4">
+ <div className="font-bold text-slate-800 uppercase ">{chat.customerName || 'Guest User'}</div>
+ {chat.customerEmail && <div className="text-[10px] text-slate-400 mt-0.5">{chat.customerEmail}</div>}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ {chat.updatedAt}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ <span className="inline-flex items-center bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-[8px] border border-slate-200 text-[10px] uppercase ">
+ {chat.messages?.length || 0} messages
+ </span>
+ </td>
+ <td className="py-4 px-4">
+ <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${chat.status === 'Active'
+ ? 'bg-emerald-50 text-emerald-650 border-emerald-100 animate-pulse'
+ : 'bg-slate-100 text-slate-450 border-slate-200/60'
+ }`}>
+ {chat.status}
+ </span>
+ </td>
+ <td className="py-4 px-4 text-right">
+ <div className="flex items-center justify-end gap-2">
+ <button
+ onClick={() => setSelectedChat(chat)}
+ className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+ >
+ View <ChevronRight className="w-3.5 h-3.5" />
+ </button>
+ </div>
+ </td>
+ </tr>
+ ))}
+ </tbody>
+                      </table>
+                    </div>
 
-{/* TAB 4: VOICE LOGS */}
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
+                      <span className="text-xs text-slate-500 font-bold">
+                        Showing {Math.min(filteredChats.length, (chatsPage - 1) * chatsPerPage + 1)} to {Math.min(filteredChats.length, chatsPage * chatsPerPage)} of {filteredChats.length} chats
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={chatsPage === 1}
+                          onClick={() => setChatsPage(prev => prev - 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          disabled={chatsPage * chatsPerPage >= filteredChats.length}
+                          onClick={() => setChatsPage(prev => prev + 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* TAB 4: VOICE LOGS */}
             {pathname === '/agent/voice' && (
-            <div className="space-y-6 animate-fade-in w-full">
-              {voiceLogs.length === 0 ? (
-                <div className="bg-white border border-slate-200 p-16 text-center rounded-xl space-y-4 shadow-sm">
-                  <Mic className="w-14 h-14 text-slate-400 mx-auto border border-slate-100 p-2.5 rounded-xl" />
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
                   <div>
-                    <h5 className="font-bold text-slate-600 text-sm">No Voice Calls Tracked</h5>
-                    <p className="text-slate-400 text-xs mt-1">Connect to our AI voice assistant to consult live and record calls.</p>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <Mic className="w-5 h-5 text-primary-600" /> Voice AI Logs
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Review AI voice calls, transcripts, and status.</p>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {voiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map((log) => (
-                      <div
-                        key={log.id}
-                        onClick={() => setSelectedVoiceLog(log)}
-                        className="bg-slate-50/50 border border-slate-200/80 hover:bg-white hover:border-primary-400 rounded-xl p-5 transition-all hover:shadow-md cursor-pointer space-y-4 group flex flex-col justify-between"
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search calls..."
+                        value={voiceSearchQuery}
+                        onChange={(e) => setVoiceSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    {/* Status Filters Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={voiceFilter}
+                        onChange={(e) => setVoiceFilter(e.target.value as any)}
+                        className="h-[46px] px-4 rounded-[8px] border border-slate-200 bg-white text-slate-700 hover:border-primary-200 focus:border-primary-500 focus:outline-none transition-all text-sm cursor-pointer shadow-sm"
                       >
-                        <div className="space-y-3.5">
-                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                            <div className="flex items-center gap-2 truncate">
-                              <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
-                                <Mic className="w-3.5 h-3.5" />
-                              </span>
-                              <span className="font-extrabold text-slate-800 text-xs truncate group-hover:text-primary-600 transition-all">
-                                {log.customerName && log.customerEmail ? `${log.customerName} (${log.customerEmail})` : log.customerName ? log.customerName : log.customerEmail ? log.customerEmail : 'Guest User'}
-                              </span>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border flex-shrink-0 ${log.status === 'Completed'
-                              ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                              : 'bg-slate-100 text-slate-450 border-slate-200/60'
-                              }`}>
-                              {log.status}
-                            </span>
-                          </div>
-
-                          <p className="text-sm text-slate-555 leading-relaxed font-normal line-clamp-2 select-text">
-                            &quot;{log.transcript}&quot;
-                          </p>
-                        </div>
-
-                        <div className="text-[10px] text-slate-400 font-bold flex items-center justify-between border-t border-slate-100/60 pt-3">
-                          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[9px]">
-                            Duration: {log.duration}
-                          </span>
-                          <span className="text-slate-450 flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-slate-400" />
-                            {log.createdAt}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Voice Pagination */}
-                  <div className="flex items-center justify-between bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex-wrap gap-4">
-                    <span className="text-xs text-slate-500 font-bold">
-                      Showing {Math.min(voiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(voiceLogs.length, voicePage * voicePerPage)} of {voiceLogs.length} voice calls
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        disabled={voicePage === 1}
-                        onClick={() => setVoicePage(prev => prev - 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        disabled={voicePage * voicePerPage >= voiceLogs.length}
-                        onClick={() => setVoicePage(prev => prev + 1)}
-                        className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                      >
-                        Next
-                      </button>
+                        <option value="All">All Statuses</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Failed">Failed</option>
+                      </select>
                     </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+                </div>
+
+                {filteredVoiceLogs.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <Mic className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching voice calls found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries or updating your status filter categories.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4">Log ID</th>
+                            <th className="py-3 px-4">Customer Info</th>
+                            <th className="py-3 px-4">Date Tracked</th>
+                            <th className="py-3 px-4">Duration</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+ <tbody className="divide-y divide-slate-100/60">
+ {filteredVoiceLogs.slice((voicePage - 1) * voicePerPage, voicePage * voicePerPage).map(log => (
+ <tr key={log.id} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+ <td className="py-4 px-4 font-bold text-slate-800 uppercase ">
+ {log.id.slice(0, 8)}
+ </td>
+ <td className="py-4 px-4">
+ <div className="font-bold text-slate-800 uppercase ">{log.customerName || 'Guest User'}</div>
+ {log.customerEmail && <div className="text-[10px] text-slate-400 mt-0.5">{log.customerEmail}</div>}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ {log.createdAt}
+ </td>
+ <td className="py-4 px-4 text-slate-500">
+ <span className="inline-flex items-center bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-[8px] border border-slate-200 text-[10px] uppercase ">
+ {log.duration}
+ </span>
+ </td>
+ <td className="py-4 px-4">
+ <span className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-[8px] text-[10px] font-bold uppercase border ${log.status === 'Completed'
+ ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+ : 'bg-slate-100 text-slate-450 border-slate-200/60'
+ }`}>
+ {log.status}
+ </span>
+ </td>
+ <td className="py-4 px-4 text-right">
+ <div className="flex items-center justify-end gap-2">
+ <button
+ onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
+ className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+ >
+ View <ChevronRight className="w-3.5 h-3.5" />
+ </button>
+ </div>
+ </td>
+ </tr>
+ ))}
+ </tbody>
+                      </table>
+                    </div>
+
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
+                      <span className="text-xs text-slate-500 font-bold">
+                        Showing {Math.min(filteredVoiceLogs.length, (voicePage - 1) * voicePerPage + 1)} to {Math.min(filteredVoiceLogs.length, voicePage * voicePerPage)} of {filteredVoiceLogs.length} calls
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={voicePage === 1}
+                          onClick={() => setVoicePage(prev => prev - 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          disabled={voicePage * voicePerPage >= filteredVoiceLogs.length}
+                          onClick={() => setVoicePage(prev => prev + 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
 
             </section>
           </div>

@@ -61,7 +61,12 @@ export async function POST(req: NextRequest) {
                   if (detailRes.ok) {
                     const detailData = await detailRes.json();
                     const transcriptData = detailData.transcript || [];
-                    const formattedTranscript = transcriptData.map((m: any) => `${m.role === 'user' ? 'Customer' : 'Agent'}: ${m.message}`).join('\n');
+                    let formattedTranscript = transcriptData.map((m: any) => `${m.role === 'user' ? 'Customer' : 'Agent'}: ${m.message}`).join('\n');
+
+                    const summary = detailData.analysis?.summary || detailData.metadata?.call_summary;
+                    if (summary) {
+                      formattedTranscript = `[SUMMARY]\n${summary}\n\n[TRANSCRIPT]\n` + formattedTranscript;
+                    }
 
                     if (formattedTranscript) {
                       transcript = formattedTranscript;

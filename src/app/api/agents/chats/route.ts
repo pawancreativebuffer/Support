@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
       customerName: s.customerName,
       customerEmail: s.customerEmail,
       updatedAt: s.updatedAt.toLocaleString('en-US', {
+        year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
