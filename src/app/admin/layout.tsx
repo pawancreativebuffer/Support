@@ -248,6 +248,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [newAgentPassword, setNewAgentPassword] = useState('');
   const [showAgentPassword, setShowAgentPassword] = useState(false);
   const [newAgentSubmitting, setNewAgentSubmitting] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const handleCreateAgent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1903,25 +1904,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                               return `${h}:${m}:${s}`;
                             };
 
-                            // Generate a brief summary from transcript
-                            let summaryText = 'No transcript available.';
-                            if (log.transcript) {
-                              if (log.transcript.includes('[SUMMARY]')) {
-                                summaryText = log.transcript.split('[TRANSCRIPT]')[0].replace('[SUMMARY]', '').trim();
-                              } else {
-                                // Fallback: Smartly extract the customer's main question
-                                const lines: string[] = String(log.transcript).split('\n');
-                                const customerLines = lines.filter((l: string) => l.startsWith('Customer:'));
-                                const firstQuestion = customerLines.find((l: string) => l.length > 30) || customerLines[0];
-
-                                if (firstQuestion) {
-                                  const q = firstQuestion.replace('Customer:', '').trim();
-                                  summaryText = "Customer asked: " + (q.length > 120 ? q.slice(0, 120) + '...' : q);
-                                } else {
-                                  const cleanTranscript = log.transcript.replace(/Agent:|User:|Assistant:|Customer:/g, '').trim();
-                                  summaryText = cleanTranscript.length > 120 ? cleanTranscript.slice(0, 120) + '...' : cleanTranscript;
-                                }
-                              }
+                            // Extract summary from transcript
+                            let summaryText = 'No AI summary available for this call.';
+                            if (log.transcript && log.transcript.includes('[SUMMARY]') && log.transcript.includes('[TRANSCRIPT]')) {
+                              summaryText = log.transcript.split('[TRANSCRIPT]')[0].replace('[SUMMARY]', '').trim();
                             }
 
                             return (
@@ -2125,8 +2111,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* DISCUSSION MODAL THREAD */}
         {selectedTicket && (
-          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="fixed inset-0 z-50 bg-slate-900/80 flex justify-end animate-fade-in" onClick={() => setSelectedTicket(null)}>
+            <div className="bg-white shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col h-full animate-slide-in-right" onClick={(e) => e.stopPropagation()}>
 
               {/* Header */}
               <div className="p-6 border-b border-slate-100 flex justify-between items-center gap-4">
@@ -2158,107 +2144,150 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch h-full p-6 min-h-0">
 
                   {/* Left Column: Inquiry Metadata & Status */}
-                  <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
+                  <div className="md:col-span-5 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
+
+                    {/* Submitter Details */}
+                    <div className="py-5 border-b border-slate-100/80 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <User className="w-[18px] h-[18px] text-primary-600" />
+                        <h4 className="text-[14px] font-bold text-primary-600">Submitter Details</h4>
+                      </div>
+                      <div className="pl-7 space-y-1">
+                        <p className="text-[15px] font-bold text-slate-800">{selectedTicket.firstName} {selectedTicket.lastName}</p>
+                        <p className="text-[13px] text-slate-500 font-medium select-all">{selectedTicket.email}</p>
+                        <p className="text-[12px] text-slate-400 font-medium pt-1.5">Raised on <span className="text-slate-600 font-semibold">{selectedTicket.createdAt}</span></p>
+                      </div>
+                    </div>
 
                     {/* Original Inquiry Description */}
-                    <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner">
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Original Inquiry</p>
-                      <div className="max-h-[160px] overflow-y-auto pr-1.5 scrollbar-thin">
-                        <p className="text-sm md:text-[15px] text-slate-650 leading-relaxed font-normal">
+                    <div className="py-5 border-b border-slate-100/80 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <MessageSquare className="w-[18px] h-[18px] text-primary-600" />
+                        <h4 className="text-[14px] font-bold text-primary-600">Original Inquiry</h4>
+                      </div>
+                      <div className="pl-7">
+                        <p className={`text-[14px] md:text-[14px] text-slate-600 leading-relaxed font-normal ${!isDescriptionExpanded ? 'line-clamp-4' : ''}`}>
                           {selectedTicket.description}
                         </p>
-                      </div>
-                      <div className="pt-3 border-t border-slate-200/60 space-y-1">
-                        <p className="text-xs text-slate-500 font-bold">Submitter: {selectedTicket.firstName} {selectedTicket.lastName}</p>
-                        <p className="text-[11px] text-slate-400 select-all">{selectedTicket.email}</p>
-                        <p className="text-[10px] text-slate-400 pt-1">Raised: {selectedTicket.createdAt}</p>
+                        {selectedTicket.description && selectedTicket.description.length > 180 && (
+                          <button 
+                            onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                            className="text-primary-600 hover:text-primary-700 text-[13px] font-medium mt-2 hover:underline transition-all"
+                          >
+                            {isDescriptionExpanded ? 'Show less' : 'View full detail'}
+                          </button>
+                        )}
                       </div>
                     </div>
 
                     {/* Ticket Attachments */}
                     {selectedTicket.attachmentUrl && (
-                      <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Ticket Attachments</p>
-                        <div className="flex flex-wrap gap-2.5">
+                      <div className="py-5 border-b border-slate-100/80 space-y-4 flex flex-col">
+                        <div className="flex items-center gap-3">
+                          <Paperclip className="w-[18px] h-[18px] text-primary-600" />
+                          <h4 className="text-[14px] font-bold text-primary-600">Attachments</h4>
+                        </div>
+                        <div className="pl-7 flex flex-wrap gap-2.5">
                           <a
                             href={selectedTicket.attachmentUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm max-w-full"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-lg text-[13px] font-bold transition-all shadow-sm max-w-full"
                           >
-                            <FileText className="w-3.5 h-3.5 text-primary-600 shrink-0" />
-                            <span className="truncate text-slate-850">{selectedTicket.attachmentName || 'View Attachment'}</span>
+                            <FileText className="w-4 h-4 text-primary-600 shrink-0" />
+                            <span className="truncate">{selectedTicket.attachmentName || 'View Attachment'}</span>
                           </a>
                         </div>
                       </div>
                     )}
 
                     {selectedTicket.mergedTickets && selectedTicket.mergedTickets.length > 0 && (
-                      <div className="bg-slate-50 rounded-xl p-5 space-y-3 shadow-inner flex flex-col">
-                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Merged Tickets</span>
-                        <button
-                          onClick={() => {
-                            setMergedTicketsList(selectedTicket.mergedTickets || []);
-                            setShowMergedTicketsModal(true);
-                          }}
-                          className="w-full text-center px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-250 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                        >
-                          <Paperclip className="w-3.5 h-3.5" /> View {selectedTicket.mergedTickets.length} Merged Ticket(s)
-                        </button>
+                      <div className="py-5 border-b border-slate-100/80 space-y-4 flex flex-col">
+                        <div className="flex items-center gap-3">
+                          <Paperclip className="w-[18px] h-[18px] text-primary-600" />
+                          <h4 className="text-[14px] font-bold text-primary-600">Merged Tickets</h4>
+                        </div>
+                        <div className="pl-7">
+                          <button
+                            onClick={() => {
+                              setMergedTicketsList(selectedTicket.mergedTickets || []);
+                              setShowMergedTicketsModal(true);
+                            }}
+                            className="w-full text-center px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-[13px] font-bold transition-all border border-slate-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                          >
+                            <Paperclip className="w-4 h-4" /> View {selectedTicket.mergedTickets.length} Merged Ticket(s)
+                          </button>
+                        </div>
                       </div>
                     )}
 
-                    {/* Status Indicator & Resolve Action */}
-                    <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50/50">
-                      <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
-                        <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Status</span>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${selectedTicket.status === 'Open'
-                          ? 'bg-slate-50 text-slate-700 border-slate-200'
-                          : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : selectedTicket.status === 'Escalated'
-                              ? 'bg-slate-50 text-slate-800 border-slate-250'
-                              : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
-                                ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
-                                : 'bg-slate-50 text-slate-600 border-slate-100'
-                          }`}>
-                          {selectedTicket.status}
-                        </span>
+                    {/* Status & Priority */}
+                    <div className="py-5 flex flex-col gap-4">
+                      <div className="flex items-center gap-3 pb-1">
+                        <Activity className="w-[18px] h-[18px] text-primary-600" />
+                        <h4 className="text-[14px] font-bold text-primary-600">Ticket Status</h4>
                       </div>
-
-                      {/* Priority Selector in Modal */}
-                      <div className="flex items-center justify-between border-b border-slate-200/40 pb-3">
-                        <span className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Ticket Priority</span>
-                        {user?.role === 'Admin' ? (
-                          <span
-                            className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border inline-block ${selectedTicket.priority === 'HIGH'
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
-                              : selectedTicket.priority === 'LOW'
-                                ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                : 'bg-amber-50 border-amber-200 text-amber-700'
-                              }`}
-                          >
-                            {selectedTicket.priority === 'HIGH' ? '🔴 High' : selectedTicket.priority === 'LOW' ? '🔵 Low' : '🟡 Medium'}
-                          </span>
-                        ) : (
-                          <select
-                            value={selectedTicket.priority || 'MEDIUM'}
-                            onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
-                            className={`text-[10px] font-extrabold uppercase tracking-wider rounded-xl px-2.5 py-1.5 border cursor-pointer focus:outline-none transition-all ${selectedTicket.priority === 'HIGH'
-                              ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold'
-                              : selectedTicket.priority === 'LOW'
-                                ? 'bg-slate-50 border-slate-200 text-slate-600'
-                                : 'bg-amber-50 border-amber-200 text-amber-700'
-                              }`}
-                          >
-                            <option value="HIGH">🔴 High</option>
-                            <option value="MEDIUM">🟡 Medium</option>
-                            <option value="LOW">🔵 Low</option>
-                          </select>
-                        )}
+                      
+                      <div className="pl-7">
+                        <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white shadow-sm">
+                          <table className="w-full text-left text-[13px]">
+                            <tbody>
+                              {/* Status Row */}
+                              <tr className="border-b border-slate-200/80">
+                                <th className="py-3 px-4 font-bold text-slate-700 bg-slate-50/50 w-1/3">Status</th>
+                                <td className="py-3 px-4 text-right">
+                                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${selectedTicket.status === 'Open'
+                                    ? 'bg-slate-50 text-slate-700 border-slate-200'
+                                    : selectedTicket.status === 'With Client' || selectedTicket.status === 'On Hold'
+                                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                      : selectedTicket.status === 'Escalated'
+                                        ? 'bg-slate-50 text-slate-800 border-slate-250'
+                                        : selectedTicket.status === 'Closed' || selectedTicket.status === 'Resolved'
+                                          ? 'bg-emerald-50 text-emerald-750 border-emerald-200'
+                                          : 'bg-slate-50 text-slate-600 border-slate-100'
+                                    }`}>
+                                    {selectedTicket.status}
+                                  </span>
+                                </td>
+                              </tr>
+                              
+                              {/* Priority Row */}
+                              <tr>
+                                <th className="py-3 px-4 font-bold text-slate-700 bg-slate-50/50 w-1/3">Priority</th>
+                                <td className="py-3 px-4 text-right">
+                                  {user?.role === 'Admin' ? (
+                                    <span
+                                      className={`text-[12px] font-extrabold rounded-xl px-3 py-1 border inline-flex items-center gap-1.5 ${selectedTicket.priority === 'HIGH'
+                                        ? 'bg-rose-50 border-rose-200 text-rose-700'
+                                        : selectedTicket.priority === 'LOW'
+                                          ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                          : 'bg-amber-50 border-amber-200 text-amber-700'
+                                        }`}
+                                    >
+                                      {selectedTicket.priority === 'HIGH' ? '🔴 High' : selectedTicket.priority === 'LOW' ? '🔵 Low' : '🟡 Medium'}
+                                    </span>
+                                  ) : (
+                                    <select
+                                      value={selectedTicket.priority || 'MEDIUM'}
+                                      onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value as any)}
+                                      className={`text-[12px] font-extrabold rounded-xl px-2 py-1 border cursor-pointer focus:outline-none transition-all ${selectedTicket.priority === 'HIGH'
+                                        ? 'bg-rose-50 border-rose-200 text-rose-700'
+                                        : selectedTicket.priority === 'LOW'
+                                          ? 'bg-slate-50 border-slate-200 text-slate-600'
+                                          : 'bg-amber-50 border-amber-200 text-amber-700'
+                                        }`}
+                                    >
+                                      <option value="HIGH">🔴 High</option>
+                                      <option value="MEDIUM">🟡 Medium</option>
+                                      <option value="LOW">🔵 Low</option>
+                                    </select>
+                                  )}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-
-
                     </div>
                   </div>
 
@@ -2433,8 +2462,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* MODAL 2: LIVE CHAT TRANSCRIPT */}
         {selectedChat && (
-          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[75vh] animate-scale-up">
+          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-end animate-fade-in sm:p-0" onClick={() => setSelectedChat(null)}>
+            <div className="bg-white shadow-2xl w-[600px] max-w-full h-full flex flex-col animate-slide-in-right" onClick={(e) => e.stopPropagation()}>
               {/* Header */}
               <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
                 <div className="flex items-center gap-3">
@@ -2462,7 +2491,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
 
               {/* Transcript Messages Body */}
-              <div className="flex-1 p-6 overflow-y-auto max-h-[400px] bg-slate-50/20 space-y-4">
+              <div className="flex-1 p-6 overflow-y-auto bg-slate-50/20 space-y-4">
                 {selectedChat.messages.map((msg, idx) => {
                   if (msg.sender === 'system') {
                     return (
@@ -2501,19 +2530,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* MODAL 3: VOICE LOG TRANSCRIPT */}
         {selectedVoiceLog && (
-          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-end animate-fade-in sm:p-0" onClick={() => setSelectedVoiceLog(null)}>
+            <div className="bg-white shadow-2xl w-[600px] max-w-full h-full flex flex-col animate-slide-in-right" onClick={(e) => e.stopPropagation()}>
 
               {/* Header */}
-              <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
+              <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4 shrink-0">
                 <div className="flex items-center gap-3">
                   <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-sm">
                     <Mic className="w-5 h-5" />
                   </span>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900">AI Voice Session Details</h3>
+                    <h3 className="text-base font-bold text-slate-900">AI Voice Session</h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      {selectedVoiceLog.customerName ? `Customer: ${selectedVoiceLog.customerName}` : selectedVoiceLog.customerEmail ? `Customer: ${selectedVoiceLog.customerEmail}` : 'Guest User'} • ID: {selectedVoiceLog.id.slice(0, 8)} • Called: {selectedVoiceLog.createdAt}
+                      {selectedVoiceLog.customerName ? `Customer: ${selectedVoiceLog.customerName}` : selectedVoiceLog.customerEmail ? `Customer: ${selectedVoiceLog.customerEmail}` : 'Guest User'} • ID: {selectedVoiceLog.id.slice(0, 8)}
                     </p>
                   </div>
                 </div>
@@ -2526,124 +2555,96 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
 
               {/* Body */}
-              <div className="flex-1 overflow-hidden flex flex-col bg-slate-50/20 min-h-0">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch h-full p-6 min-h-0">
+              <div className="flex-1 p-6 bg-slate-50/30 overflow-y-auto space-y-6">
 
-                  {/* Left Column (5 cols): Call Stats & Live Audio Player */}
-                  <div className="md:col-span-5 space-y-6 flex flex-col justify-start overflow-y-auto pr-2 pb-6 min-h-0 scrollbar-thin">
-
-                    {/* Status Indicator */}
-                    <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex items-center justify-between">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Session Status</span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border ${selectedVoiceLog.status === 'Completed'
-                        ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
-                        : 'bg-slate-105 text-slate-455 border-slate-200/60'
-                        }`}>
-                        {selectedVoiceLog.status}
-                      </span>
-                    </div>
-
-                    {/* Call Stats Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Call Duration</span>
-                        <span className="text-base font-bold text-slate-800 mt-1 block">{selectedVoiceLog.duration}</span>
-                      </div>
-                      <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Confidence Score</span>
-                        <span className="text-base font-bold mt-1 block text-primary-600">{selectedVoiceLog.confidence} Match</span>
-                      </div>
-                    </div>
-
-                    {/* Audio Recording Player */}
-                    <div className="bg-white border border-slate-200 p-5 rounded-xl space-y-3.5 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Call Recording</p>
-                        {!audioPlaybackError && <Volume2 className="w-4 h-4 text-primary-500 animate-pulse" />}
-                      </div>
-
-                      {!audioPlaybackError ? (
-                        <div className="space-y-2">
-                          <audio
-                            controls
-                            src={`/api/voice-audio?conversation_id=${selectedVoiceLog.id}`}
-                            className="w-full h-9 rounded-lg"
-                            onError={() => setAudioPlaybackError(true)}
-                          />
-                          <span className="block text-[9px] text-slate-400 font-semibold text-center leading-normal">
-                            Recorded audio retrieved dynamically from ElevenLabs
+                {/* Stats Table */}
+                <div className="border border-slate-200/80 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <table className="w-full text-left text-[13px]">
+                    <tbody>
+                      <tr className="border-b border-slate-200/80">
+                        <th className="py-3 px-4 font-bold text-slate-700 bg-slate-50/50 w-1/3">Session Status</th>
+                        <td className="py-3 px-4 text-right">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border inline-block ${selectedVoiceLog.status === 'Completed'
+                            ? 'bg-emerald-50 text-emerald-650 border-emerald-100'
+                            : 'bg-slate-100 text-slate-500 border-slate-200'
+                            }`}>
+                            {selectedVoiceLog.status}
                           </span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center p-5 border border-dashed border-slate-250 bg-slate-50/70 rounded-xl text-center space-y-3.5">
-                          <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex items-center justify-center shadow-sm">
-                            <VolumeX className="w-4.5 h-4.5" />
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-sm font-extrabold text-slate-750">
-                              Audio recording not available
-                            </p>
-                            <p className="text-[11px] font-semibold text-slate-500 leading-relaxed max-w-[240px] mx-auto">
-                              Please verify if ELEVENLABS_API_KEY is configured in your server env, or wait if the call just ended.
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                  </div>
-
-                  {/* Right Column (7 cols): Transcript Chat Thread */}
-                  <div className="md:col-span-7 flex flex-col h-full overflow-hidden border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8 min-h-0">
-
-                    {/* Fixed Header for Chat messages thread */}
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-4 shrink-0">
-                      <h4 className="font-bold text-slate-750 text-sm flex items-center gap-2">
-                        <span className="p-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                          <MessageSquare className="w-4 h-4" />
-                        </span>
-                        Call Transcript Thread
-                      </h4>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded border border-slate-200/40">
-                        Speech-To-Text Log
-                      </span>
-                    </div>
-
-                    {/* Chat messages thread container */}
-                    <div className="flex-1 overflow-y-auto pr-1 space-y-4 flex flex-col min-h-0 scrollbar-thin">
-
-                      <div className="space-y-4 pt-2">
-                        {parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).length === 0 ? (
-                          <p className="text-xs text-slate-400 italic text-center py-8">No transcript entries recorded.</p>
-                        ) : (
-                          parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).map((msg, idx) => {
-                            const isUser = msg.sender === 'user';
-                            return (
-                              <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] rounded-xl px-4.5 py-3 text-[14px] leading-relaxed font-normal shadow-sm ${isUser
-                                  ? 'bg-primary-600 text-white rounded-tr-none border border-primary-500/20'
-                                  : 'bg-slate-100 border border-slate-200/80 text-slate-800 rounded-tl-none'
-                                  }`}>
-                                  <span className={`block text-[9px] font-bold uppercase tracking-wider mb-1 ${isUser ? 'text-primary-200' : 'text-slate-455'
-                                    }`}>
-                                    {isUser ? 'Customer' : 'AI Assistant'}
-                                  </span>
-                                  <p className="select-text">{msg.text}</p>
-                                  <span className={`block text-[11px] font-semibold mt-1.5 text-right ${isUser ? 'text-white/80' : 'text-slate-500'}`}>
-                                    {msg.time}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-
-                    </div>
-
-                  </div>
-
+                        </td>
+                      </tr>
+                      <tr className="border-b border-slate-200/80">
+                        <th className="py-3 px-4 font-bold text-slate-700 bg-slate-50/50 w-1/3">Call Duration</th>
+                        <td className="py-3 px-4 text-right font-bold text-slate-800">
+                          {selectedVoiceLog.duration}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th className="py-3 px-4 font-bold text-slate-700 bg-slate-50/50 w-1/3">Confidence Score</th>
+                        <td className="py-3 px-4 text-right font-bold text-primary-600">
+                          {selectedVoiceLog.confidence} Match
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+
+                {/* Audio Recording Player */}
+                <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-5 rounded-xl shadow-lg border border-slate-700/50">
+                  <div className="absolute -top-4 -right-4 opacity-10 pointer-events-none">
+                    <Mic className="w-24 h-24 text-white" />
+                  </div>
+                  <div className="relative z-10 flex flex-col gap-3">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                      <Volume2 className="w-3.5 h-3.5 text-primary-400 animate-pulse" /> Call Recording
+                    </span>
+                    {!audioPlaybackError ? (
+                      <audio
+                        controls
+                        src={`/api/voice-audio?conversation_id=${selectedVoiceLog.id}`}
+                        className="w-full h-10 outline-none rounded-lg"
+                        onError={() => setAudioPlaybackError(true)}
+                      />
+                    ) : (
+                      <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/10">
+                        <VolumeX className="w-4 h-4 text-slate-400" />
+                        <p className="text-[11px] text-slate-300">Recording unavailable or deleted.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Transcript List */}
+                <div className="space-y-4 pt-4">
+                  {parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).length === 0 ? (
+                    <p className="text-xs text-slate-400 italic text-center py-8">No transcript entries recorded.</p>
+                  ) : (
+                    parseVoiceTranscript(selectedVoiceLog.transcript, selectedVoiceLog.createdAt).map((msg, idx) => {
+                      const isUser = msg.sender === 'user';
+                      return (
+                        <div key={idx} className="flex gap-4 items-start group">
+                          {/* Left Column: Time & Role */}
+                          <div className="w-14 shrink-0 text-right pt-2.5 space-y-1 select-none">
+                            <div className="text-[11px] font-bold text-slate-400 leading-none">{msg.time || '00:00'}</div>
+                            <div className={`text-[12px] font-bold leading-none ${isUser ? 'text-primary-600' : 'text-emerald-600'}`}>
+                              {isUser ? 'Client' : 'Agent'}
+                            </div>
+                          </div>
+                          
+                          {/* Right Column: Message Block */}
+                          <div className={`flex-1 p-4 rounded-[8px] border-l-[3px] transition-all ${isUser
+                            ? 'bg-slate-50/50 border-slate-300 text-slate-700'
+                            : 'bg-[#f4fbf7] border-emerald-500 text-slate-800'
+                            }`}>
+                            <p className="text-[13px] leading-relaxed whitespace-pre-wrap select-text">
+                              {msg.text}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
               </div>
 
               {/* Footer */}
@@ -2656,8 +2657,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* MODAL: CALL LOG TRANSCRIPT */}
         {selectedCallLog && (
-          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-scale-up">
+          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-end animate-fade-in sm:p-0" onClick={() => setSelectedCallLog(null)}>
+            <div className="bg-white shadow-2xl w-[600px] max-w-full h-full flex flex-col animate-slide-in-right" onClick={(e) => e.stopPropagation()}>
               {/* Header */}
               <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center gap-4">
                 <div className="flex items-center gap-3">
@@ -2683,79 +2684,143 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
 
                 {/* Audio Player */}
-                <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Volume2 className="w-4 h-4 text-primary-500" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Call Recording</span>
+                <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-5 rounded-xl shadow-lg border border-slate-700/50">
+                  <div className="absolute -top-4 -right-4 opacity-10 pointer-events-none">
+                    <Mic className="w-24 h-24 text-white" />
                   </div>
-                  {selectedCallLog.audioUrl ? (
-                    <audio controls src={selectedCallLog.audioUrl} className="w-full h-10 rounded-lg outline-none" />
-                  ) : (
-                    <div className="flex items-center justify-center h-16 bg-slate-50 border border-dashed border-slate-200 rounded-xl">
-                      <span className="text-sm font-semibold text-slate-400">Audio not available</span>
-                    </div>
-                  )}
+                  <div className="relative z-10 flex flex-col gap-3">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                      <Volume2 className="w-3.5 h-3.5 text-primary-400 animate-pulse" /> Call Recording
+                    </span>
+                    {selectedCallLog.audioUrl ? (
+                      <audio
+                        controls
+                        src={selectedCallLog.audioUrl}
+                        className="w-full h-10 outline-none rounded-lg"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/10">
+                        <VolumeX className="w-4 h-4 text-slate-400" />
+                        <p className="text-[11px] text-slate-300">Recording unavailable or deleted.</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* Transcript */}
-                <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col min-h-0">
-                  <div className="flex items-center gap-2 mb-4">
-                    <MessageSquare className="w-4 h-4 text-slate-400" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Full Transcript</span>
-                  </div>
+                {(() => {
+                  let rawTranscript = selectedCallLog.transcript || '';
+                  let summaryText = '';
+                  let mainTranscript = rawTranscript;
 
-                  {(!selectedCallLog.transcript || selectedCallLog.transcript.startsWith("Call in") || selectedCallLog.transcript === "Call completed.") ? (
-                    <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin">
-                      {selectedCallLog.transcript || <span className="italic text-slate-400">No transcript available.</span>}
-                    </div>
-                  ) : (
-                    <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl flex-1 overflow-y-auto max-h-[40vh] scrollbar-thin space-y-4">
-                      {(() => {
-                        const messages: { sender: string, text: string }[] = [];
-                        let currentMsg: { sender: string, text: string } | null = null;
+                  // Parse ElevenLabs summary prefix if it exists
+                  if (rawTranscript.includes('[SUMMARY]') && rawTranscript.includes('[TRANSCRIPT]')) {
+                    const parts = rawTranscript.split('[TRANSCRIPT]');
+                    summaryText = parts[0].replace('[SUMMARY]', '').trim();
+                    mainTranscript = parts[1].trim();
+                  }
 
-                        selectedCallLog.transcript.split('\n').forEach((line: string) => {
-                          const trimmed = line.trim();
-                          if (!trimmed) return;
+                  const hasNoTranscript = (!mainTranscript || mainTranscript.startsWith("Call in") || mainTranscript === "Call completed.");
 
-                          if (trimmed.startsWith('Customer:')) {
+                  return (
+                    <>
+                      {/* AI Summary Block */}
+                      {summaryText ? (
+                        <div className="bg-[#f8f9fc] border border-slate-200/80 p-5 rounded-[8px] mb-6">
+                          <div className="flex items-center gap-1.5 mb-2.5 text-primary-600">
+                            <Sparkles className="w-4 h-4" />
+                            <span className="text-[11px] font-bold uppercase tracking-widest">Summary</span>
+                          </div>
+                          <p className="text-[13px] text-slate-600 leading-relaxed">
+                            {summaryText}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="bg-[#f8f9fc] border border-slate-200/80 p-5 rounded-[8px] mb-6">
+                          <div className="flex items-center gap-1.5 mb-2.5 text-primary-600">
+                            <Sparkles className="w-4 h-4" />
+                            <span className="text-[11px] font-bold uppercase tracking-widest">Summary</span>
+                          </div>
+                          <p className="text-[13px] text-slate-600 leading-relaxed italic">
+                            No AI summary was provided for this call.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Transcript List */}
+                      <div className="space-y-4 pt-4">
+                        {hasNoTranscript ? (
+                          <p className="text-xs text-slate-400 italic text-center py-8">{mainTranscript || "No transcript available."}</p>
+                        ) : (
+                          (() => {
+                            const messages: { sender: string, text: string, time: string }[] = [];
+                            let currentMsg: { sender: string, text: string, time: string } | null = null;
+                            let timeCounter = 1; // fake time for layout
+
+                            mainTranscript.split('\n').forEach((line: string) => {
+                              const trimmed = line.trim();
+                              if (!trimmed) return;
+
+                              if (trimmed.startsWith('Customer:')) {
+                                if (currentMsg) messages.push(currentMsg);
+                                const min = Math.floor(timeCounter / 60).toString().padStart(2, '0');
+                                const sec = (timeCounter % 60).toString().padStart(2, '0');
+                                currentMsg = { sender: 'Customer', text: trimmed.slice(9).trim(), time: `${min}:${sec}` };
+                                timeCounter += 15;
+                              } else if (trimmed.startsWith('Agent:')) {
+                                if (currentMsg) messages.push(currentMsg);
+                                const min = Math.floor(timeCounter / 60).toString().padStart(2, '0');
+                                const sec = (timeCounter % 60).toString().padStart(2, '0');
+                                currentMsg = { sender: 'Agent', text: trimmed.slice(6).trim(), time: `${min}:${sec}` };
+                                timeCounter += 12;
+                              } else {
+                                if (currentMsg) {
+                                  currentMsg.text += '\n\n' + trimmed;
+                                } else {
+                                  currentMsg = { sender: 'System', text: trimmed, time: '00:00' };
+                                }
+                              }
+                            });
                             if (currentMsg) messages.push(currentMsg);
-                            currentMsg = { sender: 'Customer', text: trimmed.slice(9).trim() };
-                          } else if (trimmed.startsWith('Agent:')) {
-                            if (currentMsg) messages.push(currentMsg);
-                            currentMsg = { sender: 'Agent', text: trimmed.slice(6).trim() };
-                          } else {
-                            if (currentMsg) {
-                              currentMsg.text += '\n\n' + trimmed;
-                            } else {
-                              currentMsg = { sender: 'System', text: trimmed };
-                            }
-                          }
-                        });
-                        if (currentMsg) messages.push(currentMsg);
 
-                        return messages.map((msg, i) => {
-                          const isCustomer = msg.sender === 'Customer';
-                          if (msg.sender === 'System') {
-                            return <p key={i} className="text-sm text-slate-600 whitespace-pre-wrap">{msg.text}</p>;
-                          }
-                          return (
-                            <div key={i} className={`flex w-full ${isCustomer ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] rounded-xl p-3.5 text-sm ${isCustomer ? 'bg-primary-500 text-white rounded-tr-sm shadow-sm' : 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm shadow-sm'}`}>
-                                <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isCustomer ? 'text-primary-100' : 'text-slate-400'}`}>
-                                  {isCustomer ? 'Customer' : 'AI Agent'}
+                            return messages.map((msg, idx) => {
+                              const isCustomer = msg.sender === 'Customer';
+                              if (msg.sender === 'System') {
+                                return (
+                                  <div key={idx} className="text-center my-4">
+                                    <span className="inline-block bg-slate-100 border border-slate-200/60 text-slate-500 text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
+                                      {msg.text}
+                                    </span>
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div key={idx} className="flex gap-4 items-start group">
+                                  {/* Left Column: Time & Role */}
+                                  <div className="w-14 shrink-0 text-right pt-2.5 space-y-1 select-none">
+                                    <div className="text-[11px] font-bold text-slate-400 leading-none">{msg.time}</div>
+                                    <div className={`text-[12px] font-bold leading-none ${isCustomer ? 'text-primary-600' : 'text-emerald-600'}`}>
+                                      {isCustomer ? 'Client' : 'Agent'}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Right Column: Message Block */}
+                                  <div className={`flex-1 p-4 rounded-[8px] border-l-[3px] transition-all ${isCustomer
+                                    ? 'bg-slate-50/50 border-slate-300 text-slate-700'
+                                    : 'bg-[#f4fbf7] border-emerald-500 text-slate-800'
+                                    }`}>
+                                    <p className="text-[13px] leading-relaxed whitespace-pre-wrap select-text">
+                                      {msg.text}
+                                    </p>
+                                  </div>
                                 </div>
-                                <div className="leading-relaxed whitespace-pre-wrap">
-                                  {msg.text}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </div>
-                  )}
-                </div>
+                              );
+                            });
+                          })()
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
 
               </div>
             </div>
