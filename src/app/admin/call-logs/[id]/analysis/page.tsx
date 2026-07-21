@@ -131,7 +131,7 @@ export default function AIAnalysisPage() {
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">CSAT Score</span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-slate-800">{analysisData.analysis.csatScore}</span>
-                  <span className="text-sm font-medium text-slate-400">/ 10</span>
+                  {!isNaN(parseFloat(analysisData.analysis.csatScore)) && <span className="text-sm font-medium text-slate-400">/ 10</span>}
                 </div>
               </div>
 
@@ -141,7 +141,7 @@ export default function AIAnalysisPage() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Satisfaction</span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-emerald-600">{analysisData.analysis.csatPercentage}</span>
-                    <span className="text-xl font-bold text-emerald-600/50">%</span>
+                    {!isNaN(parseFloat(analysisData.analysis.csatPercentage)) && <span className="text-xl font-bold text-emerald-600/50">%</span>}
                   </div>
                 </div>
               )}
@@ -182,7 +182,7 @@ export default function AIAnalysisPage() {
                     analysisData.analysis.churnRisk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
                     'bg-green-100 text-green-700'
                   }`}>
-                    {analysisData.analysis.churnRisk} Risk
+                    {analysisData.analysis.churnRisk} {analysisData.analysis.churnRisk !== 'N/A' && 'Risk'}
                   </span>
                 </div>
               </div>
@@ -193,7 +193,7 @@ export default function AIAnalysisPage() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Churn Prob.</span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-rose-600">{analysisData.analysis.churnProbability}</span>
-                    <span className="text-xl font-bold text-rose-600/50">%</span>
+                    {!isNaN(parseFloat(analysisData.analysis.churnProbability)) && <span className="text-xl font-bold text-rose-600/50">%</span>}
                   </div>
                 </div>
               )}
