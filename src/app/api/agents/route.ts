@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { postgresPrisma } from '@/lib/postgresDb';
 import bcrypt from 'bcryptjs';
 
+export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   try {
     if (!postgresPrisma) {
@@ -20,7 +21,8 @@ export async function GET(req: NextRequest) {
         firstName: true,
         lastName: true,
         email: true,
-        role: true
+        role: true,
+        createdAt: true
       },
       orderBy: {
         firstName: 'asc'
@@ -83,5 +85,31 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error creating agent:', error);
     return NextResponse.json({ error: 'Failed to create agent' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Agent ID is required' }, { status: 400 });
+    }
+
+    if (!postgresPrisma) {
+      return NextResponse.json({ error: 'PostgreSQL database connection is not active' }, { status: 500 });
+    }
+
+    await postgresPrisma.portalUser.delete({
+      where: {
+        id: Number(id)
+      }
+    });
+
+    return NextResponse.json({ message: 'Agent deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting agent:', error);
+    return NextResponse.json({ error: 'Failed to delete agent' }, { status: 500 });
   }
 }

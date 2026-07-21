@@ -184,11 +184,11 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   // Pagination & Limits
   const [visibleActivities, setVisibleActivities] = useState(5);
   const [ticketsPage, setTicketsPage] = useState(1);
-  const ticketsPerPage = 5;
+  const ticketsPerPage = 15;
   const [chatsPage, setChatsPage] = useState(1);
-  const chatsPerPage = 6;
+  const chatsPerPage = 15;
   const [voicePage, setVoicePage] = useState(1);
-  const voicePerPage = 6;
+  const voicePerPage = 15;
 
   // Reset page numbers on filter/search change
   useEffect(() => {
@@ -799,7 +799,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   const activities = getActivitiesList();
 
   return (
-    <div className="bg-slate-50/50 text-slate-800 min-h-screen font-sans selection:bg-primary-600 selection:text-white flex relative">
+    <div className="bg-slate-50/50 text-slate-800 flex-1 font-sans selection:bg-primary-600 selection:text-white flex relative">
       {/* Left Sidebar */}
       <aside className="hidden lg:flex w-[280px] bg-white border-r border-slate-200 flex-col items-center p-[20px] fixed top-[77px] bottom-0 left-0 overflow-y-auto shadow-sm z-20">
         <div className="flex flex-col items-center text-center mt-4 w-full">
@@ -866,7 +866,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-20">
+      <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-6">
 
       {/* Toast Notification Card Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">

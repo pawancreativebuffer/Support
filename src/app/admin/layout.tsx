@@ -24,7 +24,7 @@ import {
   SlidersHorizontal,
   PlusCircle,
   Lock,
-  MessageCircle, Mic, Volume2, VolumeX, Calendar, FileDown
+  MessageCircle, Mic, Volume2, VolumeX, Calendar, FileDown, Eye, EyeOff
 } from 'lucide-react';
 import { useUploadThing } from '@/lib/uploadthing';
 import ReportModal from '@/components/ReportModal';
@@ -159,6 +159,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/chats') return 'chats';
     if (pathname === '/admin/voice') return 'voice';
     if (pathname === '/admin/call-logs') return 'call-logs';
+    if (pathname === '/admin/agents') return 'agents';
     return 'overview';
   };
   const activeTab = getActiveTab();
@@ -169,22 +170,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const [chats, setChats] = useState<ChatItem[]>([]);
   const [chatsPage, setChatsPage] = useState(1);
-  const chatsPerPage = 6;
+  const chatsPerPage = 15;
 
   const [voiceLogs, setVoiceLogs] = useState<VoiceLogItem[]>([]);
   const [voicePage, setVoicePage] = useState(1);
-  const voicePerPage = 6;
+  const voicePerPage = 15;
 
   const [callLogs, setCallLogs] = useState<any[]>([]);
   const [callLogsPage, setCallLogsPage] = useState(1);
-  const callLogsPerPage = 6;
+  const callLogsPerPage = 15;
+  const [agentsPage, setAgentsPage] = useState(1);
+  const agentsPerPage = 15;
 
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
   const [selectedCallLog, setSelectedCallLog] = useState<any | null>(null);
   const [audioPlaybackError, setAudioPlaybackError] = useState(false);
 
-  const [agents, setAgents] = useState<{ id: number; name: string; email: string; role: string }[]>([]);
+  const [agents, setAgents] = useState<{ id: number; name: string; email: string; role: string; createdAt?: string }[]>([]);
 
   // Filters & Search
   const [ticketFilter, setTicketFilter] = useState<'All' | 'Open' | 'With Client' | 'On Hold' | 'Escalated' | 'Closed'>('All');
@@ -197,11 +200,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [voiceSearchQuery, setVoiceSearchQuery] = useState('');
   const [callLogsFilter, setCallLogsFilter] = useState<'All' | 'Answered' | 'No Answer'>('All');
   const [callLogsSearchQuery, setCallLogsSearchQuery] = useState('');
+  const [agentsSearchQuery, setAgentsSearchQuery] = useState('');
 
   // Pagination & Limits
   const [visibleActivities, setVisibleActivities] = useState(5);
   const [ticketsPage, setTicketsPage] = useState(1);
-  const ticketsPerPage = 5;
+  const ticketsPerPage = 15;
 
   // Reset page numbers on filter/search change
   useEffect(() => {
@@ -220,17 +224,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setCallLogsPage(1);
   }, [callLogsSearchQuery, callLogsFilter]);
 
+  useEffect(() => {
+    setAgentsPage(1);
+  }, [agentsSearchQuery]);
+
   // Modals & Forms
   const [selectedTicket, setSelectedTicket] = useState<TicketItem | null>(null);
   const [showMergedTicketsModal, setShowMergedTicketsModal] = useState(false);
   const [mergedTicketsList, setMergedTicketsList] = useState<any[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordChangeAgent, setPasswordChangeAgent] = useState<{ id: number; name: string; email: string } | null>(null);
+  const [changeAgentPassword, setChangeAgentPassword] = useState('');
+  const [confirmAgentPassword, setConfirmAgentPassword] = useState('');
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [newAgentEmail, setNewAgentEmail] = useState('');
   const [newAgentLogin, setNewAgentLogin] = useState('');
   const [newAgentFirstName, setNewAgentFirstName] = useState('');
   const [newAgentLastName, setNewAgentLastName] = useState('');
   const [newAgentPassword, setNewAgentPassword] = useState('');
+  const [showAgentPassword, setShowAgentPassword] = useState(false);
   const [newAgentSubmitting, setNewAgentSubmitting] = useState(false);
 
   const handleCreateAgent = async (e: React.FormEvent) => {
@@ -270,6 +286,45 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       alert('Error creating agent');
     } finally {
       setNewAgentSubmitting(false);
+    }
+  };
+
+  const handleChangeAgentPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordChangeAgent) return;
+    if (!changeAgentPassword || !confirmAgentPassword) {
+      alert('Passwords are required.');
+      return;
+    }
+    if (changeAgentPassword !== confirmAgentPassword) {
+      alert('Passwords do not match.');
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      const res = await fetch('/api/agents/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentId: passwordChangeAgent.id,
+          newPassword: changeAgentPassword
+        })
+      });
+      if (res.ok) {
+        triggerToast(`Password updated successfully!`);
+        setShowPasswordModal(false);
+        setChangeAgentPassword('');
+        setConfirmAgentPassword('');
+        setPasswordChangeAgent(null);
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to change password');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error changing password');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -387,13 +442,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const loadAgents = async () => {
     try {
-      const res = await fetch('/api/agents');
+      const res = await fetch(`/api/agents?t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         setAgents(data);
       }
     } catch (err) {
       console.error('Error loading agents:', err);
+    }
+  };
+
+  const handleDeleteAgent = async (agentId: number) => {
+    if (!confirm('Are you sure you want to delete this agent?')) return;
+    try {
+      const res = await fetch(`/api/agents?id=${agentId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setAgents(prev => prev.filter(a => a.id !== agentId));
+        triggerToast('Agent deleted successfully!');
+      } else {
+        triggerToast('Failed to delete agent');
+      }
+    } catch (e) {
+      triggerToast('Error deleting agent');
     }
   };
 
@@ -783,6 +853,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   });
 
   const totalTickets = tickets.length;
+  const filteredAgentsList = agents.filter(a => {
+    const search = agentsSearchQuery.toLowerCase();
+    return a.name.toLowerCase().includes(search) || a.email.toLowerCase().includes(search);
+  });
+
   const activeTicketsCount = tickets.filter(t => t.status !== 'Closed' && t.status !== 'Resolved').length;
   const pendingResponseCount = tickets.filter(needsReply).length;
   const resolvedTicketsCount = tickets.filter(t => t.status === 'Closed' || t.status === 'Resolved').length;
@@ -805,7 +880,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const activities = getActivitiesList();
 
   return (
-    <div className="bg-slate-50/50 text-slate-800 min-h-screen font-sans selection:bg-primary-600 selection:text-white flex relative">
+    <div className="bg-slate-50/50 text-slate-800 flex-1 font-sans selection:bg-primary-600 selection:text-white flex relative">
       {/* Left Sidebar */}
       <aside className="hidden lg:flex w-[280px] bg-white border-r border-slate-200 flex-col items-center p-[20px] fixed top-[77px] bottom-0 left-0 overflow-y-auto shadow-sm z-20">
         <div className="flex flex-col items-center text-center mt-4 w-full">
@@ -874,6 +949,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <PhoneCall className={`w-5 h-5 transition-colors ${activeTab === 'call-logs' ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
             <span className="text-sm">Call Logs</span>
           </button>
+
+          {user?.role === 'Admin' && (
+            <button
+              onClick={() => router.push('/admin/agents')}
+              className={`flex items-center gap-3 p-3 rounded-[8px] transition-all text-left cursor-pointer w-full group ${activeTab === 'agents'
+                ? 'bg-primary-600 text-white font-medium shadow-md shadow-primary-200'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+                }`}
+            >
+              <User className={`w-5 h-5 transition-colors ${activeTab === 'agents' ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
+              <span className="text-sm">Agents</span>
+            </button>
+          )}
         </nav>
 
         {/* Sidebar Footer */}
@@ -883,7 +971,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-20">
+      <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-6">
 
         {/* Toast Notification Card Container */}
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
@@ -1912,6 +2000,126 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
             )}
 
+            {/* TAB 6: AGENTS */}
+            {pathname === '/admin/agents' && user?.role === 'Admin' && (
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm animate-fade-in w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                      <User className="w-5 h-5 text-primary-600" /> Agents Management
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Manage support agents, roles, and access.</p>
+                  </div>
+                  {/* Filter and Search Bar */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search agents..."
+                        value={agentsSearchQuery}
+                        onChange={(e) => setAgentsSearchQuery(e.target.value)}
+                        className="w-full md:w-56 h-[46px] bg-white border border-slate-200 rounded-[8px] pl-9 pr-4 text-sm focus:border-primary-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setShowAddAgentModal(true)}
+                      className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-5 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm"
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      Add Agent
+                    </button>
+                  </div>
+                </div>
+
+                {filteredAgentsList.length === 0 ? (
+                  <div className="p-16 text-center space-y-4">
+                    <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
+                      <User className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-slate-600 text-sm">No matching agents found</h5>
+                      <p className="text-slate-400 text-xs mt-1">Try modifying your search queries.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="w-full relative z-10 overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                            <th className="py-3 px-4 w-16">S.No.</th>
+                            <th className="py-3 px-4">Agent Name</th>
+                            <th className="py-3 px-4">Email</th>
+                            <th className="py-3 px-4">Created Date</th>
+                            <th className="py-3 px-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100/60">
+                          {filteredAgentsList.slice((agentsPage - 1) * agentsPerPage, agentsPage * agentsPerPage).map((agent, index) => (
+                            <tr key={index} className="hover:bg-slate-50/50 transition-colors group whitespace-nowrap text-xs text-slate-600 font-medium">
+                              <td className="py-4 px-4 text-slate-500 font-medium">
+                                {(agentsPage - 1) * agentsPerPage + index + 1}
+                              </td>
+                              <td className="py-4 px-4 font-bold text-slate-800 uppercase">
+                                {agent.name}
+                              </td>
+                              <td className="py-4 px-4 text-slate-500">
+                                {agent.email}
+                              </td>
+                              <td className="py-4 px-4 text-slate-500">
+                                {agent.createdAt ? new Date(agent.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                              </td>
+                              <td className="py-4 px-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => { setPasswordChangeAgent({ id: agent.id, name: agent.name || 'Agent', email: agent.email }); setShowPasswordModal(true); }}
+                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+                                  >
+                                    <Lock className="w-3.5 h-3.5" /> Password
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteAgent(agent.id)}
+                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between flex-wrap gap-4 mt-4">
+                      <span className="text-xs text-slate-500 font-bold">
+                        Showing {Math.min(filteredAgentsList.length, (agentsPage - 1) * agentsPerPage + 1)} to {Math.min(filteredAgentsList.length, agentsPage * agentsPerPage)} of {filteredAgentsList.length} agents
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={agentsPage === 1}
+                          onClick={() => setAgentsPage(prev => prev - 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          disabled={agentsPage * agentsPerPage >= filteredAgentsList.length}
+                          onClick={() => setAgentsPage(prev => prev + 1)}
+                          className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 select-none"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
           </section>
         </div>
 
@@ -2840,7 +3048,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </div>
                   <div className="space-y-1.5">
                     <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Password *</label>
-                    <input required value={newAgentPassword} onChange={e => setNewAgentPassword(e.target.value)} type="password" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="••••••••" />
+                    <div className="relative">
+                      <input required value={newAgentPassword} onChange={e => setNewAgentPassword(e.target.value)} type={showAgentPassword ? "text" : "password"} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="••••••••" />
+                      <button
+                        type="button"
+                        onClick={() => setShowAgentPassword(!showAgentPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showAgentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -2851,6 +3068,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <button type="submit" disabled={newAgentSubmitting} className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                     {newAgentSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
                     Create Agent
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Change Password Modal */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 bg-slate-900/80 flex items-center justify-center p-4 z-[100] animate-fade-in">
+            <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up-subtle">
+              <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900">Change Agent Password</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">Set a new password for {passwordChangeAgent?.name}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowPasswordModal(false)} className="p-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-[8px] transition-all cursor-pointer shadow-sm">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleChangeAgentPassword} className="p-6 space-y-5">
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium capitalize text-slate-700 mb-2">New Password *</label>
+                    <div className="relative">
+                      <input required value={changeAgentPassword} onChange={e => setChangeAgentPassword(e.target.value)} type={showChangePassword ? "text" : "password"} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="••••••••" />
+                      <button
+                        type="button"
+                        onClick={() => setShowChangePassword(!showChangePassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showChangePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium capitalize text-slate-700 mb-2">Confirm Password *</label>
+                    <div className="relative">
+                      <input required value={confirmAgentPassword} onChange={e => setConfirmAgentPassword(e.target.value)} type={showConfirmPassword ? "text" : "password"} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all text-slate-800" placeholder="••••••••" />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-2">
+                  <button type="button" onClick={() => setShowPasswordModal(false)} className="flex items-center justify-center gap-2 text-sm text-slate-700 border border-slate-300 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-all duration-300 px-6 h-[46px] rounded-[8px] cursor-pointer bg-white disabled:opacity-50 disabled:cursor-not-allowed select-none">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={isChangingPassword} className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white border border-transparent text-sm font-medium px-6 h-[46px] rounded-[8px] transition-all duration-300 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isChangingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                    Update Password
                   </button>
                 </div>
               </form>
