@@ -15,8 +15,10 @@ function ContactFormContent() {
   const searchParams = useSearchParams();
   const catParam = searchParams.get('category') || '';
 
+  const tabParam = searchParams.get('tab') as 'send-message' | 'live-chat' | 'call-us' | 'voice-assistant' | null;
+
   // Tab State
-  const [activeTab, setActiveTab] = useState<'send-message' | 'live-chat' | 'call-us' | 'voice-assistant'>('send-message');
+  const [activeTab, setActiveTab] = useState<'send-message' | 'live-chat' | 'call-us' | 'voice-assistant'>(tabParam || 'send-message');
 
   // Compute directly from searchParams during render
   const matched = catParam ? TOPICS.find(t => t.slug === catParam) : null;
