@@ -150,6 +150,17 @@ interface TicketItem {
   }[];
 }
 
+const formatPhoneNumber = (phone: string | null | undefined) => {
+  if (!phone) return 'N/A';
+  const cleaned = ('' + phone).replace(/\D/g, '');
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  } else if (cleaned.length === 11 && cleaned.startsWith('1')) {
+    return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
+  }
+  return phone; // Fallback if it's not standard US format
+};
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -185,6 +196,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [selectedChat, setSelectedChat] = useState<ChatItem | null>(null);
   const [selectedVoiceLog, setSelectedVoiceLog] = useState<VoiceLogItem | null>(null);
   const [selectedCallLog, setSelectedCallLog] = useState<any | null>(null);
+  const [selectedAnalysisLog, setSelectedAnalysisLog] = useState<any | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [audioPlaybackError, setAudioPlaybackError] = useState(false);
 
   const [agents, setAgents] = useState<{ id: number; name: string; email: string; role: string; createdAt?: string }[]>([]);
@@ -249,6 +262,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [showAgentPassword, setShowAgentPassword] = useState(false);
   const [newAgentSubmitting, setNewAgentSubmitting] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  const handleAIAnalysis = async (log: any) => {
+    setIsAnalyzing(true);
+    // Show a loading UI state for the log
+    setSelectedAnalysisLog({ ...log, isLoading: true });
+
+    try {
+      const res = await fetch('/api/call-logs/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callLogId: log.id })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setSelectedAnalysisLog({ ...log, aiAnalysis: data.analysis, isLoading: false });
+        
+        // Update it in the local list so it doesn't need refetching immediately
+        setCallLogs(prev => prev.map(l => l.id === log.id ? { ...l, aiAnalysis: data.analysis } : l));
+      } else {
+        alert(data.error || 'Failed to analyze call.');
+        setSelectedAnalysisLog(null);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error connecting to AI analysis server.');
+      setSelectedAnalysisLog(null);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleCreateAgent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -880,9 +925,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const activities = getActivitiesList();
 
+  const isAnalysisPage = pathname.includes('/analysis');
+
   return (
     <div className="bg-slate-50/50 text-slate-800 flex-1 font-sans selection:bg-primary-600 selection:text-white flex relative">
       {/* Left Sidebar */}
+      {!isAnalysisPage && (
       <aside className="hidden lg:flex w-[280px] bg-white border-r border-slate-200 flex-col items-center p-[20px] fixed top-[77px] bottom-0 left-0 overflow-y-auto shadow-sm z-20">
         <div className="flex flex-col items-center text-center mt-4 w-full">
           <div className="w-20 h-20 rounded-full bg-primary-600 text-white flex items-center justify-center border border-primary-700 mb-4 shadow-sm">
@@ -970,9 +1018,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           © 2026 All rights reserved.
         </div>
       </aside>
+      )}
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-[280px] overflow-x-hidden pb-6">
+      <div className={`flex-1 ${!isAnalysisPage ? 'lg:ml-[280px]' : ''} overflow-x-hidden pb-6`}>
 
         {/* Toast Notification Card Container */}
         <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
@@ -1662,7 +1711,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     onClick={() => setSelectedChat(chat)}
                                     className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
                                   >
-                                    View <ChevronRight className="w-3.5 h-3.5" />
+                                    <Eye className="w-4 h-4" /> View
                                   </button>
                                 </div>
                               </td>
@@ -1793,7 +1842,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
                                     className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
                                   >
-                                    View <ChevronRight className="w-3.5 h-3.5" />
+                                    <Eye className="w-4 h-4" /> View
                                   </button>
                                 </div>
                               </td>
@@ -1916,7 +1965,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                   {log.customer?.name || 'Unknown Caller'}
                                 </td>
                                 <td className="py-4 px-4 text-slate-500">
-                                  {log.callerNumber}
+                                  {formatPhoneNumber(log.callerNumber)}
                                 </td>
                                 <td className="py-4 px-4">
                                   <span className={`inline-flex items-center px-2.5 py-1 rounded-[8px] text-[10px] font-bold uppercase ${status === 'Answered' ? 'bg-emerald-50 text-emerald-650 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200/60'}`}>
@@ -1947,7 +1996,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                       onClick={() => setSelectedCallLog(log)}
                                       className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
                                     >
-                                      View <ChevronRight className="w-3.5 h-3.5" />
+                                      <Eye className="w-4 h-4" /> View
+                                    </button>
+                                    <button
+                                      onClick={() => router.push(`/admin/call-logs/${log.id}/analysis`)}
+                                      className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-primary-50 border border-primary-200 text-primary-700 hover:bg-primary-100 hover:text-primary-800 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
+                                    >
+                                      <Sparkles className="w-3.5 h-3.5" /> AI Analysis
                                     </button>
                                   </div>
                                 </td>
@@ -2668,7 +2723,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <div>
                     <h3 className="text-base font-bold text-slate-900">Call Log Details</h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      {selectedCallLog.callerNumber} • {new Date(selectedCallLog.createdAt).toLocaleString()}
+                      {formatPhoneNumber(selectedCallLog.callerNumber)} • {new Date(selectedCallLog.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>
@@ -2822,6 +2877,162 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   );
                 })()}
 
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: AI ANALYSIS DASHBOARD */}
+        {selectedAnalysisLog && (
+          <div className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center animate-fade-in p-4 sm:p-6 lg:p-8" onClick={() => setSelectedAnalysisLog(null)}>
+            <div className="bg-slate-50 shadow-2xl w-full max-w-5xl h-full max-h-[90vh] rounded-2xl overflow-hidden flex flex-col animate-scale-up border border-slate-200/60" onClick={(e) => e.stopPropagation()}>
+              
+              {/* Header */}
+              <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center shrink-0">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-50 text-primary-600 border border-primary-100 shadow-sm">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-900">AI Call Analysis</h2>
+                    <p className="text-sm text-slate-500 mt-0.5">
+                      {selectedAnalysisLog.customer?.name || 'Unknown Caller'} ({selectedAnalysisLog.callerNumber}) • {new Date(selectedAnalysisLog.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedAnalysisLog(null)}
+                  className="p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-700 rounded-xl transition-all shadow-sm"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto p-6 lg:p-8">
+                {selectedAnalysisLog.isLoading ? (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-4">
+                    <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+                    <p className="font-semibold text-sm animate-pulse">Running Deep AI Analysis...</p>
+                  </div>
+                ) : selectedAnalysisLog.aiAnalysis ? (
+                  <div className="space-y-6">
+                    {/* Top Row: Key Metrics */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {/* CSAT */}
+                      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">CSAT Score</span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-black text-slate-800">{selectedAnalysisLog.aiAnalysis.csatScore}</span>
+                          <span className="text-sm font-medium text-slate-400">/ 10</span>
+                        </div>
+                      </div>
+                      
+                      {/* Sentiment */}
+                      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Customer Sentiment</span>
+                        <div>
+                          <span className={`inline-flex px-3 py-1 rounded-full text-sm font-bold ${
+                            selectedAnalysisLog.aiAnalysis.sentiment === 'Positive' ? 'bg-emerald-100 text-emerald-700' :
+                            selectedAnalysisLog.aiAnalysis.sentiment === 'Negative' ? 'bg-rose-100 text-rose-700' :
+                            'bg-amber-100 text-amber-700'
+                          }`}>
+                            {selectedAnalysisLog.aiAnalysis.sentiment}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Resolution */}
+                      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Resolution Status</span>
+                        <div>
+                          <span className={`inline-flex px-3 py-1 rounded-full text-sm font-bold ${
+                            selectedAnalysisLog.aiAnalysis.resolutionStatus?.toLowerCase().includes('resolved') ? 'bg-blue-100 text-blue-700' :
+                            'bg-orange-100 text-orange-700'
+                          }`}>
+                            {selectedAnalysisLog.aiAnalysis.resolutionStatus}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Risk */}
+                      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Churn Risk</span>
+                        <div>
+                          <span className={`inline-flex px-3 py-1 rounded-full text-sm font-bold ${
+                            selectedAnalysisLog.aiAnalysis.churnRisk === 'High' || selectedAnalysisLog.aiAnalysis.churnRisk === 'Critical' ? 'bg-red-100 text-red-700 border border-red-200' :
+                            selectedAnalysisLog.aiAnalysis.churnRisk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {selectedAnalysisLog.aiAnalysis.churnRisk} Risk
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Left Column (Main Analysis) */}
+                      <div className="lg:col-span-2 space-y-6">
+                        {/* Summary */}
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">Executive Summary</h3>
+                          <p className="text-slate-600 leading-relaxed text-sm">
+                            {selectedAnalysisLog.aiAnalysis.aiSummary}
+                          </p>
+                        </div>
+
+                        {/* Agent Performance */}
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">Agent Performance</h3>
+                          <p className="text-slate-600 leading-relaxed text-sm">
+                            {selectedAnalysisLog.aiAnalysis.agentPerformance}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right Column (Meta & Actions) */}
+                      <div className="space-y-6">
+                        {/* Call Details */}
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">Call Details</h3>
+                          <div className="space-y-4">
+                            <div>
+                              <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Category</span>
+                              <span className="text-sm font-medium text-slate-700">{selectedAnalysisLog.aiAnalysis.issueCategory}</span>
+                            </div>
+                            <div>
+                              <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Priority</span>
+                              <span className="text-sm font-medium text-slate-700">{selectedAnalysisLog.aiAnalysis.priority}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Items */}
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">Action Items</h3>
+                          {selectedAnalysisLog.aiAnalysis.actionItems && selectedAnalysisLog.aiAnalysis.actionItems.length > 0 ? (
+                            <ul className="space-y-3">
+                              {selectedAnalysisLog.aiAnalysis.actionItems.map((item: string, idx: number) => (
+                                <li key={idx} className="flex gap-3 text-sm text-slate-600 items-start">
+                                  <div className="w-5 h-5 shrink-0 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center mt-0.5">
+                                    <span className="text-[10px] font-bold">{idx + 1}</span>
+                                  </div>
+                                  <span className="leading-relaxed">{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-slate-400 italic">No action items pending.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-10 text-center text-rose-500">
+                    Failed to load analysis.
+                  </div>
+                )}
               </div>
             </div>
           </div>

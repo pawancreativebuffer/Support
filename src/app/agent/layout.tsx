@@ -23,7 +23,8 @@ import {
   Loader2,
   SlidersHorizontal,
   PlusCircle,
-  Lock
+  Lock,
+  Eye
 } from 'lucide-react';
 import { useUploadThing } from '@/lib/uploadthing';
 
@@ -1685,7 +1686,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                                     onClick={() => setSelectedChat(chat)}
                                     className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
                                   >
-                                    View <ChevronRight className="w-3.5 h-3.5" />
+                                    <Eye className="w-4 h-4" /> View
                                   </button>
                                 </div>
                               </td>
@@ -1816,7 +1817,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
                                     onClick={() => { setSelectedVoiceLog(log); setAudioPlaybackError(false); }}
                                     className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 rounded-[8px] text-xs font-semibold transition-all cursor-pointer select-none"
                                   >
-                                    View <ChevronRight className="w-3.5 h-3.5" />
+                                    <Eye className="w-4 h-4" /> View
                                   </button>
                                 </div>
                               </td>
